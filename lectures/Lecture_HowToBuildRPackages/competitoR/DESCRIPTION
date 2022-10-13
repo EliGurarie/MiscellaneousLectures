@@ -1,0 +1,15 @@
+Package: competitoR
+Title: Fit Logistic Models
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Elie",
+           family = "Gurarie",
+           role = c("aut", "cre"),
+           email = "egurarie@esf.edu",
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.0
