@@ -1,0 +1,627 @@
+---
+title: 'Lab: Bayesian Lilacs - an MCMC'
+subtitle: "**[EFB 798]: Bayesian modeling with Dr. Cohen**"
+author: "Dr. Eliezer Gurarie" 
+output: 
+  html_document:
+      toc: true
+      toc_float: true
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r, echo=FALSE, eval=FALSE}
+require(knitr)
+purl("MCMCwithSTAN.rmd")
+```
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = FALSE, message=FALSE, warning=FALSE)
+```
+
+## R Markdown
+
+First .... packages!
+```{r, message=FALSE, warning=FALSE}
+packages <- c("ggplot2", "ggmap", "plyr", "magrittr", "rstan", "coda", "lattice", "mapview")
+sapply(packages, require, char = TRUE)
+```
+
+
+## 1. Lilac Data
+
+Beautiful lilac flowering data are here: ftp://ftp.ncdc.noaa.gov/pub/data/paleo/phenology/north_america_lilac.txt
+
+I tidied the data and posted them to the website here: 
+
+```{r}
+ll <- read.csv("data/LilacLocations.csv")
+lp <- read.csv("data/LilacPhenology.csv")
+```
+
+The lilac locations have latitudes, longitudes and eleveations:
+```{r}
+head(ll)
+```
+
+The lilac phenology contains, importantly, the day of blooming (our response variable) across years at each station. 
+
+```{r}
+head(lp)
+```
+
+Map all these data with `mapview()`:
+
+```{r GGmapping, message=FALSE, eval=TRUE, cache=TRUE}
+require(mapview); require(sf)
+ll.sf <- st_as_sf(ll, coords = c("Long","Lat"), crs = st_crs(4326))
+mapview(ll.sf)
+
+#basemap1 <- get_map(location = c(-112, 38), maptype = "terrain", zoom=4)
+#ggmap(basemap1) + geom_point(data = ll, mapping = aes(x = Long, y = Lat, colour = Elev, size = Nobs))
+```
+
+Pick out a few widely scattered stations (try this and all of the following with your own set!)
+
+```{r SomeStations}
+Stations <- c(456624, 426357, 354147, 456974)
+subset(ll, ID %in% Stations)
+```
+
+and tidy the data:
+```{r}
+lilacs <- subset(lp, STATION %in% Stations)
+lilacs <- lilacs[!is.na(lilacs$BLOOM),]
+```
+
+Plot some trends over time, with a "smoother" in ggplot:
+
+```{r GGplotLoess, fig.height=4, fig.width=10}
+require(ggplot2) 
+ggplot(lilacs, aes(x=YEAR, y=BLOOM)) + 
+  geom_point() + 
+  facet_grid(.~STATION) + 
+  stat_smooth()
+```
+
+Note: It is easy and seductive to make figures like the above - but an imnportant problem  with any black box method (like `stat_smooth()`) is that the actual tool is obscured. In this case, the smoother is "loess" (localized regression).  Replicating the figure in base plot is a good way to control that you know what's actually going on. 
+
+```{r BaseLoess, echo=-1}
+par(mfrow=c(2,2), bty="l")
+for(s in Stations)
+{
+  years <- 1955:2000
+  mydata <- subset(lilacs, STATION==s)
+  with(mydata, plot(YEAR, BLOOM, main=s, xlim=range(years)))
+  myloess <- loess(BLOOM~YEAR, data=mydata)
+  myloess.predict <- predict(myloess, data.frame(YEAR = years), se=TRUE)
+  with(myloess.predict, lines(years, fit)) 
+  with(myloess.predict, lines(years, fit)) 
+  with(myloess.predict, lines(years, fit - 2*se.fit, col="grey")) 
+  with(myloess.predict, lines(years, fit + 2*se.fit, col="grey")) 
+}
+```
+
+Here are our selected stations: 
+
+```{r SomeStationGGmap, eval=TRUE}
+ll.mystations <- (ll.sf %>% subset(ID %in% Stations))[,"STATION"]
+mapview(ll.mystations, map.types = "Esri.WorldPhysical")
+```
+
+
+
+## 2. A model for blooming time
+
+It looks like the blooming time of lilacs since 1980 has started happening earlier and earlier.  We propose a hockeystick model, i.e.:
+$$ X_{i,j}(T) = \begin{cases} \beta_0 + \epsilon_{ij} & T < \tau \\
+                             \beta_0 + \beta_1(T - \tau) + \epsilon_{ij} & T \geq \tau \end{cases}
+$$ 
+
+
+Encode the model in R (note the `ifelse()` function): 
+
+```{r BrokenStick}
+getX.hat <- function(T, beta0, beta1, tau)
+  ifelse(T < tau, beta0, beta0 + beta1 * (T-tau))
+```
+
+Guess some values, and see how it looks.  We'll focus on just one station, and make things easier by extracting htose columns:
+
+```{r BrokenStickIllustration, echo = -1}
+par(bty="l")
+l1 <- subset(lilacs, STATION == Stations[1])
+p <- c(120, -2, 1980, 1)
+plot(BLOOM~YEAR, pch = 19, col="grey", data = l1)
+lines(l1$YEAR, getX.hat(l1$YEAR, beta0=120, beta1 = -2, tau = 1980), col=2, lwd=2)
+```
+
+Ok, before we run off to analyze this model, lets first encode a simple linear regression in STAN:
+
+## 3. Simple STAN example: a linear model
+
+The basic idea of using RSTAN is:
+
+1. Encode model in STAN-specific code
+2. Use Rstan (which uses Rcpp) to compile the MCMC sampler as an R-accessible piece of C++ code
+3. Run the sampler - specifying the data, the number of iterations, chains, etc. 
+4. Analyze the resulting chains for convergence and stationarity. 
+
+### Step I. Writing the code. 
+
+STAN uses a pseudo-R pseudo-C type. The specifications and examples are given in the very useful manual here: http://mc-stan.org/manual.html
+
+Here is an example of the linear model, coded in STAN:
+
+```{stan lm.stan, output.var = "lm.stan", eval=FALSE, cache = FALSE}
+data {
+  int<lower=0> n; //
+  vector[n] y; // Y Vector
+  vector[n] x; // X Vector
+}
+
+parameters {
+  real beta0;  					// intercept
+  real beta1;  					// slope
+  real<lower=0> sigma;	// standard deviation
+}
+
+model {
+  //Declare variable
+  vector[n] yhat;
+
+  //Priors
+  sigma ~ inv_gamma(0.001, 0.001); 
+  beta0 ~ normal(0,1e2);
+  beta1 ~ normal(0,1e2);
+
+  //model   
+  yhat = beta0 + beta1 * (x - mean(x));
+  y ~ normal(yhat, sigma); 
+}
+```
+
+There are several pieces (called "blocks") here to go over.  
+
+1. **data block**:  This informs Stan of the objects that we will be passing to it (as a list, from within R). In this case we have 1 constants and a few vectors.  Note, you need to specify `n` because it is used later in the model specification. 
+2. **parameters block**: where you specify the parameters to estimate.  Note, the types are important, and that you can set lower and upper limits to them easily. 
+3. **model block**: is the meat of the model  Note that the `yhat` variable is one more vector that must be defined - and all variables must be specified at the beginning of the block.  Note, also, I put in a loop to define the `yhat`, to illustrate the loop syntax.  But in fact STAN is quite good at vectorization, and that vectorization can be somewhat and that loop could be replaced simply with:
+
+```{r, eval=FALSE}
+yhat <- beta0 + beta1 * (x - mean(x));
+```
+
+In *principle* STAN code is straightforward, but there are always traps and pitfalls, that take a while to debug (and involve a fair amount of looking at the manual and googling errors).
+
+Note that the priors I selected were fairly uninformative.  The inverse gamma distribution with low values of $\alpha$ and $\beta$ is a common one for the variance, which should be positive.
+
+### Step II. Compiling
+
+The big step (the SLOW step) is the transformation of the STAN specification to C++ code, and then compilation of that code.  This is done with the command `stan_model`.  In theory you could do this in-line, but the best way is to save the STAN code (e.g., save the STAN code above as `lm.stan` in your working directory) and call it from the command line as follows. 
+
+```{r loadlm.stan, eval=FALSE}
+require(rstan)
+lm_stan <- stan_model(file = "lm.stan", auto_write = TRUE)
+```
+
+This takes a few minutes to perform on my computer. Compiled versions (of all the Stan models in this lab) can be found here: http://faculty.washington.edu/eliezg/teaching/StatR503/stanmodels/
+
+
+```{r, echo=FALSE, eval=2}
+save(lm_stan, file="stanmodels/lm_stan.stanmodel")
+load("stanmodels/lm_stan.stanmodel")
+```
+
+### Step III. Running the MCMC
+
+To actually run the MCMC on the data and the model you use the `sampling` command.  A few things to note:
+
+1. the `Data` must be a named list with the variable names and types corresponding strictly to the definition sin the `data` block of the stan model.  
+2. There are lots of detailed options with respect to the sampling, but the default is: 4 chains, each of length 2000, of which the first 1000 are trimmed ("warmup").
+
+```{r lmSampling}
+l1 <- subset(lilacs, STATION == Stations[1])
+Data <- list(n = nrow(l1), x = l1$YEAR, y = l1$BLOOM)
+lm.fit <- sampling(lm_stan, data = Data)
+```
+
+This takes under a second to perform on my machine.
+
+
+A brief summary of the results:
+
+```{r}
+lm.fit
+```
+
+You can see from the output that the regression coefficients are around 116.5 and -0.6, with a standard deviation of 9.1.  It is easy (of course) to compare these results with a straightforward OLS: 
+
+```{r lmSummary}
+summary(lm(BLOOM ~ I(YEAR-mean(YEAR)), data = l1))
+```
+
+The estimate of standard deviation is given by: 
+
+```{r SD}
+summary(lm(BLOOM ~ I(YEAR-mean(YEAR)), data = l1))$sigma
+```
+
+Should be a pretty good match.
+
+### Step IV. Diagnosing the MCMC
+
+To apply the `coda` family of diagnostic tools, you need to `extract` the chains from the STAN fitted object, and re-create it is as an `mcmc.list`.  This is done with the `As.mcmc.list` command.
+
+```{r lmChains}
+require(coda)
+lm.chains <- As.mcmc.list(lm.fit, pars =  c("beta0", "beta1", "sigma"))
+plot(lm.chains)
+```
+
+You can see that the chains seem fairly well behaved, i.e. they converge and the densities are consistent between chains. Here is a nicer looking plot of the posterior distributions:
+
+```{r lmDensityPlot, message=FALSE}
+require(lattice)
+densityplot(lm.chains)
+```
+
+## 4. Hockeystick model
+
+Ok, now we will try to fit this hockeystick model to one of these datasets.  Note that the version below basically adjusts the `lm.stan` model with just a few tweaks, adding that important step function via the STAN function `int_step` (which is 0 when the argument is less than 0, and 1 when the argument is greater than 0):  
+
+```{stan hockeystickstan, eval=FALSE, cache = FALSE,  output.var="hockeystick.stan"}
+data {
+  int<lower=0> n; //
+  vector[n] y; // Y Vector
+  vector[n] x; // X Vector
+}
+
+parameters {
+  real beta0;  // intercept
+  real beta1;  // slope
+  real<lower=min(x), upper=max(x)> tau;    // changepoint
+  real<lower=0> sigma;   // variance
+}
+
+model {
+    vector[n] yhat;
+
+  // Priors
+    sigma ~ inv_gamma(0.001, 0.001); 
+    beta0 ~ normal(0,1000);
+    beta1 ~ normal(0, 1000);
+    tau ~ uniform(min(x), max(x));
+  // Define the mean
+  for(i in 1:n)
+    yhat[i] = beta0 + int_step(x[i]-tau)*beta1*(x[i] - tau);
+ 
+  // likelihood / probability model   
+    y ~ normal(yhat, sigma); 
+}
+
+```
+
+Compile:
+
+```{r HockeyStickCompiling, eval=FALSE, echo=1}
+hockeystick_stan <- stan_model(file = "stanmodels/hockeystick.stan")
+save(hockeystick_stan, file="stanmodels/hockeystick.stanmodel")
+```
+
+```{r HockeyStickSampling, echo=-1}
+load("stanmodels/hockeystick.stanmodel")
+hockeystick.fit <- sampling(hockeystick_stan, Data)
+```
+
+This takes a little bit longer to fit, but still just on the order of seconds. 
+
+Look at the estimates: 
+
+```{r HockeyStickFit}
+hockeystick.fit
+```
+
+They look quite reasonable and converged!
+
+Let's assess the fits: 
+```{r HockeyStickResults}
+require(lattice)
+hockeystick.mcmc <- As.mcmc.list(hockeystick.fit, c("beta0", "beta1","tau","sigma"))
+xyplot(hockeystick.mcmc)
+densityplot(hockeystick.mcmc)
+```
+
+Great fits, nicely behaved chains.  And you can see how the final distributions are pretty normal in the end.  
+
+The conclusion is that there was likely a structural change in the blooming of this lilac time series occuring somewhere around 1980 (between 1974 and 1984 for sure).  
+
+We can see what the point estimate of this model fit might look like, using the `getX.hat()` function above:
+
+```{r VisualizeResults, echo=-1}
+par(bty="l")
+getX.hat <- function(T, beta0, beta1, tau)
+  ifelse(T < tau, beta0, beta0 + beta1 * (T-tau))
+
+plot(BLOOM ~ YEAR, pch=19, col=rgb(0,0,0,.5), cex=2, data = l1)
+(p.hat <- summary(hockeystick.mcmc)$quantiles[,"50%"])
+lines(1950:2000, getX.hat(1950:2000, p.hat['beta0'], p.hat['beta1'], p.hat['tau']), lwd=2, col="darkred")
+```
+
+A nice fit.  You could also sample from the MCMC results to draw a 95% prediction interval around the time series, though that is a bit trickier to do compactly.  Something like this:
+
+```{r MonteCarloFits}
+par(bty="l")
+
+hockeystick.chains <- as.array(hockeystick.mcmc)
+years <- 1950:2000
+hockey.sims <- matrix(0, nrow=length(years), ncol=1e4)
+for(i in 1:1e4)
+{
+  b0 <- sample(hockeystick.chains[,"beta0",], 1)
+  b1 <- sample(hockeystick.chains[,"beta1",], 1)
+  tau <- sample(hockeystick.chains[,"tau",], 1)
+  hockey.sims[,i] <- getX.hat(years, b0, b1, tau)
+}
+
+CIs <- apply(hockey.sims, 1, quantile, p=c(0.025, 0.5, 0.975))
+
+plot(BLOOM ~ YEAR, pch=19, col=rgb(0,0,0,.5), cex=2, data = l1)
+lines(years, CIs[1,], col="red", lwd=2, lty=3)
+lines(years, CIs[2,], col="red", lwd=2)
+lines(years, CIs[3,], col="red", lwd=2, lty=3)
+```
+
+
+
+### Brief Aside: nonlinear least squares fit
+
+There is a way to fit the "hockey-stick" model to these data using the non-linear least squares `nls` function in R.  Compare the output of the MCMC to these results: 
+
+```{r}
+lilacs.nls <- nls( BLOOM ~ getX.hat(YEAR, beta0, beta1, tau), 
+                   start=list(beta0=120, beta1=-2,tau=1980), 
+                   data = l1)
+summary(lilacs.nls)
+``` 
+
+The `nls` function fits the curve by minimizing the least squared ... 
+
+### Brief Aside II: ... or "handmade" likelihood
+
+... which is the equivalent of fitting a model with a Gaussian error, which we can also do by obtating an MLE.  The likelihood function is:
+
+```{r}
+hockeystick.ll <- function(par, time, x){
+	x.hat <- getX.hat(time, par["beta0"], par["beta1"], par["tau"])
+	residual <- x - x.hat
+	-sum(dnorm(residual, 0, par["sigma"], log=TRUE))
+}
+
+par0 <- c(beta0 = 120, beta1 = -2, tau=1980, sigma = 7)
+fit.ll <- optim(par0, hockeystick.ll, time = l1$YEAR, x = l1$BLOOM)
+fit.ll$par
+```
+
+Brief pro-tip ... since $\sigma$ is positive, you're almost always better off estimating $\log(\sigma)$, e.g.
+
+```{r}
+hockeystick.ll <- function(par, time, x){
+	x.hat <- getX.hat(time, par["beta0"], par["beta1"], par["tau"])
+	residual <- x - x.hat
+	-sum(dnorm(residual, 0, exp(par["logsigma"]), log=TRUE))
+}
+
+par0 <- c(beta0 = 120, beta1 = -2, tau=1980, logsigma = 1)
+fit.ll <- optim(par0, hockeystick.ll, time = l1$YEAR, x = l1$BLOOM)
+fit.ll$par
+```
+
+"Better off" - in this case - meaning: fewer errors and a faster solution.  Also - it's a quick way to provide the common bound: $[0,\infty]$.   The estimate, in the end, is the same:
+
+```{r}
+exp(fit.ll$par['logsigma'])
+```
+
+
+## 5. Hierarchical hockey stick model
+
+Lets now try to fit a *hierarchical* model, in which we want to acknowledge that there are lots of sites and variability across them, and we want to see how variable the main timing parameters (flat intercept - $\beta_0$, decreasing slope - $\beta_1$) are across locations.  
+
+In this hierarchical model, we specify several are wide distributions for the site-specific parameters, thus:
+
+$$Y_{ij} = f(X_j | \beta_{0,i}, \beta_{1,i}, \tau, \sigma)$$
+
+Where $i$ refers to each site, and $j$ refers to each year observation. 
+
+$$ \beta_0 \sim {\cal N}(\mu_{\beta 0}, \sigma_{\beta 0}); \beta_1 \sim {\cal N}(\mu_{\beta 1}, \sigma_{\beta 1})$$
+
+We now have 6 parameters, the mean and standard deviation across all sites for two parameters and the overall change point and variance.
+
+### STAN code for hierarchical hockeysticks
+ 
+The complete STAN code to fit this model is below:
+
+```{stan, output.var = "hhs.stan", eval=FALSE, cache = FALSE}
+data {
+  int<lower=0> n;                     // number of total observations
+  int<lower=1> nsites;                // number of sites
+  int<lower=1,upper=nsites> site[n];  // vector of site IDs
+  real y[n];                        // flowering date
+  real x[n];                        // year
+} 
+
+parameters {
+  real mu_beta0;  // mean intercept
+  real<lower=0> sd_beta0;  // s.d. of intercept
+  
+  real mu_beta1;  // mean slope
+  real<lower=0> sd_beta1;  // s.d. of intercept
+
+  // overall changepoint and s.d.
+  real<lower = min(x), upper = max(x)> tau;
+  real<lower=0> sigma;    
+  
+  vector[nsites] beta0;
+  vector[nsites] beta1;
+}
+
+model {
+  vector[n] yhat;
+  
+  // Priors
+  sigma ~ inv_gamma(0.001, 0.001); 
+  mu_beta0 ~ normal(0,1e4);
+  sd_beta0 ~ inv_gamma(0.001, 0.001);
+  mu_beta1 ~ normal(0, 10);
+  sd_beta1 ~ inv_gamma(0.001, 0.001);
+  tau ~ uniform(min(x), max(x));
+  
+  for (i in 1:nsites){
+    beta0[i] ~ normal(mu_beta0, sd_beta0);
+    beta1[i] ~ normal(mu_beta1, sd_beta1);  
+  }
+  
+ // The model!
+  for (i in 1:n)
+    yhat[i] = beta0[site[i]] + int_step(x[i]-tau) * beta1[site[i]] * (x[i] - tau);
+  
+  // likelihood / probability model   
+  y ~ normal(yhat, sigma); 
+}
+```
+
+Several things to note here: 
+
+- The `data` module now includes a vector of site locations `site`, and an extra important variable `nsites` that is simply the number of unique sites. 
+
+- The `parameter` module include the parameters above, but will also keep track of the individual `beta0` and `beta1` values that are estimated [at no extra cost] for each site. 
+- The `model` module specifies that the values of the paramters in each site are drawn from the normal distributions, and then obtains the mean function (`yhat`) referencing the parameter values that are particular to each site. 
+
+The STAN code here is saved under the filename `hhs.stan`. 
+
+Compile:
+
+```{r HierarchicalHockeyStickCompiling, eval=FALSE, echo=1}
+hhs_stan <- stan_model(file = "stanmodels/hhs.stan")
+save(hhs_stan, file="stanmodels/hhs.stanmodel")
+```
+
+```{r, echo = FALSE}
+load(file="stanmodels/hhs.stanmodel")
+```
+
+### Selecting sites
+
+Let's randomly pick out 30 sites with the most observations (e.g. at least 20), and plot them:
+
+```{r, warning=FALSE, message=FALSE}
+# only lilacs, non NA
+lp2 <- subset(lp, !is.na(BLOOM) & SPECIES == 2)
+somestations <- names(which(table(lp2$STATION)>20)) %>% sample(30)
+lilacs <- subset(lp2, STATION %in% somestations) %>% 
+      merge(ll, by.x = "STATION", by.y = "ID")
+```
+
+A map: 
+
+```{r anothermap, echo=FALSE, message=FALSE, warning=FALSE}
+mapview(ll.sf %>% subset(ID %in% somestations)) 
+```
+
+### Running the sampler
+
+First, we have to define the data, recalling that every declared bit of data in the original data module must be present:
+
+```{r}
+Data <- with(lilacs, list(x = YEAR, y = BLOOM, n = length(YEAR), 
+              site = STATION %>% factor %>% as.integer, 
+						  nsites = length(unique(STATION))))
+```
+
+These data are longer - in my sample of sites, there are over 700 rows.  ALso, the model is more complex and the sampling will take more time, so for now I only do 2 chains.  
+
+```{r HHS.fit, cache=TRUE}
+load(file="stanmodels/hhs.stanmodel")
+hhs.fit <- sampling(hhs_stan, Data, iter = 2000, chains = 2)
+```
+
+Note that the output of `hhs.fit` shows estimates for the seven parameters of interest, as well as values of the three parameters for EACH site.  We won't show those here, but here are the main ones:
+
+```{r}
+print(hhs.fit, pars = c("mu_beta0", "sd_beta0", "mu_beta1","sd_beta1", "tau", "sigma"))
+```
+
+Visualiziaing the chains: 
+
+```{r HHS.iagnositcs}
+hhs.mcmc <- As.mcmc.list(hhs.fit, pars = c("mu_beta0", "sd_beta0", "mu_beta1","sd_beta1", "tau",  "sigma"))
+xyplot(hhs.mcmc)
+densityplot(hhs.mcmc)
+```
+
+You might (depending on your specific results) see that the question of "convergence" is a little bit more open here.  But certainly the wide variation in the mean intercept $\beta_0$ is notable, as is the uniformly negative slope $\beta_1$.  
+	
+	
+## 6. Hierarchical hockeystick ... with covariates
+
+We're going to do one more twist on the model, and that is to try to narrow the rather large variation in the intercept by using our latitude and longitude information.  In this model, the intercept ($\beta_0$) will be explained by elevation and latitude - the higher and further north you are, the more later flowers tend to bloom.  So in this model, everyting will be the same as above, except that rather than have $\beta_0 \sim {\cal N}(\mu, \sigma)$ - it is going to be a regression model:
+
+$$\beta_0 \sim {\cal N}({\bf X} \beta, \sigma)$$
+
+where ${\bf X}$ represents a design matrix of the form:
+
+$$\left[\begin{array}{ccc} 
+      1 & E_1 & L_1 \\
+      1 & E_2 & L_2 \\
+      1 & E_3 & L_3 \\
+      ... & ... & ...\\
+  \end{array}\right]$$
+
+where $E$ and $L$ represent elevation and latitude. 
+
+Coding this adds a few quirks to the STAN code, but surprisingly not many more lines.  See the complete code here: https://terpconnect.umd.edu/~egurarie/teaching/Biol709/stanmodels/hhswithcovar.stan.  
+
+```{r, eval=3, echo=1}
+hhswc_stan <- stan_model("hhswithcovar.stan")
+#hhswc_stan <- stan_model("./_stanmodels/hhswithcovar.stan")
+#save(hhswc_stan, file = "hhswithcovar.stanmodel")
+load(file = "./_stanmodels/hhswithcovar.stanmodel")
+```
+
+A quick way to get a covariate matrix below.  Note that I center the covariates, so that the intercept is the mean value, and the slopes tell me the number of days PER degree latitude and PER 1 km elevation:
+
+```{r}
+covars <- with(lilacs, model.matrix(BLOOM ~ I(Lat - mean(Lat)) + I((Elev - mean(Elev))/1000)))
+head(covars)
+```
+
+Which we now include in our Data list:
+
+```{r}
+Data <- with(lilacs, 
+            list(x = YEAR, y = BLOOM, n = length(YEAR), 
+               site = STATION %>% factor %>% as.integer, 
+						  nsites = length(unique(STATION)), 
+						  covars = covars, ncovars = ncol(covars)))
+```
+
+And sample:
+
+```{r, echo=FALSE, eval=FALSE, echo = 1}
+hhswc.fit <- sampling(hhswc_stan, Data, chains = 4, iter = 2000)
+save(hhswc.fit, file = "./_stanmodels/hhswithcovar.fit")
+```
+
+```{r HHSWC.sampling, cache=TRUE, echo = -1}
+load("stanmodels/hhswithcovar.fit")
+pars <- names(hhswc.fit)[1:8]
+hhswc.mcmc <- As.mcmc.list(hhswc.fit, pars)
+summary(hhswc.mcmc)
+xyplot(hhswc.mcmc)
+```
+```{r, fig.height = 6}
+densityplot(hhswc.mcmc)
+```
+
+Note that this model provides much more consistent, converging results!  This is because more data were leveraged, and the response is clearly a strong one.  The "base" mean day was around 136, the latitude effect is about +3.74 days per degree latitude, and the elevation effect is about +30 days for every 1000 m.  The slope is still significantly negative, and the mean transition year is somewhere in the early-mid 70's.  
+

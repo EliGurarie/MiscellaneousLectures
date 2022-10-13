@@ -1,0 +1,45 @@
+---
+title: "Miscellaneous Lectures"
+subtitle: <font size = 5> In (Quantitative) Environmental Biology </font>
+author: "[Elie Gurarie](https://eligurarie.github.io/)"
+output: 
+  rmdformats::downcute
+---
+
+
+```{r, echo=FALSE, eval = TRUE}
+htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner', 
+               style = 'position:absolute; top:0; right:0; padding:10px; width:150px')
+```
+
+
+# Bayesian MCMC with STAN
+
+[**Slides:** Background on Bayesian MCMC (wiht STAN)](lectures/Lecture_BayesianMCMC/BayesianMCMC_test.Rmd)
+
+[**Lab:** Lilac phenology analysis with STAN](lectures/Lab_MCMCwithSTAN/BayesianLilacs.html)
+
+data are:
+
+- [Lilac Locations](lectures/Lab_MCMCwithSTAN/data/LilacLocations.csv)
+- [Lilac Phenology](lectures/Lab_MCMCwithSTAN/data/LilacPhenology.csv)
+
+stan models are [here](lectures/Lab_MCMCwithSTAN/stanmodels/). 
+
+![](lectures/Lecture_BayesianMCMC/images/tweedledum_and_tweedledee.jpg)
+***there are frequestists and Bayesians going at it***
+
+
+```{r, echo = FALSE, eval = FALSE}
+# renderthis::to_pdf("file.rmd")
+```
+
+<!-- 
+instructions:
+git push origin gh-pages
+
+Or, to merge with (non-existent) main:
+1. git checkout gh-pages
+2. git merge main
+3. git checkout main
+--> 

@@ -1,0 +1,37 @@
+---
+title: STAN Scripts for Bayesian Lilac Lab
+output: 
+  rmdformats::material:
+    thumbnails: TRUE
+---
+
+Link to  [<font color = "yellow" size = 4> <b> Bayesian Lilacs Lab </b> </font>](../BayesianLilacs.html)
+
+# lm.stan
+
+Simple linear regression
+
+```{stan, echo = TRUE, eval = FALSE, code = readLines("lm.stan"), output.var = "lm.stan"}
+```
+
+# hockeystick.stan
+
+Hockeystick (segmented regression) model
+
+```{stan, echo = TRUE, eval = FALSE, code = readLines("hockeystick.stan"), output.var = "hockeystick.stan"}
+```
+
+# hhs.stan
+
+Hierarchical hockey stick
+
+```{stan, echo = TRUE, eval = FALSE, code = readLines("hhs.stan"), output.var = "hhs.stan"}
+```
+
+
+# hhswithcovar.stan
+
+Hierarchical hockey stick with covariates
+
+```{stan, echo = TRUE, eval = FALSE, code = readLines("hhswithcovar.stan"), output.var = "hhswithcovar.stan"}
+```

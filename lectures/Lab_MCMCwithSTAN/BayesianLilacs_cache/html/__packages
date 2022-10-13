@@ -1,0 +1,10 @@
+ggplot2
+ggmap
+plyr
+magrittr
+StanHeaders
+rstan
+coda
+lattice
+mapview
+sf
