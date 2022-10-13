@@ -27,7 +27,8 @@ data are:
 stan models are [here](lectures/Lab_MCMCwithSTAN/stanmodels/). 
 
 ![](lectures/Lecture_BayesianMCMC/images/tweedledum_and_tweedledee.jpg)
-***there are frequestists and Bayesians going at it***
+
+***Frequestists and Bayesians going at it.***
 
 
 ```{r, echo = FALSE, eval = FALSE}
