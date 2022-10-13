@@ -3,7 +3,7 @@ title: "Miscellaneous Lectures"
 subtitle: <font size = 5> In (Quantitative) Environmental Biology </font>
 author: "[Dr. Elie Gurarie](https://eligurarie.github.io/)"
 output: 
-  rmdformats::downcute
+  rmdformats::material
 ---
 
 
@@ -21,9 +21,7 @@ Guest lecture for **EFB 796: WinBUGs for Population Ecologists** with [Dr. Jonat
 
 - Lab: [**Lilac phenology analysis with STAN**](lectures/Lab_MCMCwithSTAN/BayesianLilacs.html)
 
-- Data:
-  - [Lilac Locations](lectures/Lab_MCMCwithSTAN/data/LilacLocations.csv)
-  - [Lilac Phenology](lectures/Lab_MCMCwithSTAN/data/LilacPhenology.csv)
+- Data:  [**Lilac Locations**](lectures/Lab_MCMCwithSTAN/data/LilacLocations.csv) | [**Lilac Phenology**](lectures/Lab_MCMCwithSTAN/data/LilacPhenology.csv)
 
 - [**STAN model scripts**](lectures/Lab_MCMCwithSTAN/stanmodels/). 
 
@@ -31,7 +29,7 @@ Guest lecture for **EFB 796: WinBUGs for Population Ecologists** with [Dr. Jonat
 <img src="lectures/Lecture_BayesianMCMC/images/tweedledum_and_tweedledee.jpg" alt="drawing" width="300"/>
 
 
-***Frequetists and Bayesians going at it.***
+***Frequentists and Bayesians going at it.***
 
 
 # How to Build an Rpackage
