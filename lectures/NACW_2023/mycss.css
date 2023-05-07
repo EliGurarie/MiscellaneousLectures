@@ -1,3 +1,7 @@
+.remark-slide-number {
+  display: none;
+}
+
 .pull-left {
   float: left;
   width: 47%;
