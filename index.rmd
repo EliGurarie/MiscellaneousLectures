@@ -12,6 +12,13 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
                style = 'position:absolute; top:0; right:0; padding:10px; width:150px')
 ```
 
+# TuktuTools Tutorials
+
+- [Part I: Basics](lectures/TuktuToolsTutorials/TuktuTools_PartI.html)
+- [Part II: Summaries](lectures/TuktuToolsTutorials/TuktuTools_PartII.html)
+- [Part III: Estimating Parturition](lectures/TuktuToolsTutorials/estimating_parturition.html)
+- [Part IV: Obtaining weather covariates](lectures/TuktuToolsTutorials/little_weatherStation_code.html)
+![](lectures/TuktuToolsTutorials/logo.png)
 
 # Bayesian MCMC with STAN
 
