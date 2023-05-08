@@ -14,6 +14,7 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
 
 # TuktuTools Tutorials
 
+- [Intro slides](lectures/TuktuToolsTutorials/TuktuWelcome.html)
 - [Part I: Basics](lectures/TuktuToolsTutorials/TuktuTools_PartI.html)
 - [Part II: Summaries](lectures/TuktuToolsTutorials/TuktuTools_PartII.html)
 - [Part III: Estimating Parturition](lectures/TuktuToolsTutorials/estimating_parturition.html)

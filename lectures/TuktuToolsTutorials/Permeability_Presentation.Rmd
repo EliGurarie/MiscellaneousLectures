@@ -1,0 +1,613 @@
+---
+title: "TuktuTools and GEE Workshop**"
+subtitle: "Elie Gurarie, Ophélie Couriot, Megan Perra, Chloe Beaupré"
+author: "NACW / AUC – Anchorage – May 2023"
+date: "May 10, 2023"
+output: 
+  xaringan::moon_reader:
+    css: [default, default-fonts, mycss.css]
+    self-contained: true
+    nature:
+      beforeInit: "cols_macro.js"
+      highlightStyle: github
+      countIncrementalSlides: false
+      highlightLines: true
+      titleSlideClass: ["left","top"]
+      ratio: '16:9'
+editor_options: 
+  chunk_output_type: inline
+  mode: source
+---
+
+<style type="text/css">
+.remark-slide-content {
+    font-size: 24px;
+    padding: .5em 2em 2em 2em;
+}
+</style>
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, cache = FALSE, 
+                      warning = FALSE, las = 1, dpi = 200)
+```
+
+
+```{r xaringan-tile-view, echo=FALSE, eval = TRUE}
+xaringanExtra::use_tile_view()
+```
+
+```{r runningstuff, eval = FALSE}
+xaringan::inf_mr("Permeability_Presentation.Rmd")
+getwd()
+```
+
+
+# Artificial barriers:  
+
+.pull-left-60[
+
+like **Roads**, **fencing** and **industrial infrastructure** are among the most important impacts on animal movements, especially wide-ranging and migratory animals. 
+
+Consequences for **survival**, **reproduction**, **energetics** etc. 
+
+]
+
+.pull-right-40[
+
+.center[![:scale 90%](images/pronghorn_barbedwire.png)]
+
+![](images/03_zebra-crossing-Morrison.jpg)
+
+]
+
+---
+
+## Natural barriers:  
+
+.pull-left-60[
+
+- **Rivers** / **Lakes** / **Topography** / **Snow quality**
+
+Considerable concern about change in .blue[freeze-up and thaw phenology] and .blue[snow quality] affecting mobility (with consequences).
+
+.darkblue[
+- *Boelman et al. 2019*
+- *Gurarie et al. 2020*
+]
+]
+
+.pull-right-40[
+
+.center[
+
+![](images/crossingriver.jpg)
+
+![](images/surfing3.jpg)
+
+]]
+
+
+---
+
+# In the Arctic
+
+.pull-left[
+
+
+Development is rapid:  **roads**, **ports**, **mining**, **oil-gas**
+
+**Caribou** have enormous ranges (esp. .darkred[migratory / barren-ground], but also .darkgreen[boreal / woodland])
+
+Enormous concern about the potential impacts of industrial developments and road building on caribou in particular.
+
+
+]
+
+
+.pull-right[
+![](images/caribou_road_USGS_severson.webp)
+
+]
+
+
+
+
+---
+
+.pull-left[
+
+## Boreal caribou ...
+
+![](images/boreal/BasemapWithLines_noRoad.png)
+]
+
+.pull-right[
+
+.center[![:scale 60%](images/boreal/boreal_caribou.jpeg)]
+
+![](images/boreal/HW3.jpg)
+
+]
+
+
+---
+
+.pull-left[
+
+## Boreal caribou ... with highways
+
+![](images/boreal/BasemapWithLines.png)
+]
+
+.pull-right[
+
+.center[![:scale 60%](images/boreal/boreal_caribou.jpeg)]
+
+![](images/boreal/HW3.jpg)
+
+]
+
+
+
+---
+
+# Barren-ground caribou and industrial development
+
+.pull-left-70[
+
+<br>
+<video width="800" controls align="center">
+  <source src="animations/ekatianimation_winter_zoom.mp4" type="video/mp4">
+</video> 
+]
+
+.pull-right-30[
+
+### Diavik Diamond Mine
+
+![](images/Diavik.png)
+
+### Bathurst herd caribou
+
+![](images/barrenground/bathurstcaribou.png)
+
+
+]
+
+---
+
+# Movement data ...
+
+.pull-left-40[
+
+![](images/movementdata.png)
+![:scale 90%](images/CollaredCaribou.png)
+]
+
+
+
+ .pull-right-60[There is **a lot** of movement data.]
+
+--
+
+<br>
+
+ .pull-right-60[BUT movement data are an intense and invasive procedure to collect.  They are (or should only be) gathered with the permission of local communities, which are often (understandably) hesitant to bother the animals.]
+
+--
+
+<br>
+
+ .pull-right-60[This places (in our view) a **particular responsibility** on researchers to:
+ 
+ 1. maximally address the concerns of those communities, 
+ 
+ 2. to learn as much as possible from those data.]
+
+
+
+---
+
+
+.pull-left-40[
+
+## Zone of influence
+
+
+Segmented **Resource / Step Selection Function** against distance.  
+
+.center[![:scale 80%](images/ZOI/boulanger_mines.png)]
+
+Ekati/Diavik mine complex in the middle of Bathurst caribou range:
+
+]
+
+
+.pull-right-60[
+
+Estimated ZOI: **7.1** to **16.8** km - but quite variable!
+
+.center[![:scale 80%](images/ZOI/Boulanger2021_ZOI.png)]
+
+![](images/ZOI/Boulanger2021_title.png)
+
+]
+
+
+---
+.pull-left[
+
+## Circuit Theory
+
+Simulating landscape connectivity based on response to "distance to roads" selection.
+
+![](images/Fullman_road_selection.png)
+
+]
+
+.pull-right[
+
+![:scale 80%](images/Fullman_circuitscape.png)
+
+![](images/FullmanTitle.png)
+]
+
+
+---
+
+.pull-left-30[
+
+# Movement-centric analyses
+
+![](images/reindeer-road-norway-wildlife_h.webp)
+
+![](images/Beyer.png)
+
+]
+
+.pull-right-70[
+
+Quantify the **permeability** of linear elements - applied to wild reindeer in Norway. 
+
+![](images/Beyer_tracks.png)
+
+]
+
+
+---
+
+.pull-left-30[
+
+# Movement-centric analyses
+
+![](images/reindeer-road-norway-wildlife_h.webp)
+
+![](images/Beyer.png)
+
+]
+
+.pull-right-70[
+
+Quantify the **permeability** of linear elements - applied to wild reindeer in Norway. 
+
+![](images/Beyer_tracks_annotated.png)
+
+.darkblue[For these animals, road permeability ranges (approximately) from **0.01** to **0.21**]
+]
+
+---
+
+.pull-left-40[
+
+# A few issues:
+
+
+- Hard to implement
+
+- Slow
+
+- Animal, not road, centric
+
+]
+
+.pull-right-60[
+![](images/Beyer_tracks_annotated.png)
+]
+
+--
+
+.large.darkred[**Our goal is to make this analysis widely applicable!**]
+
+Specifically, to design an .darkblue[**R** package] where you inputs are  **Movements** + **Linear Elements** + **Environmental covariates**, and outputs are .red[**permeability indices**].
+
+
+
+
+---
+
+
+
+.pull-left-60.large[
+
+# Permeability
+
+If the barrier is **perfectly permeable**, the probability of selecting a new location does not depend on whether it crossed. 
+
+**The barrier might as well not be there**
+
+]
+
+.pull-right-40[
+
+![](plots/permeable.png)
+]
+
+---
+
+.pull-left-60.large[
+
+# Impermeable barrier
+
+An **impermeable barrier** has zero probability of crossing. 
+]
+
+.pull-right-40[
+
+![](plots/impermeable.png)
+]
+
+---
+
+
+.pull-left-60.large[
+
+# Semi-permeable barrier
+
+A location across a **semi-permeable barrier** has *some* probability of crossing that is proportionately lower than the probability of choosin a corresponding point on the same side. 
+
+
+The coefficient of permeability is $\large \kappa$.  
+
+$$0 < \kappa < 1$$
+
+]
+
+.pull-right-40[
+
+
+![](plots/semipermeable.png)
+]
+
+---
+
+.pull-left-60.large[
+
+# Hyper-permeable barrier
+
+If $\kappa > 1$, an organism in the vicinity of a barrier is **more likely** to cross it!
+
+]
+
+.pull-right-40[
+
+![](plots/hyperpermeable.png)
+]
+
+
+---
+
+## Animated intuition
+
+![:col_header permeable, semipermeable, impermeable]
+
+
+![:col_row 
+<video controls>
+  <source src="animations/permeable.mp4" type="video/mp4"
+</video>,
+<video controls>
+  <source src="animations/semipermeable.mp4" type="video/mp4"
+</video>,
+<video controls>
+  <source src="animations/impermeable.mp4" type="video/mp4"
+</video>
+]
+
+
+---
+
+# Barrier and resource preference
+
+.center[![:scale 90%](plots/schematic3b.png)]
+
+
+---
+# Impermeability has consequences
+
+Biased walk towards center of attraction (e.g. calving ground) with barrier in the middle
+
+.center[![:scale 80%](plots/Consequences1.png)]
+
+
+---
+# Impermeability has consequences
+
+For this specific geography, barrier permeability has major impacts on proportion of animals arriving in timely manner, and on the time of arrival. 
+
+.center[![:scale 80%](plots/arrivalconsequences.png)]
+
+
+---
+# But these effects are obscured revealed by ZOI analysis
+
+.pull-left-40[
+
+ZOI determined by peak of log-likelihood curve ...
+
+![](images/ZOI/boulanger_likelihood.png)
+
+.tiny.center[(*Boulanger et al. 2012*)]
+]
+
+--
+
+.pull-right-60[
+... which does not appear at all with barriers. 
+![](images/ZOI/ZOInull.png)
+
+.red[Absence of **Zone of Influence** does not equal absence of **Barrier Influence**!]
+]
+
+
+---
+
+# **Estimation**
+
+.pull-left-40[
+
+1. Regularize data
+
+2. Find actual crossings
+
+3. Compute possible steps
+
+4. Assess whether each possible step crossed
+
+5. Estimate $\kappa$ using maximum likelihood
+
+]
+
+
+.pull-right-60[
+.pull-left-40[![](images/estimation/estimation_illustration.png)]
+.pull-right-60[![](images/estimation/CrossingTable.png)]
+]
+
+---
+
+# Example with simulated data
+
+.pull-left[![](plots/KappaBetaSimulation.png)]
+
+.pull-right[
+
+- Simulated some tracks with barrier
+
+- Contrasted a range of **permeability** values (0 to 1)
+
+- Contrasted a range of **resource selection** values (0 to 2)
+
+]
+
+---
+
+# Estimates!
+
+.pull-left-70[![](plots/KappaBetaEstimates.png)]
+
+.pull-right-30[
+
+.large[**Maximum likelihood estimates** work very well.
+
+
+]
+
+]
+
+
+
+---
+
+# Example with Boreal Caribou
+
+6 animals around HW1.  **n** crossings out of **N** possible steps. 
+
+.center[![:scale 60%](images/boreal/Borealcaribouexample_trackmap.JPG)]
+
+--
+
+$$\large \widehat{\kappa} = 0.24\,\, (95\%\,\text{C.I.}: 0.13-0.36)$$
+
+**Interpretation:** caribou is 75% less likely to show up on the other side of HW1 than if the road weren't there. 
+
+
+---
+
+
+.pull-left-40[
+
+# Diavik mine results
+
+![](images/barrenground/EkatiRoads.png)]
+
+--
+
+.pull-right-60[
+
+## Seasonal variation
+
+Counting locations that **could have crossed** and **did cross** over a 3 month window
+
+![](images/estimation/crossings2.png)
+![](images/estimation/crossings1.png)
+]
+
+
+---
+
+# Diavik mine results
+
+.pull-left-40[
+
+- Misery Road has permeability $\kappa = 0$  **Dec-Apr** AND $\approx 0$  **Jul-Sep**.  
+
+-  But relatively high (with low power) in **May-June**.  
+
+- Sable Road generally higher. around 0.25-0.4 late summer - fall, around 0.1 in **Jan-Apr**.  
+]
+
+.pull-right-60[
+
+**Permeability estimates**
+
+![](images/estimation/MineRoadPermeability.png)
+
+]
+
+
+---
+
+.pull-left[
+
+# Main take-aways
+
+- Barriers are important!
+
+- **Permeability** (movement related) & **Habitat Use** (landscape related) measure unique but important properties with (likely) important fitness consequences. 
+
+- The ability to quantify permeability is important for assessing:
+
+  - Success in mitigation for artificial barriers
+  - Climate-change related impacts on natural barriers
+
+]
+
+--
+
+.pull-right[
+
+## (Near)-Future work 
+
+- Develop & improve tools for simulataneous **permeability** & **habitat resource** analysis.
+
+- Apply widely!  This kind of analysis has resonance & relevance globally. 
+
+]
+
+
+---
+
+background-image: url("images/merci.png")
+background-size: cover
+  
