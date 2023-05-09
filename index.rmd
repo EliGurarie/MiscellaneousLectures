@@ -48,6 +48,11 @@ Guest lecture for **EFB 796:  R and Reproducible Research** with [Dr. Hyatt Gree
 - [**`competitoR` package bundle**](lectures/Lecture_HowToBuildRPackages/competitoR.zip)
 
 
+# North American Caribou Workshop 2023
+
+- [Measurements and consequences of (im)-permeability](lectures/NACW_2023/Permeability_Presentation.html)
+
+![](lectures/NACW_2023/bg.png)
 
 ```{r, echo = FALSE, eval = FALSE}
 # renderthis::to_pdf("file.rmd")
