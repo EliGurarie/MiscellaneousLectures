@@ -1,0 +1,29 @@
+---
+title: "Untitled"
+author: "Elie"
+date: "2022-10-03"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# sampled
+
+
+```{r}
+require(magrittr); require(plyr)
+a <- read.csv("VolleyballFlags.csv") %>% mutate(Area = ifelse(Location == "n", "S", "N"))
+with(a, table(Count, Area)) %>% t %>%  barplot(legend.text = TRUE, beside = TRUE)
+  
+glm.null <- glm(Count ~ 1, family = "poisson", data = a) 
+glm.location <- glm(Count ~ Area, family = "poisson", data = a) 
+  
+AIC(glm.null, glm.location)
+```
+
+```{r}
+predict(glm.location, newdata = data.frame(Area = c("S","N")), se.fit = TRUE)
+```
+

@@ -24,7 +24,25 @@ editor_options:
     padding: .5em 2em 2em 2em;
 }
 </style>
+# To save some time while we wait to get started
 
+## reinstall this:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+devtools::install_github("ocouriot/TuktuTools", 
+                         build_vignettes = TRUE)
+
+```
+
+
+## bookmark a few sites
+
+https://github.com/ocouriot/TuktuTools
+
+https://eligurarie.github.io/MiscellaneousLectures
+
+---
 
 # Schedule of the day
 .pull-left[

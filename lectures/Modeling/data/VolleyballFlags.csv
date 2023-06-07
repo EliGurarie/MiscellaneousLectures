@@ -1,0 +1,46 @@
+﻿rid,Location,Shape,Count,Group
+1,north,circle,0,Sampling snakes
+2,north,circle,2,Sampling snakes
+3,north,circle,0,Sampling snakes
+4,north,circle,0,Sampling snakes
+5,north,circle,1,Sampling snakes
+11,north,circle,1,Sampling snakes
+12,north,circle,0,Sampling snakes
+13,north,circle,1,Sampling snakes
+14,north,circle,0,Sampling snakes
+15,north,circle,0,Sampling snakes
+21,north,circle,1,Divide & conquer
+22,north,circle,1,Divide & conquer
+23,north,circle,0,Divide & conquer
+24,north,circle,1,Divide & conquer
+25,north,circle,0,Divide & conquer
+26,north,circle,0,Divide & conquer
+33,perimeter,circle,0,EG
+34,perimeter,circle,0,EG
+35,perimeter,circle,0,EG
+36,perimeter,circle,1,EG
+37,perimeter,circle,0,EG
+38,perimeter,circle,0,EG
+39,perimeter,circle,0,EG
+40,perimeter,circle,0,EG
+41,perimeter,circle,0,EG
+42,perimeter,circle,0,EG
+43,perimeter,circle,0,EG
+44,perimeter,circle,0,EG
+45,perimeter,circle,0,EG
+6,south,circle,0,Sampling snakes
+7,south,circle,0,Sampling snakes
+8,south,circle,0,Sampling snakes
+9,south,circle,1,Sampling snakes
+10,south,circle,0,Sampling snakes
+16,south,circle,0,Sampling snakes
+17,south,circle,0,Sampling snakes
+18,south,circle,0,Sampling snakes
+19,south,circle,0,Sampling snakes
+20,south,circle,0,Sampling snakes
+27,south,circle,0,Divide & conquer
+28,south,circle,0,Divide & conquer
+29,south,circle,0,Divide & conquer
+30,south,circle,0,Divide & conquer
+31,south,circle,0,Divide & conquer
+32,south,circle,0,Divide & conquer
