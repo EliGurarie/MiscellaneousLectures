@@ -320,7 +320,7 @@ sd(pups$Weight)
 
 This suggests a model!  
 
-`$$W \sim {\cal N}(\mu = 33\,kg, \sigma = 5.7)$$`
+`$$W \sim {N}(\mu = 33\,kg, \sigma = 5.7)$$`
 With no covariates. 
 
 ]
@@ -333,7 +333,7 @@ With no covariates.
 *Probably* there is a relationship between length and weight.  The simplest relationship is linear. 
 
 
-`$$\large Y \sim {{\cal N}(\text{mean} = \beta_0 + \beta_1 X,\,\, \text{sd} = \sigma)}$$`
+`$$\large Y \sim {{N}(\text{mean} = \beta_0 + \beta_1 X,\,\, \text{sd} = \sigma)}$$`
 
 ![](Lecture_Modeling_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
 ]
@@ -364,14 +364,14 @@ This is the **functional form of the predictor**
 **Version 1:**
 
 `$$Y_i = \beta_0 + \beta_1 X_i + \epsilon_i$$`
-where `\(\epsilon_i \sim {\cal N}(0, \sigma)\)`
+where `\(\epsilon_i \sim {N}(0, \sigma)\)`
 
 
 or
 
 **Version 2:**
 
-`$$Y_i \sim {\cal N}(\beta_0 + \beta_1 X_i, \sigma)$$`
+`$$Y_i \sim {N}(\beta_0 + \beta_1 X_i, \sigma)$$`
 ]
 
 V2 is better because it is more transparent about the number of parameters!  
@@ -591,7 +591,7 @@ class: small
 
 ### Normal Model
 
-.large[$$Y_i \sim {\cal Normal}(\alpha_0 + \beta_1 X_i, \sigma)$$]
+.large[$$Y_i \sim {Normal}(\alpha_0 + \beta_1 X_i, \sigma)$$]
 Models continuous data with a "normal-like" distribution.
 
 ![](Lecture_Modeling_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
