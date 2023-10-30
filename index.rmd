@@ -55,6 +55,14 @@ Guest lecture for **EFB 796:  R and Reproducible Research** with [Dr. Hyatt Gree
 
 ![](lectures/NACW_2023/bg.png)
 
+
+# Matrices in Ecology
+
+Lecture from **EFB 796: Practical Seminar in Quantitative Wildlife Ecology** on the [Mathemagics of Matrices](lectures/MatricesInEcology/matrices.html)
+
+![](lectures/MatricesInEcology/matrices_files/figure-html/ShrinkingMexico-.gif)
+
+
 ```{r, echo = FALSE, eval = FALSE}
 # renderthis::to_pdf("file.rmd")
 ```

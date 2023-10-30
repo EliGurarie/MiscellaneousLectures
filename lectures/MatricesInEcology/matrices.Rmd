@@ -1,0 +1,638 @@
+---
+title: "Matrices in Ecology"
+subtitle: "EFB 796: Fall 2023"
+author: "Prof. [Elie Gurarie](https://eligurarie.github.io/)"
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warnings = FALSE)
+```
+
+> Note: this is an unfinished lecture on the utility of matrices in ecology for a **Practical Seminar in Quantitative Wildlife Ecology** graduate level course at SUNY-ESF.  A theme of the class is looking under the hood of various statistical operations and tools - and at times building our own engines.  WIth that in mind, matrices come up over and over again in various applications, and this is an attempt to bring together several "magical" ways that matrices concretely solve problems, fit models, and perform other useful operations on data.  This includes: linear regression, principle component analysis, spatial transformations, and population modeling ... so really a lot of what we do!
+
+# Part I. Ordinary Least Squares in Matrix Notation
+
+In matrix notation, the ordinary least squares (OLS) estimates of simple linear regression and factorial analysis is a straightforward generalization of:
+
+$$ {\bf y} = {\bf X} \beta^T + {\bf \epsilon} $$
+
+Here, ${\bf y}$ is a $n \times 1$ vector of observations^[bold-faced means specifically $n\times1$ vector, capitals refer to matrices], $\beta^T$ represents a $1 \times k$ of regression coefficients (intercepts, group means, regression coefficients, etc.),  $X$ is an $n \times k$ "design matrix" for the model (more on this later), and ${\bf \epsilon}$ is a vector of random "errors"^[which are, of course, not usually or even primarily *errors*, but more often *unexplained variation*.].   
+
+To sink into $X$, the design matrix, a bit, consider the familiar intercept / slope model (${\bf y} = \alpha + \beta {\bf x} + {\bf \epsilon}$). Here $X$ will have TWO columns $(1, {\bf x})$, one for the intercept, the second for the covariate $x$.  An even SIMPLER case is to only have an intercept column, where every element is = 1.  This is equivalent to just estimating a mean and standard deviation. Walking through the examples below may provide some intuition for why a column of 1's is an "intercept".  
+
+And never forget that our goal is to estimate all the $\beta$ values (and also the ever-forgotten $\sigma$ standard deviation of the $\epsilon$).
+
+
+## 1. Solving for $\widehat{\beta}$
+
+Just a bit of algebra & calculus here.  We really want to minimize those residuals $\epsilon$, which we do by taking the derivative and setting to 0. So:
+
+$${\partial  {\bf \epsilon} \over \partial\beta} =  {\partial\left({{\bf y} - X\beta^T}\right) \over \partial \beta}$$
+
+It seems crazy that this is even possible, but once you get used to it - matrix / vector calculus is pretty similar to scalar (number) calculus.  In any case, you CAN take that derivative, and you CAN set it equal to 0, and you CAN solve for $\beta$ (even though it's a vector and X is a FREAKING MATRIX[!!]) and you get a solution that looks like this:
+
+$$\hat{\beta} = \left(\mathbf{X}^T \mathbf{X}\right)^{-1} \mathbf{X}^T y$$
+
+This is general, and computable (i.e. no need to numerically look for a solution). But it does need some picking apart and explaining.  We'll do some simple examples below. 
+
+
+## 2. Mean only model
+
+If there are no covariates, the model is simply:  
+$$Y \sim {\cal N}(\beta_0, \sigma^2) $$
+
+(Obviously, $\beta_0$ = $\mu$ = $\alpha$, as the intercept is the mean)
+
+The OLS estimate of $\beta_0$ was:
+$$\widehat{\beta_0} = {1\over n} \sum_{i=1}^n Y_i$$
+
+Let's try to apply the more general solution:
+$$ \hat{\beta}=\left(\mathbf{X}^T\mathbf{X}\right)^{-1}\mathbf{X}^Ty$$
+
+The design matrix $X$ here is just a column vector of 1's.  In the following example, assume a vector $Y = (1,2,3)$, and $X = \left( \begin{array}{c}1\\1\\1\end{array} \right)$.  In R:
+```{r}
+(Y <- 1:3)
+(X <- matrix(1, nrow=3))
+```
+
+## 2b. Some important matrix operations
+
+Matrices are basically just a very convenient / powerful shorthand to do bookkeeping and collapse sums on multi-dimensional vectors.  You can define a $n \times k$ matrix $A$ just by enumerating the row and column elements $A_{ij}$, where $i \in {1,2,..,n}$ and $j \in {1,2, ...,k}$.   The following matrix operations are needed to obtain the estimates.
+
+The **transpose** of $A_{ij}$ is: $A^T_{ij} = A_{ji}$. Thus: $A^T$ is a $k\times n$ matrix, and (in our example) $X^T = (1,1,1)$ (a $1 \times 3$ matrix).  In R, the function is just `t()`:
+```{r}
+t(X)
+```
+
+Matrix **multiplication**:  The product of a $n \times m$ matrix $A$, consisting of elements $a_{ij}$ multiplied by an $m \times p$ matrix $B$, consisting of elements $b_{ij}$ is a square $m \times m$ matrix, the elements of which are:
+$$(AB)_{ij} = \sum_{k=1}^m a_{ik}\,b_{kj}$$
+
+So, $X^T X$ is a $1 \times 1$ matrix, the element of which is $\sum_{k=1}^3 X^T_{1,k} X_{k,1} = 1+1+1 = 3$.  In R, matrix multiplication (and other matrix operations) are denotes with a `%` delimeter.  Thus:
+
+```{r}
+t(X) %*% X
+```
+
+Compare with:
+
+```{r}
+X %*% t(X)
+```
+
+And with
+
+```{r, error=TRUE}
+t(X) * X
+```
+
+The **inverse** of a matrix:  $A^{-1}$ is defined according to the following identity:
+$$A^{-1} A = A \times A^{-1} = I$$
+Where $I$ is the identity matrix, or a diagonal vector of 1's.  The inversion of a matrix is a somewhat slippery and subtle thing.  It is also an important step in lots of statistical calculations, and somewhat computationally intensive.  If a regression procedure is slow, the inversion of the matrix is almost always the computationally limiting step.  For example, inverting a $1000 \times 1000$ matrix takes a noticable amount of time (several seconds on my machine):
+
+```{r, cache=TRUE}
+system.time(solve(matrix(rnorm(1e6),nrow=1e3)))
+```
+
+## 3. Estimating the mean
+
+Ok, back to our case.  The inverse of $X^T X$ is the matrix which returns the identity matrix when mutiplied by $X^T X$ .  Since $X^T X = 3$, its inverse is just $1/3$.  In R, the inverse is obtained with the `solve()` function:
+
+```{r}
+solve(t(X)%*%X)
+```
+
+We multiply this back by $X^T$ to obtain for the "hat matrix" $H$ (which converts $Y$ to $\widehat{Y}$).  This product (of a $1\times1$ and a $1\times 3$ matrix) just carries the 1/3 across all the elements of $X^T$:
+```{r}
+solve(t(X) %*% X) %*% t(X)
+```
+
+When we multiply this by $Y$ (the last step), you are performing the sum - that is part of the definition of the sample mean - but it weighted by the 1/n term, thus:
+$$ \left(\mathbf{X}^T\mathbf{X}\right)^{-1}\mathbf{X}^T \, Y = H Y = {1\over 3} y_1 + {1\over 3} y_3 + {1\over 3} y_3 = {1\over3}(1+2+3) = 2.$$  In R:
+
+```{r}
+(beta <- solve(t(X)%*%X)%*%t(X)%*%Y)
+```
+
+I.e. $\widehat{\beta_0} = \widehat{\mu} = \overline{X} = 2$.   Voilà!
+
+
+## 4. Estimating the variance
+
+Note that that estimate of the variance on the residuals, expressed generally, is:
+
+$$ \widehat{\sigma^2} = {1 \over n-k} (Y - \widehat{Y})^T (Y - \widehat{Y})$$  
+In this case, $k=1$, and the product of the two matrices is just the regular sum of squared residuals in the definition of the sample variance:
+
+$$ \widehat{\sigma^2} = {1 \over n-1} \sum_{i=1}^n (Y_i - \widehat{Y})^2$$
+
+Thus, in R:
+```{r}
+H <- solve(t(X)%*%X)%*%t(X)
+beta.hat <- H%*%Y
+Y.hat <-X%*%beta.hat
+(sigma.hat <- t(Y-Y.hat) %*% (Y - Y.hat) / (nrow(X) - ncol(X)))
+```
+Which is, of course, equal to:
+```{r}
+sd(Y)
+```
+
+## 5. Adding a column
+
+Obviously, the advantage of the matrix notation is its great generality. We can perform a linear regression of $Y = 1,2,3$ against some covariate $X = -1,0,1$ using the exact same code.  We need only to set up the design matrix:
+
+```{r}
+(X <- cbind(c(1,1,1), -1:1))
+(H <- solve(t(X)%*%X)%*%t(X))
+(beta.hat <- H%*%Y)
+Y.hat <-X%*%beta.hat
+(sigma.hat <- t(Y-Y.hat) %*% (Y - Y.hat) / (nrow(X) - ncol(X)))
+```
+
+So the regression coefficients are $\beta_0 = 2$ and $\beta_1 = 1$, and $\sigma^2 = 0$. Obviously, that's correct, but if you need proof:
+
+```{r, echo=-1, fig.height=5, dpi=100, out.width=400}
+par(bty="l", cex.lab=1.25, las=1)
+plot(X[,2],Y, cex=2, pch=19)
+abline(t(beta.hat), col=2, lwd=2)
+```
+
+
+## 6. Real data example
+
+Maybe you're unimpressed because that's such a fake example?  Here's an all-matrix regression analysis of the famous iris datas set:.  The figure shows *petal length* as a response variable against *sepal length* and *species* in interaction. 
+
+```{r}
+require(ggplot2)
+data(iris)
+ggplot(iris, aes(Sepal.Length, Petal.Length, col = Species)) + geom_point() +  geom_smooth(method = "lm")
+```
+
+What are the regression coefficients?  Here's your response:
+
+```{r}
+y <- iris$Petal.Length
+```
+
+here's your design matrix:
+
+```{r}
+X <- with(iris, 
+          cbind(Sepal.Length = iris$Sepal.Length,
+                setosa = Species == "setosa",
+                versicolor = Species == "versicolor",
+                virginica = Species == "virginica"))
+```
+
+
+Here's how that matrix looks:
+
+```{r}
+head(X)
+```
+
+
+Here are the regression coefficients:
+
+```{r}
+(beta.hat <- solve(t(X) %*% X) %*% t(X) %*% y)
+```
+Compare those to the output of `lm`:
+
+```{r}
+(mylm <- lm(Petal.Length ~ Sepal.Length + Species-1, data = iris))
+```
+
+Voilà!
+
+Note that that matrix `X` is created by the formula command in R `y ~ X`, and can be returnes with the very useful `model.matrix()` function.  Thus:
+
+```{r}
+model.matrix(mylm) |> head()
+```
+
+What about the model *variance*?  I.e. that hidden $\widehat{\sigma^2}$ that everyone always forgets about? 
+
+```{r}
+y.hat <- X %*% beta.hat
+(sigma.hat <- t(y-y.hat) %*% (y - y.hat) / (nrow(X) - ncol(X)))
+```
+
+And that little variance is in the model output here:
+
+```{r}
+summary(mylm)$sigma^2
+```
+
+Huzzah!
+
+> **Mini-challenge:** How would you write up the design matrix the *interaction* model, where there is a unique slope for each species?  
+
+# Part II: Matrices as transformations and rotations
+
+
+```{r echo = FALSE}
+pars <- function(...){
+    par(mar = c(3,3,2,2), bty = "l", mgp = c(1.5,.25,0),
+        tck = 0.01, cex.lab = 1.2, ...)
+}
+
+```
+
+A **square** ($k \times k$) matrix distorts a vector (or matrix) of length (or first dimension) $k$ by twisting and stretching.
+
+Here's a 2D vector:
+
+```{r, echo = -1}
+pars()
+x <- rbind(c(1,1)) # note ... this has to be a "matrix" for everything to work
+
+plot(0,0, xlim = c(-1,1), asp = 1, ylim = c(-1,1))
+plotarrow <- function(x, l = .1, ...) 
+  arrows(0,0, x[1], x[2], length = l, ...)
+plotarrow(x)
+```
+
+here's a vector that rotates everything by some angle $\theta$ 
+
+```{r}
+theta <- pi/4 # this is 45 degrees counter-clockwise in radian-speak
+M.rotate <- rbind(c(cos(theta),-sin(theta)), 
+                  c(sin(theta), cos(theta)))
+```
+
+
+Here's a [*rotation matrix*](https://en.wikipedia.org/wiki/Rotation_matrix) of that first vector.  Note - there's a lot of transforming that has to happen!:
+
+```{r, echo = -1}
+pars()
+x2 <- t(M.rotate %*% t(x))
+plot(0,0,xlim = c(-2,2), asp = 1, ylim = c(-2,2))
+plotarrow(x)
+plotarrow(x2, col = "red")
+```
+
+You can go round and round and round:
+```{r, echo = -1}
+pars()
+narrows <- 100
+palette(gplots::rich.colors(narrows))
+theta <- 2*pi/narrows # this is 45 degrees counter-clockwise in radian-speak
+M.rotate <- rbind(c(cos(theta),-sin(theta)), 
+                  c(sin(theta), cos(theta)))
+
+x <-  rbind(c(1,0))
+plot(0,0,xlim = c(-2,2), asp = 1, ylim = c(-2,2))
+for(i in 1:narrows){
+  x <- t(M.rotate %*% t(x))
+  plotarrow(x, col = i)
+}
+```
+
+Other matrices simply stretch.  Perhaps in different ways across different dimensions.  
+
+```{r}
+d.x <- 0.9; d.y <- 0.8
+M.squeeze <- rbind(c(d.x,0),c(0,d.y))
+```
+
+Stretch/squeeze once:
+
+```{r}
+x <- rbind(c(1,1))
+x2 <- t(M.squeeze %*% t(x))
+plot(0,0,xlim = c(-2,2), asp = 1, ylim = c(-2,2))
+plotarrow(x)
+plotarrow(x2, col = 2)
+```
+
+Lets do this a bunch of times:
+
+```{r, echo = -1}
+pars()
+narrows <- 20
+palette(gplots::rich.colors(narrows))
+x <-  rbind(c(1,1))
+plot(0,0,xlim = c(0,1), asp = 1, ylim = c(0,1))
+for(i in 1:20){
+  x <- t(M.squeeze %*% t(x))
+  plotarrow(x, col = i)
+}
+```
+
+> Q. What happens if we start with the vector (1,0)?  Or the vector (0,1)?
+
+Nice!  We can combine both of these transformations into a single Squeezing & Rotating matrix. To do this, you matrix multiple the matrices:
+
+```{r, echo = -1}
+pars()
+narrows <- 20
+palette(gplots::rich.colors(narrows))
+theta <- 2*pi/narrows # this is 45 degrees counter-clockwise in radian-speak
+M.rotate <- rbind(c(cos(theta),-sin(theta)), c(sin(theta), cos(theta)))
+M <- M.rotate %*% M.squeeze
+x <-  rbind(c(1,1))
+plot(0,0,xlim = c(-.2,1), asp = 1, ylim = c(-.2,1))
+for(i in 1:20){
+  x <- t(M %*% t(x))
+  plotarrow(x, col = i)
+}
+
+```
+
+We can make a super general rotate, squeeze matrix function:
+
+```{r}
+getDistortMatrix <- function(theta, d.x, d.y){
+  M.rotate <- rbind(c(cos(theta),-sin(theta)), c(sin(theta), cos(theta)))
+  M.squeeze <- rbind(c(d.x, 0), c(0,d.y))
+  M.rotate %*% M.squeeze
+}
+```
+
+And we can apply it in surprising ways. For example, here are some coordinates of a country:
+
+```{r Mexico, echo = -1, warnings = FALSE}
+pars()
+require(mapdata)
+mexico <-map("world", "Mexico", plot = FALSE) 
+mexico.xy <- cbind(mexico$x, mexico$y) |> apply(2, scale)
+plot(mexico.xy, type = "l")
+```
+
+### Rotating Mexico!  
+
+```{r RotatingMexico, animation.hook='gifski', dev='png', interval=0.05, res = 100, echo = -1, fig.width = 5, fig.height = 5, out.width = 400, out.height = 400}
+par(mar = c(0,0,0,0), bty = "n", axes = FALSE)
+n.frames <- 60
+M <- getDistortMatrix(2*pi/n.frames, 1, 1)
+mexico.t <- mexico.xy
+
+for(i in 1:n.frames){
+  mexico.t <- t(M %*% t(mexico.t))
+  plot(mexico.t, type = "l",
+       ylim = c(-2,2), xlim = c(-2,2),
+       asp = 1, lwd = 2)
+}
+
+```
+
+### This Mexico is rotating and shrinking!
+
+```{r ShrinkingMexico, animation.hook='gifski', dev='png', interval=0.05, res = 100, echo = -1, fig.width = 5, fig.height = 5, out.width = 400, out.height = 400}
+par(mar = c(0,0,0,0), bty = "n", axes = FALSE); palette(gplots::rich.colors(60))
+
+n.frames <- 60
+M <- getDistortMatrix(3*pi/n.frames, .95, .95)
+mexico.t <- mexico.xy
+
+for(i in 1:n.frames){
+  mexico.t <- t(M %*% t(mexico.t))
+  plot(mexico.t, type = "l", 
+       ylim = c(-2,2), xlim = c(-2,2),
+       asp = 1, lwd = 2, col = i)
+}
+```
+
+
+This may seem silly - BUT - underneath *all* of your spatial transformations of georeferenced data is more or less completely straightfoward matrix multiplication.  
+
+### Eigenvalues / eigenvectors
+
+This is the fundamental equation eigenvalue equation:
+
+$$M {\bf v} = \lambda {\bf v}$$
+
+In words this means that for *some* (not all!) SQUARE matrices, there is a magic vector (the eigenvector) which - when the matrix is applied - the effect is ONLY to distort it linearly.  
+
+This is important!  This is not the first time you've seen [$\lambda$]()!  
+
+A few points: 
+
+1. there are (technically) as many eigenvector - eigenvalue pairs as there are columns/rows in M. Usually we only care about the first few.  
+2. The applications of "eigen-values" are surprising and many.  
+
+Our friend the "distortion/squeeze" matrix has a real eigenvector and eigenvalue:
+
+```{r}
+M.squeeze <- rbind(c(.9,0),
+                   c(0,.8))
+M.squeeze
+eigen(M.squeeze)
+```
+
+What does this mean?  It means there are two eigenvector / eigenvalue pairs.  One is: (-1, 0) - paired with the value 0.9, and the other is (0, -1) paired with the value 0.8. 
+
+Let look at the first eigenvector:
+
+```{r, echo = -1}
+pars()
+x <- rbind(c(-1,0)) # note ... this has to be a "matrix" for everything to work
+
+plot(0,-1, xlim = c(-1,1), asp = 1, ylim = c(-1,1), type = "l")
+plotarrow(x)
+```
+
+What happens when we apply the matrix to this vector?
+
+```{r}
+M.squeeze %*% t(x)
+```
+It shrank!  By exactly the first eigenvalue $\lambda = 0.9$!   Same for the second pair:
+
+```{r}
+M.squeeze %*% cbind(c(0,-1))
+```
+
+In practice what this means is that *any* vector along any of the two axes will always be only shrunk by these two respective numbers - that the "distortion" matrix becomes just a "stretching factor".  Why this is important will make sense - maybe - later. 
+
+
+# Part III: Population ecology 
+
+The most fundamental/intuitive interpretation (for an ecologist witih any intuition for population biology) is with respect to Leslie matrices, and how they "transform" an age-structured population.  For now, just check out these population ecology slides here:
+
+https://eligurarie.github.io/EFB370/lectures/ModuleIII/PopulationStructure_PartII.html
+
+
+
+# Part IV: Principle Components
+ 
+... are basically the eigenvalue - eigenvector combinations of variance-covariance matrices.  *What the heck does that mean!?*  As usual, examples are our friends. 
+
+So ... back to our iris data. ^[Note that while we *usually* use ordination in ecology to understand abundances or counts of many, many species (columns) across sites (rows), in this example, we will be understanding how the *measurements* (sepal width, sepal length, petal width, petal length) are distributed across *indviduals*.  That's not fundamentally important, but it's confusing since so many ordinations *assume* the columns represent species.]
+
+```{r}
+require(scales)
+cols <- c("orange","purple","green")
+data(iris)
+head(iris)
+```
+
+To decompose things properly, it is important to *scale* the variables you are ordinating.  See how I use `apply` to do that below:
+
+```{r}
+X.iris <- as.matrix(iris[,1:4] |> apply(2, scale))
+pairs(X.iris, col = alpha(cols[iris$Species], .4), 
+      pch = 19, upper.panel = NULL)
+```
+
+We will do a principle component analysis by hand.  The goal will be to "rotate" the data along PC axes which do the best job accounting for correlated covariates. 
+
+## 1. the autocorrelation matrix
+
+We now obtain the correlation matrix:
+
+```{r setupIris}
+M.corr <- cor(X.iris)
+par(mar = c(2,8,2,2))
+image.plot(x = 1:4, y = 1:4, M.corr, yaxt = "n", ylab = "", 
+           asp = 1, main = "correlation matrix of iris data")
+mtext(side = 2, at = 1:4, colnames(X.iris), las = 1)
+```
+
+You can see that the correlation is very high for petal length & width, pretty high for sepal length, but *negative* for sepal width.  
+
+## 2. Compute eigenvalues and eigenvectors
+
+Here's the decomposition:
+
+```{r}
+eigen(M.corr)
+```
+
+Just to confirm that this is "true" according to the eigenvalue theorem:
+
+```{r}
+(lambda1 <- eigen(M.corr)$value[1])
+(v1 <- eigen(M.corr)$vector[,1])
+
+lambda1 * v1
+M.corr %*% v1
+```
+
+Perfect.  So there is a linear combination of these variables that when the correlation matrix is "applied" to it - simply expands the values of those vectors by a pretty large value (x 2.9).
+
+Maybe that's not too intuitive, but in practice it means that if we combine those four variables according to the ratios described in that eigenvector, you will have stretched the data out *maximally* along a core axis of those data. Or, more specifically, that you've found the "axis" along which the *variance* of the observations is maximized.  
+
+## 3. Compute all four principle components
+
+Principal components are new variables that are constructed as linear combinations or mixtures of the initial variables, and those mixtures are in the eigenvector.  
+
+So, let's take the first eigenvector:
+
+```{r}
+(eigen1 <- eigen(M.corr)$vector[,1])
+```
+
+If we multiply these weightings by all the covariates and add them up (exactly - ***matrix multiplication***) we "transform" the data into an orthogonalized version of the data:
+
+```{r}
+PC1 <- X.iris %*% t(t(eigen1))
+```
+
+PC1 is a vector of the same length as the data, but it has the largest possible variance of any linear combination of those vectors!
+
+Check it:
+
+```{r}
+sd(PC1)
+```
+
+And the standard deviation of all our (scaled) variables, is just 1.  
+
+We can get all 4 components by doing all the multiplication and addition all at once with .... ***Matrix Multiplication***!
+
+
+```{r}
+PC <- X.iris %*% eigen(M.corr)$vector
+colnames(PC) <- paste0("PC", 1:4)
+```
+
+Compare this pair of pairs plots:
+
+```{r morePairsPlots, fig.width = 5, fig.height = 5}
+pairs(PC, upper.panel = NULL, asp = 1, pch = 19, 
+      col = alpha(cols[iris$Species], .5))
+pairs(X.iris, upper.panel = NULL, pch = 19, 
+       col = alpha(cols[iris$Species], .5))
+```
+
+The correlation among the principle components is now - basically - zero:
+
+```{r}
+cor(PC) |> round(1e-10)
+```
+
+
+## 4. Homemade ordination plot
+
+When we plot these (& color-code by species), we see how well they separate:
+
+```{r homemadePCA, fig.height = 5, fig.width = 5, echo = -1}
+pars()
+plot(PC[,1], PC[,2], col = alpha(cols[iris$Species], .3), 
+     pch = 19, asp = 1)
+```
+
+
+You can see how that 1st component has *radically* separated the data orthogonally along an axis (even though it was naive to species).   
+
+We can also see how each of the measured traits (singly) maps on to these new principle component axes ... that's simply their respective weights.  Thus:
+
+```{r homemadePCAwithArrows, fig.height = 5, fig.width = 5, echo = -1}
+pars()
+plot(PC[,1], PC[,2], col = alpha(cols[iris$Species], .3), 
+     pch = 19, asp = 1)
+weights1 <- eigen(M.corr)$vector[,1]
+weights2 <- eigen(M.corr)$vector[,2]
+
+arrows(rep(0,4),rep(0,4),weights1, weights2, col = "red",length = 0.05)
+text(weights1, weights2, colnames(X.iris), cex = 0.7, col = "darkred", font = 3)
+```
+
+*Petal length* and *petal width* do something very very similar - they are so correlated it is hardly worth using both for any reason.  *Sepal length* is, similar, but a bit deeper in the 2nd component, and *sepal width* is totally its own thing.  
+
+This thing we 
+
+## 5. Compare to a "PCA"
+
+There are lots of options for performing a principle components analysis in R. Just in base R there are two(!): `princomp` and `prcomp`.  They are confusing, but trust me - they all just do things that `eigen` also does.  Thus: 
+
+```{r}
+prcomp(X.iris)
+```
+
+This output is the standard deviations of the four components, and their actual weightings.  We can compute those standard deviations directly from our principle component matrix above:
+
+```{r}
+apply(PC, 2, sd)
+```
+
+So they agree.  Plotting these ordinations I find tricky to control (an argument for computing your out PCA's).  But this *kind of* works:
+
+```{r}
+par(mfrow = c(1,2))
+row.names(X.iris) <- substring(iris$Species, 1, 2)
+biplot(princomp(X.iris))
+```
+
+Note that this ordination is flipped sign-wise (in the second component) relative to the one we did - that's completely arbitrary. 
+
+Recall - again - that the standard deviation of the standardized *raw* covariates was always 1.  So the first two principle components really absorbed pretty much ALL of the variation in the data.  
+
+See how the `ordiplot` (which I find a bit awkward to use) compares to our ordination plot above:
+
+```{r, echo = -1}
+pars()
+vegan::ordiplot(prcomp(X.iris), type = "n") |> 
+  points("sites", col = alpha(cols[iris$Species], .3), pch = 19) |> 
+  text("species", arrows = TRUE, col = "red")
+```
+  
+  
