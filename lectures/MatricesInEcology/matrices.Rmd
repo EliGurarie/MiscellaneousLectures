@@ -33,7 +33,7 @@ And never forget that our goal is to estimate all the $\beta$ values (and also t
 
 Just a bit of algebra & calculus here.  We really want to minimize those residuals $\epsilon$, which we do by taking the derivative and setting to 0. So:
 
-$${\partial  {\bf \epsilon} \over \partial\beta} =  {\partial\left({{\bf y} - X\beta^T}\right) \over \partial \beta}$$
+$${\partial  {\bf \epsilon} \over \partial\beta} =  {\partial \left( {\bf y} - X \beta^T \right) \over  \partial \beta}$$
 
 It seems crazy that this is even possible, but once you get used to it - matrix / vector calculus is pretty similar to scalar (number) calculus.  In any case, you CAN take that derivative, and you CAN set it equal to 0, and you CAN solve for $\beta$ (even though it's a vector and X is a FREAKING MATRIX[!!]) and you get a solution that looks like this:
 
