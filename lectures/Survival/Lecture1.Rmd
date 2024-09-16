@@ -1,0 +1,85 @@
+---
+title: "Survival Basics"
+output: html_document
+date: "2024-09-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Goal: Estimate "hazard" of the simplest discrete process: 
+
+Rolling a die until we get a 6.  Time to event = number of rolls.
+
+Simulate:
+
+```{r}
+X <- rnbinom(50, size = 1, p = 1/6) + 1
+mean(X)
+plot(table(X), type = "h")
+```
+
+## Likelihood
+
+Probability mass function:
+
+$$f(x|p) = p(1-p)^{x-1}$$
+
+Can be reasoned out.  But has a name: $X \sim \text{NegBinom}(p)$. 
+
+Likelihood:
+
+$${\cal L}(p|{\bf X}) = \prod_{i=1}^n f(X_i|p)$$
+
+log-likelihood:
+
+$${\cal l}(p|{\bf X}) = \sum (X_i-1) \log(1-p) + n\log(p) = n\log(p) + (\sum X_i - n) \log(1-p)$$
+
+```{r}
+p.like <- function(p, X){
+  n <- length(X)
+  n*log(p) + (sum(X)-n) * log(1-p)
+}
+curve(p.like(x, X = X), xlab = "p")
+```
+
+The maximum likelihood estimate is where this curve is - at a maximum!  
+
+You can actually work this out by hand:
+
+$${dl \over dp} = ...$$
+
+```{r}
+(p.hat <- optimize(p.like, c(0,1), X = X, maximum = TRUE))
+```
+
+WHich is actually just:
+
+```{r}
+1/(sum(X)/length(X))
+```
+
+But now we can also get a confidence interval:
+
+```{r}
+require(Rdistance)
+p.dd <- secondDeriv(p.hat$maximum, p.like, X = X)
+se = sqrt(-1/p.dd)
+(CI  = p.hat$maximum + c(-2,2) * se[1,1])
+```
+
+`optim`, rather than `optimize`, does this all at once if you ask for the "Hessian"
+
+```{r}
+p.fit <- optim(0.5, p.like, X = X, 
+      control = list(fnscale = -1), 
+      hessian = TRUE, method = "L-BFGS-B", 
+      lower = 1e-7, upper = 1-1e-7)
+
+p.hat <- p.fit$par
+p.se <- sqrt(-1/p.fit$hessian[1,1])
+
+list(p.hat = p.hat, p.CI = p.hat + c(-2,2) * p.se)
+```
+
