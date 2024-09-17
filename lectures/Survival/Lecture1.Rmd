@@ -1,5 +1,6 @@
 ---
-title: "Survival Basics"
+title: "Survival Basics: Censoring and Discrete Hazards"
+author: "Elie Gurarie"
 output: 
   html_document:
       toc: true
@@ -13,17 +14,18 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 
+Survival analysis models time-to-event as an outcome (e.g. time to death, how long do you wait for an animal to appear in a camera trap, etc).  There are lots of ecological applications.  
+
+The goals in this lecture are to get an intuition for why time-to-event data is fundamentally different than other kinds of observations, and - on the basis of a simple experiment - get intuition for the *hazard function* and *censored data* and how to estimate those using maximum likelihood.  
 
 # Discrete Hazard process
-
-
-> Goal: Estimate "hazard" of the simplest discrete process: 
 
 Rolling a die until we get a 6.  *Time to event* = number of rolls.
 
 Simulate:
 
-```{r}
+```{r, echo = -1}
+set.seed(1976)
 X <- rep(NA, 50)
 for(i in 1:length(X)){
     rolls <- 0
@@ -34,7 +36,6 @@ for(i in 1:length(X)){
     }
     X[i] <- rolls
 }
-#X <- rnbinom(50, size = 1, p = 1/6) + 1
 mean(X)
 plot(table(X), type = "h")
 ```
@@ -45,106 +46,150 @@ Probability mass function:
 
 $$Pr(X = x) = f(x|p) = p(1-p)^{x-1}$$
 
-Can be reasoned out.  But has a name: $X \sim \text{NegBinom}(p)$. 
+Can be reasoned out, but also has a name, the [negative binomial distribution](https://en.wikipedia.org/wiki/Negative_binomial_distribution): $X \sim \text{NegBinom}(p)$. 
+
+*Important note:* the standard definition of the negative binomial is *number of failures before first success*, so it includes 0, whereas in our definition if the event dies in the first attempt, that's a 1, not a 0, so technically:  $X+1 \sim \text{NegBinom}(p)$.  This becomes important later. 
 
 ## Likelihood function
-
 
 $${\cal L}(p|{\bf X}) = \prod_{i=1}^n f(X_i|p)$$
 
 log-likelihood:
 
-$${\cal l}(p|{\bf X}) = \sum (X_i-1) \log(1-p) + n\log(p) = n\log(p) + (\sum X_i - n) \log(1-p)$$
+$$\begin{align} {\cal l}(p|{\bf X}) &= \sum (X_i-1) \log(1-p) + n\log(p) \\
+& = n\log(p) + \left(\sum X_i - n\right) \log(1-p) \end{align}$$
 
 ```{r}
-p.like <- function(p, X){
+p.ll <- function(p, X){
   n <- length(X)
   n*log(p) + (sum(X)-n) * log(1-p)
 }
-curve(p.like(x, X = X), xlab = "p")
+curve(p.ll(x, X = X), xlab = "p")
 ```
 
-## Maximum Likelihood Estimate
+## Maximum likelihood estimate
 
 The maximum likelihood estimate is where this curve is - at a maximum!  
 
-You can actually work this out by hand:
-
-$${dl \over dp} = ...$$
-
 ```{r}
-(p.hat <- optimize(p.like, c(0,1), X = X, maximum = TRUE))
+(p.hat <- optimize(p.ll, c(0,1), X = X, maximum = TRUE))
 ```
 
-WHich is actually just:
+Plot the maximum
 
 ```{r}
-1/(sum(X)/length(X))
+curve(p.ll(x, X = X), xlab = "p")
+abline(v = p.hat, lwd = 2, col = 2)
 ```
 
-But now we can also get a confidence interval:
+
+But now we can also get a confidence interval, using the all important *Hessian*.  Recall that for a maximum likelihood estimate $\widehat{\theta}$ , an asymptotic estimate of its variance is given by $$\sigma^2_{\hat\theta} = {-1\over d^2l(\hat\theta)/d\theta^2}$$
+
+i.e., the greater the (negative) curvature, the smaller the standard error.  Here's one way to compute this:
 
 ```{r}
 require(Rdistance)
-p.dd <- secondDeriv(p.hat$maximum, p.like, X = X)
+p.dd <- secondDeriv(p.hat$maximum, p.ll, X = X)
 se = sqrt(-1/p.dd)
 (CI  = p.hat$maximum + c(-2,2) * se[1,1])
 ```
 
-`optim`, rather than `optimize`, does this all at once if you ask for the "Hessian"
+`optim`, rather than `optimize`, does this all at once if you ask for the "Hessian".  Some notes about the somewhat fussy (but very important) `optim` function: 
+- by default it *minimizes*, so to make it *maximize* you have to add the `control = list(fnscale = -1)` OR you can just make your function return the negative log-likelihood, 
+- `method = "L-BFGS-B"` gives "box constraints" - limiting the search to a known range, but because the log-likelihood is infinity at 0 and 1, we have to 
+- the `par` argument is an "initial guess" - the place where the optimizer will start looking for a maximum. 
 
 ```{r}
-p.fit <- optim(0.5, p.like, X = X, 
+(p.fit <- optim(par = 0.5, p.ll, X = X, 
       control = list(fnscale = -1), 
       hessian = TRUE, method = "L-BFGS-B", 
-      lower = 1e-7, upper = 1-1e-7)
+      lower = 1e-7, upper = 1-1e-7))
+```
 
+There's a fair amount of output.  All we need is the estimate itself (`$par`) and the Hessian (`$hessian`)
+
+```{r}
 p.hat <- p.fit$par
 p.se <- sqrt(-1/p.fit$hessian[1,1])
 
 list(p.hat = p.hat, p.CI = p.hat + c(-2,2) * p.se)
 ```
 
-Easy peasy!  Maybe not so interesting. 
+Easy peasy!  
 
-By the way, the standard error of this estimate can be calculated **analytically**!
+## Analytic solution
 
-It's $\sigma = {n(C-n) \over C^2(C-n) + C^2n}$ where $C = \sum X_i$.  Don't believe me?  Check it out:
+This is a rare likelihood that you can actually solve analytically - which is a satisfying problem to solve. To get the estimate you have to take the derivative of the log-likelihood against $p$ and set it to 0.  
+
+$${dl \over dp} = {n \over p} - {\sum X_i - n \over 1-p}$$
+
+Setting this equal to 0 and solving for $\widehat{p}$ gives the (intuitive):
+
+$$\widehat{p} = {n \over \sum_i^n X_i}$$
+*Can you think of another, even more compact way to write this!?*
+
+Quick check
 
 ```{r}
-# numerical solution
-p.se  
+list(p.hat_math = length(X)/sum(X), 
+     p.hat_optim = p.hat)
+```
 
+The standard error of this estimate can also be calculated **analytically**!  That's an exercise for a lazy Sunday afternoon, or a train ride, or some other time.  
+
+The solution is $\sigma = {n(C-n) \over C^2(C-n) + C^2n}$ where $C = \sum X_i$.  Check it out:
+
+```{r}
 # analytic solution
 n <- length(X)
 C <- sum(X)
-sqrt(n*(C-n)/(C^2 * (C-n) + C^2*n))
+list(sigma_math = sqrt(n*(C-n)/(C^2 * (C-n) + C^2*n)), 
+     sigma_optim = p.se)
 ```
 
 # Discrete Hazard with Censoring
 
-**Censoring** is a very important feature of survival data.  Basically, you can't follow your population forever, so at some point objects "fall out" of the study. 
+**Censoring** is a very important feature of survival data.  Basically, you can't follow your population forever, so at some point objects "fall out" of the study. You don't know when the event happened, just that is had to happen after we were done making observations.   
 
-Here, we'll do something very simple.  We'll simply say we can only follow our individuals for 4 years. Afterwards, we don't track them anymore. 
+Here, we'll do something very simple: we'll simply say we can only follow our individuals for 6 years. Afterwards, we don't track them anymore. 
 
-In our data:
+Let's generate more data (this time I just use the negative binomial shortcut, and manually censor):
 
 ```{r}
+X <- rnbinom(100, size = 1, p = 1/6) + 1
 X.full <- X
-Y <- rep(4, sum(X > 4))
-X <- X[X <= 4]
+Y <- rep(6, sum(X > 6))
+X <- X[X <= 6]
 ```
 
-So the `Y`'s now are censored data .. all 4's:
+The `X's` are the  "known fate" data 
 
+```{r}
+sort(X)
+```
+
+and the `Y`'s now are censored .. all 6's:
 ```{r}
 Y
 ```
 
-and `X` is the remaining "known fate" data
+Here's a nice visualization of these data:
 
-```{r}
-sort(X)
+```{r, echo = -1}
+par(cex.axis = 0.8, las = 1, bty = "l", tck = -0.01, mgp = c(1.25,.4,0), mar = c(3,2,1,1))
+X.censored.df <- data.frame(X = c(sort(X),Y), 
+                           censored = c(rep(FALSE, length(X)), 
+                                        rep(TRUE, length(Y))))
+n <- nrow(X.censored.df)
+with(X.censored.df, {
+     plot(X, 1:n, type = "n", 
+          ylab = "", xlab = "time to event")
+     segments(rep(0, n), 1:n, X, 1:n, 
+              col = c("black", "darkgrey")[censored + 1])
+    })
+
+legend("bottomright", col = c("black", "darkgrey"), 
+       legend = c("dead", "censored"), lty = 1)
 ```
 
 Can we still estimate the hazard probability $p$?  
@@ -169,13 +214,15 @@ $${\cal L}(p|{\bf X},{\bf Y}) = \prod_{i=1}^n f(X_i|p) \prod_{i=1}^m g(Y_i|p)$$
 The log likelihood is:
 
 
-$${\cal l}(p|{\bf X},{\bf Y})  = \log({\cal L} (p|{\bf X},{\bf Y}))$$
-Ok, that's kind of a cop out.  But it's not so easy or necessary to write out. But we can code it up using some short cuts.  Namely that $f(x,p)$ is (very close to) the negative binomial *probability mass function*, and $g(y,p)$ is one minus the negative binomial *cumulative mass function*:
+$$\begin{align} {\cal l}(p|{\bf X},{\bf Y})  &= \log({\cal L} (p|{\bf X},{\bf Y})) \\
+ &= \sum_{i=1}^n \log(f(X_i|p)) + \sum_{i=1}^m \log(f(Y_i|p)) \end{align}$$
+
+Ok, that's kind of a cop out.  It's not so easy or necessary to write out, but we can code it up using negative binomial short cuts. Namely that $f(x,p)$ is (very close to) the negative binomial *probability mass function*, and $g(y,p)$ is one minus the negative binomial *cumulative mass function*.  Note that in R, all distribution functions have a `log` option ... now you maybe understand why:
 
 ```{r}
 p.censored.ll <- function(p, Z, Y){
-    log.Z <- dnbinom(Z-1, prob = p, size = 1, log = TRUE)    
-    log.Y <- 1-pnbinom(Y-1, prob = p, size = 1, log = TRUE)    
+    log.Z <- dnbinom(Z+1, prob = p, size = 1, log = TRUE)    
+    log.Y <- 1-pnbinom(Y+1, prob = p, size = 1, log = TRUE)    
     sum(log.Z) + sum(log.Y)
 }
 ```
@@ -184,10 +231,56 @@ p.censored.ll <- function(p, Z, Y){
 Let's compare the likelihood function for both the full $X$ dataset, and the censored version:
 
 ```{r}
-ps <- seq(1e-4,1-1e-4, length = 100)
-ll <- sapply(ps, p.censored.ll, Z = X, Y = Y)
-ll.full <- sapply(ps, p.censored.ll, Z = X.full, Y = c())
+ps <- seq(1e-4,1-1e-4, length = 1000)
+ll <- sapply(ps, p.censored.ll, X, Y = Y)
+ll.full <- sapply(ps, p.censored.ll, X.full, Y = c())
 plot(ps, ll, type = "l")
 lines(ps, ll.full, col = 2)
+```
+
+## Maximum likelihood estimate
+
+Using `optimize` to get the point estimate:
+
+```{r}
+(p.hat <- optimize(p.censored.ll, c(0,1), 
+                   Z = X, Y = Y, maximum = TRUE))
+```
+
+```{r}
+p.dd <- secondDeriv(p.hat$maximum, p.censored.ll, Z = X, Y = Y)
+se = sqrt(-1/p.dd)
+(CI  = p.hat$maximum + c(-2,2) * se[1,1])
+```
+
+Using `optim` instead:
+
+```{r}
+p.fit <- optim(0.5, p.censored.ll, 
+                Z = X, Y = Y, 
+      control = list(fnscale = -1), 
+      hessian = TRUE, method = "L-BFGS-B", 
+      lower = 1e-7, upper = 1-1e-7)
+```
+
+And the resulting point estimate and confidence interval:
+
+```{r}
+p.hat <- p.fit$par
+(p.se <- sqrt(-1/p.fit$hessian[1,1]))
+
+list(p.hat = p.hat, p.CI = p.hat + c(-2,2) * p.se)
+```
+
+
+# Continuous time survival process
+
+*next time*
+
+```{r, echo = FALSE}
+require(survival)
+X.surv <- Surv(time = c(X,Y), event = c(rep(1, length(X)), rep(0, length(Y))))
+H.df <- coxph(X.surv ~ 1) |> basehaz() 
+lm(hazard~time-1, data = H.df) |> summary()
 ```
 
