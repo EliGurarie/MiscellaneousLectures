@@ -1,34 +1,54 @@
 ---
 title: "Survival Basics"
-output: html_document
+output: 
+  html_document:
+      toc: true
+      toc_float: true
+      number_sections: true
 date: "2024-09-16"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-Goal: Estimate "hazard" of the simplest discrete process: 
 
-Rolling a die until we get a 6.  Time to event = number of rolls.
+
+# Discrete Hazard process
+
+
+> Goal: Estimate "hazard" of the simplest discrete process: 
+
+Rolling a die until we get a 6.  *Time to event* = number of rolls.
 
 Simulate:
 
 ```{r}
-X <- rnbinom(50, size = 1, p = 1/6) + 1
+X <- rep(NA, 50)
+for(i in 1:length(X)){
+    rolls <- 0
+    x <- 0
+    while(x != 6){
+        rolls <- rolls+1
+        x <- sample(1:6,1)
+    }
+    X[i] <- rolls
+}
+#X <- rnbinom(50, size = 1, p = 1/6) + 1
 mean(X)
 plot(table(X), type = "h")
 ```
 
-## Likelihood
+## Probability distribution
 
 Probability mass function:
 
-$$f(x|p) = p(1-p)^{x-1}$$
+$$Pr(X = x) = f(x|p) = p(1-p)^{x-1}$$
 
 Can be reasoned out.  But has a name: $X \sim \text{NegBinom}(p)$. 
 
-Likelihood:
+## Likelihood function
+
 
 $${\cal L}(p|{\bf X}) = \prod_{i=1}^n f(X_i|p)$$
 
@@ -43,6 +63,8 @@ p.like <- function(p, X){
 }
 curve(p.like(x, X = X), xlab = "p")
 ```
+
+## Maximum Likelihood Estimate
 
 The maximum likelihood estimate is where this curve is - at a maximum!  
 
@@ -81,5 +103,91 @@ p.hat <- p.fit$par
 p.se <- sqrt(-1/p.fit$hessian[1,1])
 
 list(p.hat = p.hat, p.CI = p.hat + c(-2,2) * p.se)
+```
+
+Easy peasy!  Maybe not so interesting. 
+
+By the way, the standard error of this estimate can be calculated **analytically**!
+
+It's $\sigma = {n(C-n) \over C^2(C-n) + C^2n}$ where $C = \sum X_i$.  Don't believe me?  Check it out:
+
+```{r}
+# numerical solution
+p.se  
+
+# analytic solution
+n <- length(X)
+C <- sum(X)
+sqrt(n*(C-n)/(C^2 * (C-n) + C^2*n))
+```
+
+# Discrete Hazard with Censoring
+
+**Censoring** is a very important feature of survival data.  Basically, you can't follow your population forever, so at some point objects "fall out" of the study. 
+
+Here, we'll do something very simple.  We'll simply say we can only follow our individuals for 4 years. Afterwards, we don't track them anymore. 
+
+In our data:
+
+```{r}
+X.full <- X
+Y <- rep(4, sum(X > 4))
+X <- X[X <= 4]
+```
+
+So the `Y`'s now are censored data .. all 4's:
+
+```{r}
+Y
+```
+
+and `X` is the remaining "known fate" data
+
+```{r}
+sort(X)
+```
+
+Can we still estimate the hazard probability $p$?  
+
+## Probability distribution
+
+There are now 2 data streams.  The first, $X$, has the same distribution as before:
+$$Pr(X = x) = f(x,p) = p(1-p)^{x-1}$$
+
+The second $Y$ will have value $y$ as long as the actual event $X$ is greater than $y$, so:
+
+$$g(y,p) = Pr(Y = y) = Pr(X > y) = \sum_{i = y+1}^\infty p(1-p)^{i-1}$$
+
+This is not as tidy as the non-censored example!  
+
+## Likelihood function
+
+The likelihood function now asks what is $p$ given $\bf X$, which contains $n$ known fate observations, and $\bf Y$, which contains $m$ censored observations is:
+
+$${\cal L}(p|{\bf X},{\bf Y}) = \prod_{i=1}^n f(X_i|p) \prod_{i=1}^m g(Y_i|p)$$
+
+The log likelihood is:
+
+
+$${\cal l}(p|{\bf X},{\bf Y})  = \log({\cal L} (p|{\bf X},{\bf Y}))$$
+Ok, that's kind of a cop out.  But it's not so easy or necessary to write out. But we can code it up using some short cuts.  Namely that $f(x,p)$ is (very close to) the negative binomial *probability mass function*, and $g(y,p)$ is one minus the negative binomial *cumulative mass function*:
+
+```{r}
+p.censored.ll <- function(p, Z, Y){
+    log.Z <- dnbinom(Z-1, prob = p, size = 1, log = TRUE)    
+    log.Y <- 1-pnbinom(Y-1, prob = p, size = 1, log = TRUE)    
+    sum(log.Z) + sum(log.Y)
+}
+```
+
+
+Let's compare the likelihood function for both the full $X$ dataset, and the censored version:
+
+```{r}
+ps <- seq(1e-4,1-1e-4, length = 100)
+ll <- sapply(ps, p.censored.ll, Z = X, Y = Y)
+ll.full <- sapply(ps, p.censored.ll, Z = X.full, Y = c())
+plot(ps, ll, type = "l")
+lines(ps, ll.full, col = 2)
 ```
 
