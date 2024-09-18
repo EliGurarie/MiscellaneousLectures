@@ -1,6 +1,6 @@
 ---
-title: "Miscellaneous Lectures"
-subtitle: <font size = 5> In Quantitative Ecology </font>
+title: "**Miscellaneous Lectures**"
+subtitle: <font size = 5> ***In Quantitative Ecology*** </font>
 author: "[Dr. Elie Gurarie](https://eligurarie.github.io/)"
 output: 
   rmdformats::material
@@ -15,18 +15,20 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
 
 # Survival 101
 
-- [**Time-to-event modeling Part 1**](lectures/Survival/Lecture1.html) a fundamental lecture on [Survival] modeling, where we estimate a hazard by maximizing a Likelihood *by hand* by golly!
+- [**Time-to-event modeling Part 1**](lectures/Survival/Lecture1.html) a fundamental lecture on survival modeling, where we estimate a hazard by maximizing a Likelihood *by hand*, *by golly*!
 
-![lethal dice](lectures/Survival/lethaldice.jpg)
+***(more to come)***
 
-(more to come)
+![](lectures/Survival/lethaldice.jpg)
+
+
 
 
 # Matrices in Ecology
 
 Lecture from **EFB 796: Practical Seminar in Quantitative Wildlife Ecology** on the [Mathemagics of Matrices](lectures/MatricesInEcology/matrices.html)
 
-![Spinning shrinking Mexico](lectures/MatricesInEcology/matrices_files/figure-html/ShrinkingMexico-.gif)
+![](lectures/MatricesInEcology/matrices_files/figure-html/ShrinkingMexico-.gif)
 
 
 # Bayesian MCMC with STAN
