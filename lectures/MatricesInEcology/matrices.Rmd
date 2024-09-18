@@ -4,6 +4,7 @@ subtitle: "EFB 796: Fall 2023"
 author: "Prof. [Elie Gurarie](https://eligurarie.github.io/)"
 output: 
   html_document:
+    theme: journal
     toc: TRUE
     toc_float: TRUE
 editor_options: 
@@ -12,6 +13,12 @@ editor_options:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, cache = TRUE, message = FALSE, warnings = FALSE)
+```
+
+```{r, echo = FALSE}
+eliepars <- function()
+    par(bty = "l", tck = 0.01, mar = c(3,3,2,2), las = 1, 
+        cex.axis = 0.8, cex.lab = 1.1, mgp = c(1.5,.25,0))
 ```
 
 > Note: this is an unfinished lecture on the utility of matrices in ecology for a **Practical Seminar in Quantitative Wildlife Ecology** graduate level course at SUNY-ESF.  A theme of the class is looking under the hood of various statistical operations and tools - and at times building our own engines.  WIth that in mind, matrices come up over and over again in various applications, and this is an attempt to bring together several "magical" ways that matrices concretely solve problems, fit models, and perform other useful operations on data.  This includes: linear regression, principle component analysis, spatial transformations, and population modeling ... so really a lot of what we do!
@@ -157,8 +164,8 @@ Y.hat <-X%*%beta.hat
 
 So the regression coefficients are $\beta_0 = 2$ and $\beta_1 = 1$, and $\sigma^2 = 0$. Obviously, that's correct, but if you need proof:
 
-```{r, echo=-1, fig.height=5, dpi=100, out.width=400}
-par(bty="l", cex.lab=1.25, las=1)
+```{r, fig.height=5, dpi=100, out.width=400, echo = -1}
+eliepars()
 plot(X[,2],Y, cex=2, pch=19)
 abline(t(beta.hat), col=2, lwd=2)
 ```
@@ -242,7 +249,6 @@ pars <- function(...){
     par(mar = c(3,3,2,2), bty = "l", mgp = c(1.5,.25,0),
         tck = 0.01, cex.lab = 1.2, ...)
 }
-
 ```
 
 A **square** ($k \times k$) matrix distorts a vector (or matrix) of length (or first dimension) $k$ by twisting and stretching.
@@ -304,7 +310,8 @@ M.squeeze <- rbind(c(d.x,0),c(0,d.y))
 
 Stretch/squeeze once:
 
-```{r}
+```{r, echo = -1}
+eliepars()
 x <- rbind(c(1,1))
 x2 <- t(M.squeeze %*% t(x))
 plot(0,0,xlim = c(-2,2), asp = 1, ylim = c(-2,2))
@@ -369,7 +376,7 @@ plot(mexico.xy, type = "l")
 ### Rotating Mexico!  
 
 ```{r RotatingMexico, animation.hook='gifski', dev='png', interval=0.05, res = 100, echo = -1, fig.width = 5, fig.height = 5, out.width = 400, out.height = 400}
-par(mar = c(0,0,0,0), bty = "n", axes = FALSE)
+par(mar = c(0,0,0,0), bty = "n", axes = FALSE, bg = "black")
 n.frames <- 60
 M <- getDistortMatrix(2*pi/n.frames, 1, 1)
 mexico.t <- mexico.xy
@@ -378,7 +385,7 @@ for(i in 1:n.frames){
   mexico.t <- t(M %*% t(mexico.t))
   plot(mexico.t, type = "l",
        ylim = c(-2,2), xlim = c(-2,2),
-       asp = 1, lwd = 2)
+       asp = 1, lwd = 2, col = "antiquewhite")
 }
 
 ```
@@ -386,7 +393,7 @@ for(i in 1:n.frames){
 ### This Mexico is rotating and shrinking!
 
 ```{r ShrinkingMexico, animation.hook='gifski', dev='png', interval=0.05, res = 100, echo = -1, fig.width = 5, fig.height = 5, out.width = 400, out.height = 400}
-par(mar = c(0,0,0,0), bty = "n", axes = FALSE); palette(gplots::rich.colors(60))
+par(mar = c(0,0,0,0), bty = "n", axes = FALSE, bg = "black"); palette(gplots::rich.colors(60))
 
 n.frames <- 60
 M <- getDistortMatrix(3*pi/n.frames, .95, .95)
@@ -488,10 +495,10 @@ We will do a principle component analysis by hand.  The goal will be to "rotate"
 
 We now obtain the correlation matrix:
 
-```{r setupIris}
+```{r setupIris, echo = -1}
+eliepars(); par(mar = c(2,8,2,2))
 M.corr <- cor(X.iris)
-par(mar = c(2,8,2,2))
-image.plot(x = 1:4, y = 1:4, M.corr, yaxt = "n", ylab = "", 
+fields::image.plot(x = 1:4, y = 1:4, M.corr, yaxt = "n", ylab = "", 
            asp = 1, main = "correlation matrix of iris data")
 mtext(side = 2, at = 1:4, colnames(X.iris), las = 1)
 ```
@@ -556,7 +563,8 @@ colnames(PC) <- paste0("PC", 1:4)
 
 Compare this pair of pairs plots:
 
-```{r morePairsPlots, fig.width = 5, fig.height = 5}
+```{r morePairsPlots, fig.width = 5, fig.height = 5, echo = -1}
+eliepars()
 pairs(PC, upper.panel = NULL, asp = 1, pch = 19, 
       col = alpha(cols[iris$Species], .5))
 pairs(X.iris, upper.panel = NULL, pch = 19, 
@@ -616,8 +624,8 @@ apply(PC, 2, sd)
 
 So they agree.  Plotting these ordinations I find tricky to control (an argument for computing your out PCA's).  But this *kind of* works:
 
-```{r}
-par(mfrow = c(1,2))
+```{r, echo = -1}
+eliepars()
 row.names(X.iris) <- substring(iris$Species, 1, 2)
 biplot(princomp(X.iris))
 ```

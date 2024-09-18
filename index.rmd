@@ -12,14 +12,22 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
                style = 'position:absolute; top:0; right:0; padding:10px; width:150px')
 ```
 
-# TuktuTools Tutorials
 
-- [Intro slides](lectures/TuktuToolsTutorials/TuktuWelcome.html)
-- [Part I: Basics](lectures/TuktuToolsTutorials/TuktuTools_PartI.html)
-- [Part II: Summaries](lectures/TuktuToolsTutorials/TuktuTools_PartII.html)
-- [Part III: Estimating Parturition](lectures/TuktuToolsTutorials/estimating_parturition.html)
-- [Part IV: Obtaining weather covariates](lectures/TuktuToolsTutorials/little_weatherStation_code.html)
-![](lectures/TuktuToolsTutorials/logo.png)
+# Survival 101
+
+- [**Part 1**](lectures/Survival/Lecture1.html) A fundamental lecture on [Survival] modeling, where we estimate a hazard by maximizing a Likelihood *by hand* by golly!
+
+![lethal dice](lectures/Survival/lethaldice.jpg)
+
+(more to come)
+
+
+# Matrices in Ecology
+
+Lecture from **EFB 796: Practical Seminar in Quantitative Wildlife Ecology** on the [Mathemagics of Matrices](lectures/MatricesInEcology/matrices.html)
+
+![Spinning shrinking Mexico](lectures/MatricesInEcology/matrices_files/figure-html/ShrinkingMexico-.gif)
+
 
 # Bayesian MCMC with STAN
 
@@ -34,7 +42,7 @@ Guest lecture for **EFB 796: WinBUGs for Population Ecologists** with [Dr. Jonat
 - [**STAN model scripts**](lectures/Lab_MCMCwithSTAN/stanmodels/). 
 
 
-<img src="lectures/Lecture_BayesianMCMC/images/tweedledum_and_tweedledee.jpg" alt="drawing" width="300"/>
+<img src="lectures/Lecture_BayesianMCMC/images/tweedledum_and_tweedledee.jpg" alt="tweedledum and tweedledee" width="300"/>
 
 
 ***Frequentists and Bayesians going at it.***
@@ -48,20 +56,22 @@ Guest lecture for **EFB 796:  R and Reproducible Research** with [Dr. Hyatt Gree
 - [**`competitoR` package bundle**](lectures/Lecture_HowToBuildRPackages/competitoR.zip)
 
 
+# TuktuTools Tutorials
+
+- [Intro slides](lectures/TuktuToolsTutorials/TuktuWelcome.html)
+- [Part I: Basics](lectures/TuktuToolsTutorials/TuktuTools_PartI.html)
+- [Part II: Summaries](lectures/TuktuToolsTutorials/TuktuTools_PartII.html)
+- [Part III: Estimating Parturition](lectures/TuktuToolsTutorials/estimating_parturition.html)
+- [Part IV: Obtaining weather covariates](lectures/TuktuToolsTutorials/little_weatherStation_code.html)
+![TuktuTools](lectures/TuktuToolsTutorials/logo.png)
+
+
 #  Measurements and consequences of (im)-permeability
 
   - [North American Caribou Workshop - Anchorage 2023](lectures/NACW_2023/Permeability_Presentation.html)
   - [Global Initiative on Ungulate Migration - Grand Teton N.P. 2023](lectures/NACW_2023/GIUM_permeability.html)
 
-![](lectures/NACW_2023/bg.png)
-
-
-# Matrices in Ecology
-
-Lecture from **EFB 796: Practical Seminar in Quantitative Wildlife Ecology** on the [Mathemagics of Matrices](lectures/MatricesInEcology/matrices.html)
-
-![](lectures/MatricesInEcology/matrices_files/figure-html/ShrinkingMexico-.gif)
-
+![caribou impermeability](lectures/NACW_2023/bg.png)
 
 ```{r, echo = FALSE, eval = FALSE}
 # renderthis::to_pdf("file.rmd")
