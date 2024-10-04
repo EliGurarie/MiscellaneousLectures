@@ -35,7 +35,7 @@ Lecture from **EFB 796: Practical Seminar in Quantitative Wildlife Ecology** on 
 
 Guest lecture for **EFB 796: WinBUGs for Population Ecologists** with [Dr. Jonathan Cohen](https://www.esf.edu/faculty/cohen/)
 
-- Slides: [**Background on Bayesian MCMC**](lectures/Lecture_BayesianMCMC/BayesianMCMC_test.Rmd)
+- Slides: [**Background on Bayesian MCMC**](lectures/Lecture_BayesianMCMC/BayesianMCMC_slides.html)
 
 - Lab: [**Lilac phenology analysis with STAN**](lectures/Lab_MCMCwithSTAN/BayesianLilacs.html)
 
