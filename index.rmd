@@ -13,6 +13,10 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
 ```
 
 
+# Practical Seminar in Quantitative Ecology
+- [**Lecture/Lab 1**: All the Distributions Are Related](./lectures/PSQE_2025/Lab01_RandomNumbers/AllTheDistributionsAreRelated.html)
+
+
 # Survival 101
 
 - [**Time-to-event modeling Part 1**](lectures/Survival/Lecture1.html) a fundamental lecture on survival modeling, where we estimate a hazard by maximizing a Likelihood *by hand*, *by golly*!
