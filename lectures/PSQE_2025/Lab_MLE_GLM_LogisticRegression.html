@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nicki Barbour &amp; Elie Gurarie" />
+
+<meta name="date" content="2025-01-29" />
+
+<title>GLM’s and Logistic Regression (with Likelihoods)</title>
+
+<script src="Lab_MLE_GLM_LogisticRegression_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="Lab_MLE_GLM_LogisticRegression_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Lab_MLE_GLM_LogisticRegression_files/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="Lab_MLE_GLM_LogisticRegression_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="Lab_MLE_GLM_LogisticRegression_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="Lab_MLE_GLM_LogisticRegression_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="Lab_MLE_GLM_LogisticRegression_files/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="Lab_MLE_GLM_LogisticRegression_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="Lab_MLE_GLM_LogisticRegression_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="Lab_MLE_GLM_LogisticRegression_files/navigation-1.1/tabsets.js"></script>
+<link href="Lab_MLE_GLM_LogisticRegression_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="Lab_MLE_GLM_LogisticRegression_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">GLM’s and Logistic Regression (with
+Likelihoods)</h1>
+<h3 class="subtitle">EFB 796: Practical Seminar in Quantitative
+Ecology</h3>
+<h4 class="author">Nicki Barbour &amp; <a
+href="eligurarie.github.io">Elie Gurarie</a></h4>
+<h4 class="date">2025-01-29</h4>
+
+</div>
+
+
+<div id="whats-a-glm-anyway" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> What’s a “GLM”
+anyway?</h1>
+<p>From our last lecture, we now have a deeper understanding of linear
+regression, using both OLS and MLE with a normal distribuion. But what
+if we had data that required a different probability distribution (e.g.,
+count data, binary data,…)?</p>
+<p>Generalized linear models (GLM) provide this flexibility. Unlike OLS
+linear regression, GLM’s do <em>not</em> assume a linear relationship
+between the response and covariates - instead, they assume that there is
+a linear relationship between a <em>transformed</em> response variable
+and the covariates. This transformation is captured with the <em>Link
+Function</em> (<span class="math inline">\(g(\mu)\)</span>). The Link
+Function is the key component of a GLM - it <em>links</em> the random
+component (probability distribution of the response variable) with the
+systematic component (covariates).</p>
+<p>The <em>systematic component</em> (<span
+class="math inline">\(\eta\)</span>) is also called the “linear
+predictor” in a GLM, containing all the covariates <span
+class="math inline">\(x\)</span>:</p>
+<p><span
+class="math display">\[\eta_i=\beta_0+\beta_1x_{1i}+...+\beta_kx_{ki}\]</span></p>
+<p>We can express this same formula for the linear predictor as:</p>
+<p><span class="math display">\[\eta= X\beta\]</span> where <span
+class="math inline">\(X\)</span> is a matrix of the covariates and <span
+class="math inline">\(\beta\)</span> is all the unknown parameters
+(coefficients).</p>
+<p>Getting back to our Link Function <span
+class="math inline">\(g(\mu)\)</span>, its purpose is to link the linear
+predictor (<span class="math inline">\(\eta\)</span>) with the center or
+mean (<span class="math inline">\(\mu\)</span>) of the distribution
+function used, such that:</p>
+<p><span class="math display">\[g(\mu)= X\beta = \eta\]</span></p>
+<p>Because GLM’s do not assume a linear relationship between the
+response and explanatory variables, just between <span
+class="math inline">\(\eta\)</span> and the explanatory variables, they
+have much flexibility in the distributions available for the response
+variable, <span class="math inline">\(Y\)</span>. In fact, any of the
+exponential family distributions are available, including normal
+(Gaussian), exponential, beta, Bernoulli, Poisson, gamma, and
+binomial.</p>
+<p>Each of these distributions have a special Link Function, also called
+a “canonical link function”. To be picky, the “canonical link function”
+technically transforms the mean of the response variable <span
+class="math inline">\(\mu\)</span> (also represented as <span
+class="math inline">\(\mu=E(Y)\)</span>, where <span
+class="math inline">\(E\)</span> represents the “expected value” of the
+mean <span class="math inline">\(\mu\)</span> of the response <span
+class="math inline">\(Y\)</span>) to the “natural exponential parameter”
+for the exponential family distribution of choice. Don’t worry about
+that too much, as in practice we almost always just use the canonical
+link functions, which are clearly defined for each distribution.</p>
+<p>The Link Function, <span
+class="math inline">\(g(\mu)=X\beta\)</span>, basically defines the
+transformation you have to apply to a particular distribution’s <span
+class="math inline">\(\mu\)</span> to fit a linear relationship with the
+covariates (linear predictor).</p>
+<p>How do you get a particular distribution’s <span
+class="math inline">\(\mu\)</span>? With the “Mean Function”! For
+example, for the normal distribution, which has an “identity” link
+(e.g., no real transformation), the Link Function is <span
+class="math inline">\(g(\mu)=X\beta=\mu\)</span> and the Mean Function
+is <span class="math inline">\(\mu=X\beta\)</span>, such that the linear
+predictor equation becomes:</p>
+<p><span class="math display">\[\mu_i = \eta_i =
+\beta_0+\beta_1x_{1i}+...+\beta_kx_{ki}\]</span> Another example is the
+Poisson distribution, which has a “Log” Link Function, <span
+class="math inline">\(g(\mu)=X\beta=\log(\mu)\)</span>, such that <span
+class="math inline">\(\mu=exp(X\beta)\)</span> for the Mean Function and
+the linear predictor equation is:</p>
+<p><span class="math display">\[\log(\mu_i) = \eta_i =
+\beta_0+\beta_1x_{1i}+...+\beta_kx_{ki}\]</span></p>
+<p>A list of examples for the most common GLM distributions:</p>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="33%" />
+<col width="14%" />
+<col width="23%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Distribution</th>
+<th>Link name</th>
+<th>Link function</th>
+<th>Mean function</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Normal distribution</td>
+<td>“Identity”</td>
+<td><span class="math inline">\(\mu\)</span></td>
+<td><span class="math inline">\(\mu={\bf X}\beta\)</span></td>
+</tr>
+<tr class="even">
+<td>Poisson distribution</td>
+<td>“Log”</td>
+<td><span class="math inline">\({\bf X}\beta=\log(\mu)\)</span></td>
+<td><span class="math inline">\(\mu=\exp({\bf X}\beta)\)</span></td>
+</tr>
+<tr class="odd">
+<td>Exponential distribution</td>
+<td>“Negative Inverse”</td>
+<td><span class="math inline">\({\bf
+X}\beta=-(\frac{1}{\mu})\)</span></td>
+<td><span class="math inline">\(\mu=-(\frac{1}{{\bf
+X}\beta})\)</span></td>
+</tr>
+<tr class="even">
+<td>Gamma distribution</td>
+<td>“Negative Inverse”</td>
+<td><span class="math inline">\({\bf
+X}\beta=-(\frac{1}{\mu})\)</span></td>
+<td><span class="math inline">\(\mu=-(\frac{1}{{\bf
+X}\beta})\)</span></td>
+</tr>
+<tr class="odd">
+<td>Bernoulli distribution</td>
+<td>“Logit”</td>
+<td><span class="math inline">\({\bf
+X}\beta=\log(\frac{\mu}{1-\mu})\)</span></td>
+<td><span class="math inline">\(\mu=\frac{\exp({\bf
+X}\beta)}{1+\exp({\bf X}\beta)}\)</span></td>
+</tr>
+<tr class="even">
+<td>Binomial distribution</td>
+<td>“Logit”</td>
+<td><span class="math inline">\({\bf
+X}\beta=\log(\frac{\mu}{n-\mu})\)</span></td>
+<td><span class="math inline">\(\mu=\frac{\exp({\bf
+X}\beta)}{1+\exp({\bf X}\beta)}\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>As you may have noticed, our classic linear regression could be
+conducted with a GLM, using the “Identity” link. Assuming a linear
+relationship between the linear predictor <span
+class="math inline">\(\eta\)</span> and the transformed response
+variable with a GLM, instead of the response variable and covariates,
+releases us of our OLS assumptions of normality and homogeneity of
+variance for the residuals - in fact, our response does not have to be a
+continuous numeric variable at all! Models are fit using MLE, not OLS,
+providing the benefits of working with likelihood functions to estimate
+parameters.</p>
+<p>So what are the main assumptions of a GLM?</p>
+<p>1 - Linearity between the response variable and the linear predictor
+(captured with the Link Function)</p>
+<p>2 - Residuals are i.i.d (independent of each other and follow the
+chosen probability distribution)</p>
+<p>3 - Overdispersion (observed model variance &gt;&gt; expected
+variance) is <em>not</em> present (or has been accounted for)…</p>
+<p>Each distribution has a variance function <span
+class="math inline">\(V(\mu)\)</span>, which describes how the variance
+of the response variable <span class="math inline">\(var(Y)\)</span>
+depends on its mean <span class="math inline">\(\mu\)</span>. The
+variance of the response variable, specifically, is equal to the
+variance function multiplied by a constant (<span
+class="math inline">\(\phi\)</span>): <span
+class="math inline">\(var(Y)=\phi V(\mu)\)</span>. To check for
+overdispersion, you can compare the estimated variance of your model
+<span class="math inline">\(var(Y)\)</span> to the expected variance for
+your chosen distribution (<span class="math inline">\(V(\mu)\)</span>).
+Overdispersion is common for count data, so it’s important to check for
+the appropriate variance function for your distribution and compare your
+estimated variance to it .</p>
+<p>As a reminder, much of the distributions you would use in a GLM are
+covered in the “All the Distributions Are Related” lecture in Week 3
+folder, including their parameters, and mean and variance functions. And
+for more reading, the <a
+href="https://en.wikipedia.org/wiki/Generalized_linear_model">Wikipedia
+page</a> for GLM’s has a nice table of the canonical link functions (and
+mean functions) for different exponential family distributions:</p>
+<p><img src="images/GLM_Wikipedia.png" /></p>
+<p>Let’s go through some examples, using both “by hand” MLE and the
+<code>glm</code> function from the <code>stats</code> R package.</p>
+</div>
+<div id="linear-model" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Linear model</h1>
+<p>We will try a GLM version of our simple linear model from the last
+lecture, using the <code>mammals</code> data from the <code>MASS</code>
+package.</p>
+<pre class="r"><code>require(MASS)
+data(mammals)</code></pre>
+<p>First, we process our data to have body weight in grams and then
+log-transformed versions of our <span class="math inline">\(X\)</span>
+variable (body size) and our <span class="math inline">\(Y\)</span>
+variable (brain size).</p>
+<pre class="r"><code>mammals$body &lt;- mammals$body*1000
+mammals$log_brain &lt;- log(mammals$brain)
+mammals$log_body &lt;- log(mammals$body)
+head(mammals)</code></pre>
+<pre><code>##                   body brain log_brain  log_body
+## Arctic fox        3385  44.5  3.795489  8.127109
+## Owl monkey         480  15.5  2.740840  6.173786
+## Mountain beaver   1350   8.1  2.091864  7.207860
+## Cow             465000 423.0  6.047372 13.049793
+## Grey wolf        36330 119.5  4.783316 10.500399
+## Goat             27660 115.0  4.744932 10.227743</code></pre>
+<div id="maximum-likelihood-estimation" class="section level2"
+number="2.1">
+<h2><span class="header-section-number">2.1</span> Maximum likelihood
+estimation</h2>
+<p>For a linear model with a normal distribution, we will use the
+“identity” link. The canonical Link Function is <span
+class="math inline">\(g(\mu)=X\beta=\mu\)</span> and the Mean Function
+is <span class="math inline">\(\mu=X\beta\)</span>. Our model is:</p>
+<p><span class="math display">\[\mu = \beta_0+\beta X\]</span> Where
+<span class="math inline">\(X\)</span> is the (log-transformed) body
+size of our mammals. Our goal is to estimate our coefficients, <span
+class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta_1\)</span>, as well as our variance (<span
+class="math inline">\(\sigma^2\)</span>), given <span
+class="math inline">\(\mu\)</span> and our observed data <span
+class="math inline">\(Y\)</span>. We can write this as:</p>
+<p><span class="math display">\[\cal L(\beta, \sigma^2|\bf X,
+Y)\]</span> where <span class="math inline">\(\beta\)</span> is the
+coefficients and <span class="math inline">\(X\)</span> is the covariate
+design matrix.</p>
+<p>To estimate <span class="math inline">\(\mu\)</span> (a.k.a, <span
+class="math inline">\(\hat \mu\)</span>), remember that for the normal
+distribution, <span class="math inline">\(\mu=X\beta\)</span>. In our
+likelihood function below, we define our coefficients <code>beta0</code>
+and <code>beta</code>, and our variance <code>sigma2</code>, and then
+find <code>mu.hat</code> (<span class="math inline">\(\hat \mu\)</span>,
+a.k.a our linear predictor a.k.a <span
+class="math inline">\(X\beta\)</span>) according to our model.</p>
+<pre class="r"><code>neglogLik_Gaussian &lt;- function(params = c(beta0, beta1, sigma2), X, Y){
+    beta0 &lt;- params[&#39;beta0&#39;]
+    beta1 &lt;- params[&#39;beta1&#39;]
+    sigma2 &lt;- params[&#39;sigma2&#39;]
+    mu.hat &lt;- beta0 + beta1 * X # calculates the linear predictor
+    logProb &lt;- dnorm(Y, mean = mu.hat, sd = sqrt(sigma2), log = TRUE)
+    -sum(logProb)
+}</code></pre>
+<pre class="r"><code>mammals_fit &lt;- optim(par = c(beta0 = 1, beta1 = 1, sigma2 = 2), 
+                 neglogLik_Gaussian, 
+                 X = mammals$log_body, 
+                 Y = mammals$log_brain,
+                 hessian = TRUE)
+
+mammals_fit</code></pre>
+<pre><code>## $par
+##      beta0      beta1     sigma2 
+## -3.0573239  0.7516352  0.4664991 
+## 
+## $value
+## [1] 64.33647
+## 
+## $counts
+## function gradient 
+##      150       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+## 
+## $hessian
+##               beta0        beta1       sigma2
+## beta0  1.329049e+02 1.095840e+03   0.01959574
+## beta1  1.095840e+03 1.031096e+04   0.30040516
+## sigma2 1.959574e-02 3.004052e-01 142.45089441</code></pre>
+<p>Once again, we get 0.75 as our <span
+class="math inline">\(\beta_1\)</span> value!</p>
+<p>We can get our standard errors from the Hessian and then get our 95%
+confidence intervals:</p>
+<pre class="r"><code>se &lt;- sqrt(diag(solve(mammals_fit$hessian)))
+mammals_params &lt;- 
+  with(mammals_fit, 
+  data.frame(estimate = par, se = se, 
+             CI.low = par - 1.95*se,
+             CI.high = par + 1.95*se))
+mammals_params</code></pre>
+<pre><code>##          estimate         se     CI.low    CI.high
+## beta0  -3.0573239 0.24663221 -3.5382567 -2.5763911
+## beta1   0.7516352 0.02800082  0.6970336  0.8062368
+## sigma2  0.4664991 0.08378522  0.3031179  0.6298803</code></pre>
+</div>
+<div id="using-the-glm-function" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Using the
+<code>glm</code> function</h2>
+<p>We can also compare our “by hand” MLE with the output from the
+<code>glm</code> function (<code>stats</code> package), specifying our
+<code>family</code> as “gaussian” (the default is actually Gaussian, but
+all of the glm options listed above are available, see
+<code>?glm</code>).</p>
+<pre class="r"><code>mammals_glm &lt;- glm(log_brain ~ log_body, data = mammals, family = &quot;gaussian&quot;)
+summary(mammals_glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = log_brain ~ log_body, family = &quot;gaussian&quot;, data = mammals)
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -3.05767    0.25071  -12.20   &lt;2e-16 ***
+## log_body     0.75169    0.02846   26.41   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.4820452)
+## 
+##     Null deviance: 365.111  on 61  degrees of freedom
+## Residual deviance:  28.923  on 60  degrees of freedom
+## AIC: 134.67
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<p>Looks the same! Note that you can get AIC values the same way we
+covered in the last lecture.</p>
+<pre class="r"><code>-2*(-mammals_fit$value) + 2*3</code></pre>
+<pre><code>## [1] 134.6729</code></pre>
+<p>Which should be the same output as with the AIC function:</p>
+<pre class="r"><code>AIC(mammals_glm)</code></pre>
+<pre><code>## [1] 134.6729</code></pre>
+<p>Remember our assumption, of i.i.d normal residuals. As with
+<code>lm()</code>, you can just “plot” the fitted model to obtain
+diagnositc residual plots:</p>
+<pre class="r"><code>plot(mammals_glm)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/ResidualDiagnosticsGLM-1.png" width="1152" /></p>
+<p>The residuals look good!</p>
+</div>
+</div>
+<div id="logistic-regression" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Logistic
+regression</h1>
+<p>“Logistic regression” is a widely used term for a <em>Bernoulli
+linear model</em>, i.e. a model with two outcomes. In various forms
+(some more complex) this is probably the most widely used generalized
+linear model because so many kinds of data are binary (dead / alive;
+present / absent; male / female; etc.)</p>
+<p>When dealing with binary data there in one immediate issue: The
+normal assumption of residuals is <em>never</em> satisfied. And even
+visualizing effects can pose problems. We’ll walk through these with the
+example below.</p>
+<div id="sole-data" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Sole data</h2>
+<p>As an example, we’ll use a presence/absence dataset of common sole (a
+kind of flat-fish, <em>Solea solea</em>) in the estuary of the <a
+href="pt.wikipedia.org/wiki/Rio_Tejo">Tejo river</a> in Portugal.<a
+href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<pre class="r"><code>Solea &lt;- read.csv(&quot;data/Solea.csv&quot;)</code></pre>
+<p>The response variable is binary (absence = 0, presence = 1), and
+there are various potential explanatory covariates, including salinity,
+temperature, depth, and relative percentages of gravel/sand/mud.</p>
+<pre class="r"><code>str(Solea)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    65 obs. of  13 variables:
+##  $ Sample     : int  1 2 3 4 5 6 7 8 9 10 ...
+##  $ season     : int  1 1 1 1 1 1 1 1 1 1 ...
+##  $ month      : int  5 5 5 5 5 5 5 5 5 5 ...
+##  $ Area       : int  2 2 2 4 4 4 3 3 3 1 ...
+##  $ depth      : num  3 2.6 2.6 2.1 3.2 3.5 1.6 1.7 1.8 4.5 ...
+##  $ temp       : int  20 18 19 20 20 20 19 17 19 21 ...
+##  $ salinity   : int  30 29 30 29 30 32 29 28 29 12 ...
+##  $ transp     : int  15 15 15 15 15 7 15 10 10 35 ...
+##  $ gravel     : num  3.74 1.94 2.88 11.06 9.87 ...
+##  $ large_sand : num  13.15 4.99 8.98 11.96 28.6 ...
+##  $ fine_sand  : num  11.93 5.43 16.85 21.95 19.49 ...
+##  $ mud        : num  71.2 87.6 71.3 55 42 ...
+##  $ Solea_solea: int  0 0 1 0 0 0 1 1 0 1 ...</code></pre>
+<p>We will investigate the relationship between Sole presence and
+salinity for this example.</p>
+</div>
+<div id="visualizations" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Visualizations</h2>
+<p>Let’s start with a plot of this data - plotting presence/absence data
+with a continuous covariate is not very straightforward.</p>
+<p>A crude <code>ggplot</code> option:</p>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<pre class="r"><code>ggplot(data=Solea, aes(x=salinity, y=Solea_solea))+
+  geom_point()+
+  theme_classic()+
+  xlab(&quot;Salinity (ppt)&quot;)+ylab(&quot;Sole Presence/Absence&quot;)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-9-1.png" width="576" /></p>
+<p>And a nicer example in base R with (Elie’s) hand-written
+function:</p>
+<pre class="r"><code>plotBinary &lt;- function (X, Y, ...){
+     plot(X, jitter(Y, factor = 0.1), col = rgb(0, 0, 0, 0.5), 
+         pch = 19, ylim = c(-0.2, 1.2), ...)
+     boxplot(X ~ Y, horizontal = TRUE, notch = TRUE, add = TRUE, 
+         at = c(-0.1, 1.1), width = c(0.1, 0.1), col = &quot;grey&quot;, 
+         boxwex = 0.1, yaxt = &quot;n&quot;)
+ }</code></pre>
+<pre class="r"><code>with(Solea, plotBinary(salinity, Solea_solea, xlab=&quot;salinity&quot;, ylab = &quot;Presence&quot;, yaxt = &quot;n&quot;))</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-11-1.png" width="576" /></p>
+<p>From these plots, we can see that Sole seem to be avoiding higher
+salinities but we can use a logistic regression model to investigate
+further.</p>
+</div>
+<div id="the-bernoulli-model" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> The Bernoulli
+model</h2>
+<p>First step is to pick our distribution and associated Link Function.
+Since our data is constrained from {0,1}, the Bernoulli distribution is
+appropriate - this uses the “Logit” Link, with Canonical Link <span
+class="math inline">\(g(\mu)=X\beta=\log(\frac{\mu}{1-\mu})\)</span> and
+Mean Function <span
+class="math inline">\(\mu=\frac{exp(X\beta)}{1+exp(X\beta)}\)</span>.
+Our probability model is:</p>
+<p><span class="math display">\[Y_i \sim {\cal
+Bernoulli}(\mu)\]</span></p>
+<p>where:</p>
+<p><span class="math display">\[\log\left(\frac{\mu}{1-\mu}\right) =
+\beta_0+\beta X\]</span></p>
+<p>That “logit link” is what is often referred to as the “log-odds”,
+where the “odds” of a probability are <span class="math inline">\(p
+\over 1-p\)</span>. Thus, for example, if <span class="math inline">\(p
+= 0.5\)</span> gamblers will say “<em>even odds</em>”. If <span
+class="math inline">\(p = 0.75\)</span>, they’ll say “<em>three to one
+odds</em>”, because <span class="math inline">\(0.75 / (1-0.75) =
+3/1\)</span>, etc.</p>
+<p>In our equation, <span class="math inline">\(Y_i\)</span> is the
+<span class="math inline">\(i\)</span>th observation (0 or 1), <span
+class="math inline">\(\mu\)</span> is the predicted probability, <span
+class="math inline">\(X\)</span> is the salinity, and the <span
+class="math inline">\(\beta\)</span>’s are the regression coefficients.
+Since our goal is to estimate the coefficients, <span
+class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta_1\)</span>, given <span
+class="math inline">\(X\)</span> and our observations data <span
+class="math inline">\(Y\)</span>. We can write this as:</p>
+<p><span class="math display">\[\cal L(\beta|\bf X, Y)\]</span></p>
+<p>We’ll get values for <span class="math inline">\(\beta\)</span>, but
+if we want to convert those back to a probability we have to apply the
+“inverse link” function, which in this case is <span
+class="math inline">\(\exp(\mu) / \left(1 + \exp(\mu)\right)\)</span>,
+or what we sometimes like to call the “expit” function.</p>
+</div>
+<div id="writing-the-likelihood" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Writing the
+likelihood</h2>
+<p>A note before we dig into creating our Likelihood function - the
+Bernoulli distribution is actually a special case of a binomial
+distribution, as it only has 2 outcomes (other binomial distributions
+have &gt;2 outcomes), with a single trial per observation (e.g., similar
+to a coin toss - can only have a 1 or 0 at a given observation).</p>
+<p>So, in R, the functions for a Bernoulli distribution are the same as
+those for a binomial distribution, e.g., <code>dbinom</code>.</p>
+<p>We define our log likelihood function step-wise, first with our
+linear predictor <span class="math inline">\(\eta\)</span> (a.k.a <span
+class="math inline">\(X\beta\)</span>), then transforming <span
+class="math inline">\(\eta\)</span> to get <span
+class="math inline">\(\hat \mu\)</span> (which represents the
+probability of success, or observing a Sole for a given
+observation).</p>
+<pre class="r"><code>neglogLik_Bernoulli &lt;- function(params = c(beta0, beta1), X, Y){
+    beta0 &lt;- params[&#39;beta0&#39;]
+    beta1 &lt;- params[&#39;beta1&#39;]
+    
+    eta &lt;- beta0 + beta1 * X # calculates the linear predictor
+    
+    mu.hat &lt;- exp(eta)/(1 + exp(eta)) # calculates mu_hat via the log-link, e.g. probability of getting a 1 for Y
+    
+    # use size = 1 for trial = 1
+    logProb &lt;- dbinom(Y, size = 1, prob = mu.hat, log = TRUE)
+    
+    -sum(logProb)
+}</code></pre>
+<p>We can then fit our (log)-likelihood function using
+<code>optim</code>:</p>
+<pre class="r"><code>Solea_fit &lt;- optim(par = c(beta0 = 0, beta1 = -1), 
+                 neglogLik_Bernoulli, 
+                 X = Solea$salinity, Y = Solea$Solea_solea,
+                 hessian = TRUE)
+
+Solea_fit</code></pre>
+<pre><code>## $par
+##      beta0      beta1 
+##  2.6601654 -0.1298135 
+## 
+## $value
+## [1] 34.28
+## 
+## $counts
+## function gradient 
+##       85       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+## 
+## $hessian
+##           beta0     beta1
+## beta0  11.26252  274.3119
+## beta1 274.31190 7500.4898</code></pre>
+<p>We get parameter estimates of:</p>
+<pre class="r"><code>Solea_fit$par</code></pre>
+<pre><code>##      beta0      beta1 
+##  2.6601654 -0.1298135</code></pre>
+<p>But what do these mean in terms of observing Sole?</p>
+<p>Currently, our coefficients give us values as “log odds”, e.g., the
+coefficient value for our <span class="math inline">\(\beta_1\)</span>
+of -0.13 tells us that for a one-unit increase in salinity, the log odds
+is expected to decrease by about ~ 0.13.</p>
+<p>This is not very intuitive, however, so we can back-transform <span
+class="math inline">\(\beta_1\)</span> to get it in terms of the “odds
+ratio”:</p>
+<pre class="r"><code>exp(Solea_fit$par[2])</code></pre>
+<pre><code>##     beta1 
+## 0.8782592</code></pre>
+<p>If you get an “odds ratio” value &lt; 1, it indicates a decrease in
+the odds of observing a success (e.g., a sole); a value &gt; 1 indicates
+an increase in the odds of observing a success.</p>
+<p>Here we have a value &lt; 1 (0.88), indicating that for every one
+unit increase in salinity, the odds of observing a Sole is decreased by
+89% (a highly negative relationship).</p>
+</div>
+<div id="plotting-predictions" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Plotting
+predictions</h2>
+<p>We can plot our predicted relationship (for values of salinity 1-40
+ppt) using our fancy base R plot function again:</p>
+<pre class="r"><code>eta &lt;- Solea_fit$par[1] + Solea_fit$par[2] * c(1:40) 
+mu.hat &lt;- exp(eta)/(1 + exp(eta))
+
+plotBinary(Solea$salinity,Solea$Solea_solea)
+lines(1:40, mu.hat)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-16-1.png" width="576" /></p>
+<p>There us a much higher probability of observing Sole at lower
+salinities.</p>
+<p>We can get confidence intervals from our model as before, using our
+Hessian:</p>
+<pre class="r"><code>se &lt;- sqrt(diag(solve(Solea_fit$hessian)))
+Solea_coeffs &lt;- 
+  with(Solea_fit, 
+       data.frame(estimate = par, se = se, 
+                  CI.low = par - 1.95*se,
+                  CI.high = par + 1.95*se)
+       )
+Solea_coeffs</code></pre>
+<pre><code>##         estimate         se     CI.low     CI.high
+## beta0  2.6601654 0.90158337  0.9020778  4.41825299
+## beta1 -0.1298135 0.03493645 -0.1979396 -0.06168745</code></pre>
+<p>This is an extremely useful table, as it shows that the confidence
+intervals around <span class="math inline">\(\beta_1\)</span> (the
+effect of salinity) are all below 0, so the effect is significantly
+negative.</p>
+<p>AIC value:</p>
+<pre class="r"><code>AIC &lt;- -2*(-Solea_fit$value) + 2*nrow(Solea_coeffs)
+AIC</code></pre>
+<pre><code>## [1] 72.56</code></pre>
+</div>
+<div id="using-the-glm-function-1" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Using the
+<code>glm</code> function</h2>
+<p>Let’s compare to the <code>glm</code> output! Everything is done in
+one line.</p>
+<pre class="r"><code>Solea_glm &lt;- glm(Solea_solea ~ salinity, data = Solea, family = &quot;binomial&quot;)
+summary(Solea_glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Solea_solea ~ salinity, family = &quot;binomial&quot;, data = Solea)
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.66071    0.90167   2.951 0.003169 ** 
+## salinity    -0.12985    0.03494  -3.716 0.000202 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 87.492  on 64  degrees of freedom
+## Residual deviance: 68.560  on 63  degrees of freedom
+## AIC: 72.56
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>This contains all the information above. Obviously, it is more
+efficient in this way, but when you do it with a likelihood you get a
+deeper appreciation of what’s happening beneath the hood.</p>
+</div>
+<div id="deviance-residuals" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Deviance
+residuals</h2>
+<p>We can get our residuals next, using model predicted coefficient
+values to calculate <span class="math inline">\(\eta\)</span> and then
+our expit function (Mean Function) to transform <span
+class="math inline">\(\eta\)</span> or <span
+class="math inline">\(X\beta\)</span> to our predicted probabilities,
+<span class="math inline">\(\hat \mu\)</span>.</p>
+<p>For non-normal GLM’s, we should use the <em>deviance</em> residuals,
+since they are based on the likelihood function and can better assess
+outliers and the fit of the model for individual observations.</p>
+<p>Each deviance residual tells you how much a given observation
+contributes to this “total deviance”. Deviance residuals are scaled and
+standardized, such that if the model is a good fit, they will follow a
+normal distribution. Problems can be identified by plotting the deviance
+residuals vs the fitted (<span class="math inline">\(Y\)</span>)
+values.</p>
+<p>The formula to calculate the deviance residuals (<span
+class="math inline">\(d\)</span>) for a given observation <span
+class="math inline">\(i\)</span> is:</p>
+<p><span class="math display">\[d_i=\text{sign}(Y_i-\hat
+\mu_i)\sqrt{-2\log\left(\frac{{\cal L}(Y_i, \hat \mu_i)}{{\cal
+L}(1-Y_i,1-\hat \mu_i)}\right)}\]</span></p>
+<p>Where <span class="math inline">\(\text{sign}\)</span> is a function
+that is equal to 1 for positive values, and -1 for negative values
+(i.e., it ensures the correct sign for the residuals) and <span
+class="math inline">\({\cal L}(Y_i, \hat \mu_i)\)</span> is the
+Likelihood of observing <span class="math inline">\(y_i\)</span>, given
+the predicted probability <span class="math inline">\(\hat
+\mu_i\)</span>.</p>
+<p>We extract our predicted probabilities (<span
+class="math inline">\(\hat \mu\)</span>) and then put them into the
+(rather nasty) formula to calculate the deviance residuals:</p>
+<pre class="r"><code>Y_obs &lt;- Solea$Solea_solea
+X_obs &lt;- Solea$salinity
+
+B_0 &lt;- Solea_coeffs$estimate[1]
+B_1 &lt;- Solea_coeffs$estimate[2]
+
+eta &lt;- B_0 + B_1 * X_obs 
+mu_hat &lt;- exp(eta)/(1 + exp(eta))
+
+deviance_residuals &lt;- sign(Y_obs - mu_hat) * sqrt(-2 * (Y_obs * log(mu_hat) + (1 - Y_obs) * log(1 - mu_hat)))</code></pre>
+<pre class="r"><code>plot(deviance_residuals ~ Y_obs)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-20-1.png" width="576" /></p>
+<p>You can go ahead and plot a QQ plot of the deviance residuals, and
+you’ll get something vaguely normal-ish:</p>
+<pre class="r"><code>qqnorm(deviance_residuals)
+qqline(deviance_residuals)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-21-1.png" width="576" /></p>
+<p>The “residual deviance” is the sum of the square of the deviance
+residuals:</p>
+<pre class="r"><code>residual_dev &lt;- sum(deviance_residuals^2)
+residual_dev</code></pre>
+<pre><code>## [1] 68.56</code></pre>
+<p>This is also available in the bottom of the summary from our
+<code>glm</code> model:</p>
+<pre class="r"><code>summary(Solea_glm)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = Solea_solea ~ salinity, family = &quot;binomial&quot;, data = Solea)
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  2.66071    0.90167   2.951 0.003169 ** 
+## salinity    -0.12985    0.03494  -3.716 0.000202 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 87.492  on 64  degrees of freedom
+## Residual deviance: 68.560  on 63  degrees of freedom
+## AIC: 72.56
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<p>We can use our “residual deviance” to check for overdispersion
+(common with count and binary data, where the observed variance of the
+data is &gt;&gt; the variance predicted by the model). We put it into a
+formula with our degrees of freedom <span
+class="math inline">\(df\)</span> to calculate the “dispersion
+parameter”:</p>
+<p><span class="math display">\[\text{Dispersion Parameter} =
+\frac{\text{Residual Deviance}}{\text{degrees of freedom}}\]</span></p>
+<p>We want a <em>smaller</em> residual deviance value, as this
+essentially indicates the variability in our data that was not able to
+be explained with our data.</p>
+<p>The dispersion parameter should be close to 1 for a well-fitting
+model. If it’s &gt; 1 (e.g., &gt; 2), that suggests that there is
+<em>overdispersion</em> (a common phenomenon!) and that you might
+consider dealing with that with a quasi-binomial model, which explicitly
+estimates the dispersion parameter. Or, then, try to include more
+variables to explain that overdispersion.</p>
+<p>The degrees of freedom <span class="math inline">\(df\)</span> is
+<span class="math inline">\(n-k\)</span>, with <span
+class="math inline">\(n\)</span> the number of observations and <span
+class="math inline">\(k\)</span> the number of model parameters. We have
+65 observations and two parameters (<span
+class="math inline">\(\beta_0\)</span>, <span
+class="math inline">\(\beta_1\)</span>), so 63 degrees of freedom.</p>
+<pre class="r"><code>df &lt;- nrow(Solea)-2
+dispersion_param &lt;- residual_dev/df
+dispersion_param</code></pre>
+<pre><code>## [1] 1.088254</code></pre>
+<p>Our dispersion parameter is quite close to 1, so this is a nice
+model!</p>
+<p>There is, incidentally, a nice package called
+<code>performance</code> which has a bunch of functions for seeing how
+good your model is. Here’s an example of its functionality:</p>
+<pre class="r"><code>require(performance)
+check_overdispersion(Solea_glm)</code></pre>
+<pre><code>## # Overdispersion test
+## 
+##  dispersion ratio = 1.028
+##           p-value = 0.912</code></pre>
+<pre class="r"><code>check_model(Solea_glm)</code></pre>
+<p><img src="Lab_MLE_GLM_LogisticRegression_files/figure-html/unnamed-chunk-25-1.png" width="576" /></p>
+<pre class="r"><code>check_autocorrelation(Solea_glm)</code></pre>
+<pre><code>## OK: Residuals appear to be independent and not autocorrelated (p = 0.748).</code></pre>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>This example from an excellent ecological statistics
+book: <a href="http://www.highstat.com/book2.htm"><em>Mixed Effects
+Models and Extensions in Ecology with R</em> (2009). Zuur, Ieno, Walker,
+Saveliev and Smith. Springer</a><a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1456 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nicki Barbour &amp; Elie Gurarie" />
+
+<meta name="date" content="2025-01-29" />
+
+<title>Linear Modeling (with matrices and likelihoods)</title>
+
+<script src="Lab_MLE_Regression_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="Lab_MLE_Regression_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="Lab_MLE_Regression_files/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="Lab_MLE_Regression_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="Lab_MLE_Regression_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="Lab_MLE_Regression_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="Lab_MLE_Regression_files/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="Lab_MLE_Regression_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="Lab_MLE_Regression_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="Lab_MLE_Regression_files/navigation-1.1/tabsets.js"></script>
+<link href="Lab_MLE_Regression_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="Lab_MLE_Regression_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Modeling (with matrices and
+likelihoods)</h1>
+<h3 class="subtitle">EFB 796: Practical Seminar in Quantitative
+Ecology</h3>
+<h4 class="author">Nicki Barbour &amp; <a
+href="eligurarie.github.io">Elie Gurarie</a></h4>
+<h4 class="date">2025-01-29</h4>
+
+</div>
+
+
+<div id="the-linear-model" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> The Linear Model</h1>
+<p>We all learned what a linear <em>model</em> was in high school at
+some point (even if we didn’t use the word <em>model</em> then), likely
+via the iconic formula, <span class="math inline">\(Y = mX + b\)</span>,
+with <span class="math inline">\(Y\)</span> and <span
+class="math inline">\(X\)</span> the (continuous, numeric) dependent and
+independent variables, respectively, <span
+class="math inline">\(m\)</span> representing the slope of the linear
+relationship between the two, and <span class="math inline">\(b\)</span>
+the intercept.</p>
+<p>The “classic” linear regression<a href="#fn1" class="footnote-ref"
+id="fnref1"><sup>1</sup></a> model with a single predictor in statistics
+is formulated typically as:</p>
+<p><span class="math display">\[Y_i = \alpha + \beta X_i +
+\epsilon_i\]</span></p>
+<p>with <span class="math inline">\(Y\)</span> as the response variable,
+<span class="math inline">\(X\)</span> as the predictor, <span
+class="math inline">\(i\)</span> indexing observations (<span
+class="math inline">\(1,2, ... n\)</span>) intercept <span
+class="math inline">\(\alpha\)</span>, slope <span
+class="math inline">\(\beta\)</span> and <span
+class="math inline">\(\epsilon_i\)</span> as a “residual” variation. In
+the broader field of linear modeling, we’ll use <span
+class="math inline">\(\beta\)</span> as a vector for <em>all</em> the
+coefficients, so:</p>
+<p><span class="math display">\[Y_i = \beta_0 + \beta_1 X_{1i} + \beta_2
+X_{2i} + ... + \beta_k X_{ki} + \epsilon_i\]</span></p>
+<p>In fact - the most sophisticated (and useful) way to write a linear
+model is in terms of a <em>matrix</em> of predictors (i.e. a <span
+class="math inline">\(n \times x\)</span> tabulation of each predictor
+for each observation), and a <em>vector</em> of coefficients <span
+class="math inline">\(\beta\)</span>:</p>
+<p><span class="math display">\[{\bf Y} = \bf{X}\beta +
+\epsilon\]</span></p>
+<p>This is not <strong>just</strong> for compact notation but, as we’ll
+see later, extremely useful for fitting models, and “generalizing” the
+linear model.</p>
+<p>One more useful but of notation is the <em>linear predictor</em>:</p>
+<p><span class="math display">\[\widehat{Y} = {\bf X} \beta\]</span></p>
+<p>So - in the simplest case: <span class="math display">\[\widehat{Y} =
+\beta_0 + \beta X\]</span></p>
+<p>With not quite perfect notation, these are illustated in the figure
+below:</p>
+<p><img src="images/classic_lm.png" /></p>
+<p>Importantly, our classic linear model contains important assumptions
+about the distribution of the <strong>residuals</strong><a href="#fn2"
+class="footnote-ref" id="fnref2"><sup>2</sup></a>, i.e.~the difference
+between each actual data point and the regression line. Namely, that
+they are (1) normally distributed with (2) mean 0 and constant variance,
+and (3) independent. These assummptions are often summarized is
+<em>i.i.d.</em> (independent and identically distributed). It is
+important to assess the validity of these assumptions when fitting
+normal models.</p>
+<p><span class="math display">\[\epsilon_i \sim {\cal N}(0,
+\sigma^2)\]</span></p>
+</div>
+<div id="linear-model-in-r" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Linear model in R</h1>
+<p>In R, we can run a classic linear regression by using the
+<code>lm</code> function, from the <code>stats</code> package (see
+<code>?lm</code>). But what is actually happening to get those beautiful
+parameter estimates?</p>
+<p>A quick simulation show us how this works:</p>
+<pre class="r"><code>alpha &lt;- -1; beta &lt;- 0.5; sigma &lt;- 1
+X &lt;- 1:20
+Y &lt;- alpha + beta * X + rnorm(length(X), 0, sd = sigma)
+plot(X,Y)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>The model fit is:</p>
+<pre class="r"><code>lm(Y~X)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Coefficients:
+## (Intercept)            X  
+##     -1.0361       0.5216</code></pre>
+<p>This provides estimates for the intercept and slope. You can add
+those lines easily with the <code>abline()</code> command:</p>
+<pre class="r"><code>alpha &lt;- -1; beta &lt;- 0.5; sigma &lt;- 1
+X &lt;- 1:20
+Y &lt;- alpha + beta * X + rnorm(length(X), 0, sd = sigma)
+plot(X,Y)
+abline(lm(Y~X), col = 2, lwd = 2)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>How precise are those estimates? This is best obtained with the
+<code>summary()</code> command:</p>
+<pre class="r"><code>summary(lm(Y~X))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.93414 -0.43986 -0.04475  0.67526  1.36140 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.08521    0.41533  -2.613   0.0176 *  
+## X            0.50750    0.03467  14.638 1.94e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.8941 on 18 degrees of freedom
+## Multiple R-squared:  0.9225, Adjusted R-squared:  0.9182 
+## F-statistic: 214.3 on 1 and 18 DF,  p-value: 1.94e-11</code></pre>
+<p>So the estimates are -1.08, s.e. 0.41, and 0.51m s.e. 0.35 for
+intercept and slope respectively.</p>
+<p>The <code>lm</code> output object contains multitudes, and is almost
+always worth saving as an extra object:</p>
+<pre class="r"><code>mylm &lt;- lm(Y~X)
+str(mylm)</code></pre>
+<pre><code>## List of 12
+##  $ coefficients : Named num [1:2] -1.085 0.507
+##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;X&quot;
+##  $ residuals    : Named num [1:20] 0.997 0.852 0.137 -1.934 0.668 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:20] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ effects      : Named num [1:20] -18.978 13.087 -0.164 -2.214 0.408 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:20] &quot;(Intercept)&quot; &quot;X&quot; &quot;&quot; &quot;&quot; ...
+##  $ rank         : int 2
+##  $ fitted.values: Named num [1:20] -0.5777 -0.0702 0.4373 0.9448 1.4523 ...
+##   ..- attr(*, &quot;names&quot;)= chr [1:20] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##  $ assign       : int [1:2] 0 1
+##  $ qr           :List of 5
+##   ..$ qr   : num [1:20, 1:2] -4.472 0.224 0.224 0.224 0.224 ...
+##   .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. ..$ : chr [1:20] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+##   .. .. ..$ : chr [1:2] &quot;(Intercept)&quot; &quot;X&quot;
+##   .. ..- attr(*, &quot;assign&quot;)= int [1:2] 0 1
+##   ..$ qraux: num [1:2] 1.22 1.26
+##   ..$ pivot: int [1:2] 1 2
+##   ..$ tol  : num 1e-07
+##   ..$ rank : int 2
+##   ..- attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+##  $ df.residual  : int 18
+##  $ xlevels      : Named list()
+##  $ call         : language lm(formula = Y ~ X)
+##  $ terms        :Classes &#39;terms&#39;, &#39;formula&#39;  language Y ~ X
+##   .. ..- attr(*, &quot;variables&quot;)= language list(Y, X)
+##   .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. ..$ : chr [1:2] &quot;Y&quot; &quot;X&quot;
+##   .. .. .. ..$ : chr &quot;X&quot;
+##   .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;X&quot;
+##   .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. ..- attr(*, &quot;predvars&quot;)= language list(Y, X)
+##   .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;Y&quot; &quot;X&quot;
+##  $ model        :&#39;data.frame&#39;:   20 obs. of  2 variables:
+##   ..$ Y: num [1:20] 0.419 0.782 0.575 -0.989 2.12 ...
+##   ..$ X: int [1:20] 1 2 3 4 5 6 7 8 9 10 ...
+##   ..- attr(*, &quot;terms&quot;)=Classes &#39;terms&#39;, &#39;formula&#39;  language Y ~ X
+##   .. .. ..- attr(*, &quot;variables&quot;)= language list(Y, X)
+##   .. .. ..- attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+##   .. .. .. ..- attr(*, &quot;dimnames&quot;)=List of 2
+##   .. .. .. .. ..$ : chr [1:2] &quot;Y&quot; &quot;X&quot;
+##   .. .. .. .. ..$ : chr &quot;X&quot;
+##   .. .. ..- attr(*, &quot;term.labels&quot;)= chr &quot;X&quot;
+##   .. .. ..- attr(*, &quot;order&quot;)= int 1
+##   .. .. ..- attr(*, &quot;intercept&quot;)= int 1
+##   .. .. ..- attr(*, &quot;response&quot;)= int 1
+##   .. .. ..- attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+##   .. .. ..- attr(*, &quot;predvars&quot;)= language list(Y, X)
+##   .. .. ..- attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+##   .. .. .. ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;Y&quot; &quot;X&quot;
+##  - attr(*, &quot;class&quot;)= chr &quot;lm&quot;</code></pre>
+<p>An important piece is that residual portion:</p>
+<pre class="r"><code>mylm$residuals</code></pre>
+<pre><code>##           1           2           3           4           5           6 
+##  0.99668452  0.85234496  0.13727515 -1.93414001  0.66753895 -0.01591403 
+##           7           8           9          10          11          12 
+## -0.12307928 -1.44553465 -0.46043081  0.42816232  1.36140183 -0.10756394 
+##          13          14          15          16          17          18 
+##  0.37539691 -0.07357823 -1.40433123 -0.44976472 -0.43655860 -0.10908053 
+##          19          20 
+##  1.04275975  0.69841164</code></pre>
+<p>Which we can assess visually via some <em>residual
+diagnostics</em>.</p>
+<p>To assess the <strong>normality</strong> of the residuals, we use
+Quantile-Quantile (or QQ) plots, which plots the value of your residuals
+against the <em>quantile</em> of each point from a normal distribution
+(“theoretical quantiles”). If their relationship is linear, the
+assumption is considered met. Here are the manual calculations of a
+qq-plot:</p>
+<pre class="r"><code>residuals_sorted &lt;- sort(mylm$residuals)
+
+# Compute normal quantiles
+n &lt;- length(residuals_sorted)
+normal_quantiles &lt;- qnorm((1:n - 0.5) / n)
+plot(normal_quantiles, residuals_sorted)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Here is the QQ-plot as described above:</p>
+<pre class="r"><code>qqnorm(mylm$residuals)
+qqline(mylm$residuals)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Looks pretty normal.</p>
+<p>TO assess the <strong>homogeneity of variance</strong> we plot the
+residuals against the predicted (fitted) values can be an easy way to
+check this. Violating this assumption can affect the standard errors on
+your residuals and your model parameter estimates. Here is a residuals
+vs. fitted plot:</p>
+<pre class="r"><code>plot(mylm$fitted.values, mylm$residuals)
+abline(h = 0)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Looks like variance is constant and unstructured.</p>
+<p>Other linear regression assumptions include no crazy influential
+outliers (can be checked with a Cook’s Distance plot) and that your
+residuals are independent of each other (no autocorrelation present -
+can be checked with a Durbin Watson test).</p>
+<p>All of these residual diagnostic plots are performed with one line of
+code:</p>
+<pre class="r"><code>plot(mylm)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-11-1.png" width="1152" /></p>
+</div>
+<div id="ordinary-least-squares" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Ordinary Least
+Squares</h1>
+<p>The <code>lm</code> function uses <em>Ordinary Least Squares</em>
+(OLS) to estimate parameter values. This is a straightforward method
+with a single goal: to minimize the square of the sum of the residuals.
+In other words, to find the values of <span
+class="math inline">\(\beta\)</span> for which:</p>
+<p><span class="math display">\[S(\beta) = \sum_{i=1}^n (Y - {\bf
+X}\beta)^2\]</span></p>
+<p>is minimized. This is actually pretty straightforward to do
+mathematically in the univariate case. Write this sum as a function of
+<span class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta_1\)</span>:</p>
+<p><span class="math display">\[ Y_i = \beta_0 + \beta_1 X_i +
+\epsilon_i\]</span></p>
+<p>The sum of squaresquared residuals is:</p>
+<p><span class="math display">\[S(\beta_0, \beta_1) = \sum_{i=1}^{n}
+(Y_i - \beta_0 - \beta_1 X_i)^2. \]</span></p>
+<p>To find the minimum, you take the derivative and set to 0. There are
+two parameters, we’ll focus on <span
+class="math inline">\(\beta_1\)</span> first:</p>
+<p>To minimize <span class="math inline">\(S(\beta_0, \beta_1)\)</span>,
+we take partial derivatives with respect to <span
+class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta_1\)</span> and set them to zero.</p>
+<p><span class="math display">\[\frac{\partial S}{\partial \beta_1} = -2
+\sum_{i=1}^{n} X_i (Y_i - \beta_0 - \beta_1 X_i).\]</span></p>
+<p>Setting this to zero:</p>
+<p><span class="math display">\[\sum_{i=1}^{n} X_i (Y_i - \beta_0 -
+\beta_1 X_i) = 0.\]</span> And solving for <span
+class="math inline">\(\beta_1\)</span> (after some manipulations)
+gives:</p>
+<p><span class="math display">\[\widehat{\beta}_1 = \frac{\sum_{i=1}^{n}
+(X_i - \bar{X}) (Y_i - \bar{Y})}{\sum_{i=1}^{n} (X_i -
+\bar{X})^2}\]</span></p>
+<p>This formula is worth meditating on and thinking about geometrically.
+You multiply the pair-wise deviations of <span
+class="math inline">\(X\)</span> and <span
+class="math inline">\(Y\)</span> from the mean, and then re-scale by the
+deviations in the <span class="math inline">\(X\)</span>.</p>
+<p>Let’s convince ourselves that this formula works for the simulated
+data above:</p>
+<pre class="r"><code>sum( (X-mean(X)) * (Y - mean(Y))) / sum((X-mean(X))^2)</code></pre>
+<pre><code>## [1] 0.5074985</code></pre>
+<p>Sure enough, we get something close to 0.5! And exactly the estimate
+from the <code>lm()</code> function:</p>
+<pre class="r"><code>lm(Y~X)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Coefficients:
+## (Intercept)            X  
+##     -1.0852       0.5075</code></pre>
+<div id="ols-in-matrix-notation" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> OLS in matrix
+notation</h2>
+<p>The matrix representation of the linear model is:</p>
+<p><span class="math display">\[ Y = X\beta + \epsilon\]</span> where
+<span class="math inline">\(Y\)</span> is a <span
+class="math inline">\(n\)</span> x 1 vector of observations, <span
+class="math inline">\(\beta\)</span> is a 1 x <span
+class="math inline">\(k\)</span> vector of our regression coefficients
+(e.g., for simple linear regression, <span
+class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta\)</span> - the things we want to estimate),
+<span class="math inline">\(bf X\)</span> is a <span
+class="math inline">\(n\)</span> x <span
+class="math inline">\(k\)</span> matrix of covariates, also known as the
+“design matrix”, and <span class="math inline">\(\epsilon\)</span> is a
+vector of random errors.</p>
+<p>In the univariate case <span class="math inline">\(\bf X\)</span>
+actually has two columns, one for the intercept (consisting entirely of
+1) and one for the covariate of interest.!</p>
+<p>For example, let’s say we have 3 observations, so that <span
+class="math inline">\(Y = (1, 2, 3)\)</span>:</p>
+<pre class="r"><code>Y &lt;- c(1, 2, 3)</code></pre>
+<p>If we had an “intercept only” model (no covariate), our design matrix
+<span class="math inline">\(X\)</span> would just have a vector of 3 1’s
+for the intercept:</p>
+<pre class="r"><code>X &lt;- matrix(1, nrow = 3)
+X</code></pre>
+<pre><code>##      [,1]
+## [1,]    1
+## [2,]    1
+## [3,]    1</code></pre>
+<p>If we added a covariate, our design matrix <span
+class="math inline">\(X\)</span> would then contain two columns, one
+with our intercept values (1) and one with our covariate values.</p>
+<p>Let’s say we had covariate values <span class="math inline">\((0, 1,
+2)\)</span>.</p>
+<pre class="r"><code>covar &lt;- c(-1, 0, 1)</code></pre>
+<p>We can append our covariate values to our design matrix <span
+class="math inline">\(X\)</span> using the <code>cbind</code>
+function:</p>
+<pre class="r"><code>X &lt;- cbind(X, covar)
+X</code></pre>
+<pre><code>##        covar
+## [1,] 1    -1
+## [2,] 1     0
+## [3,] 1     1</code></pre>
+<p>This is a “hand-made” design matrix!</p>
+<p>These (very simple) data look like this:</p>
+<pre class="r"><code>plot(covar, Y)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Recalling that the goal of OLS it to minimize the <em>sum of squared
+residuals</em> (RSS) which we notated as <span
+class="math inline">\(S(\beta)\)</span> above:</p>
+<p><span class="math display">\[ S(\beta) = (Y-{\bf X}\beta)^T(Y-{\bf
+X}\beta)\]</span> The general solution is:</p>
+<p><span class="math display">\[ \widehat{\beta} = ({\bf X}^T{\bf
+X})^{-1} {\bf X}^TY\]</span></p>
+<p>Here, the <span class="math inline">\(X^TX\)</span> represents the
+“<em>transpose of <span class="math inline">\(X\)</span> multiplied by
+the <span class="math inline">\(X\)</span></em>”. This is essentially
+the matrix equivalent of the denominator in the univariate solution
+given above: <span class="math inline">\(\sum(X - \bar{X})^2\)</span>.
+But we’ll break it down:</p>
+<div id="what-is-a-transpose" class="section level3" number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> What is a
+“transpose”?</h3>
+<p>If we have a matrix <span class="math inline">\(X\)</span> with <span
+class="math inline">\(i\)</span> rows and <span
+class="math inline">\(j\)</span> columns, the transpose simply flips
+rows and columns topsy-turvy, e.g., for matrix <span
+class="math inline">\(X_{ij}\)</span>, the transpose is <span
+class="math inline">\(X^T = X_{ji}\)</span>.</p>
+<p>The R function to take the transpose of a matrix is
+<code>t</code>:</p>
+<pre class="r"><code>t(X)</code></pre>
+<pre><code>##       [,1] [,2] [,3]
+##          1    1    1
+## covar   -1    0    1</code></pre>
+<p>Now we take the product of our transposed matrix <span
+class="math inline">\(X\)</span> with matrix <span
+class="math inline">\(X\)</span>, such that <span
+class="math inline">\(X^TX\)</span>.</p>
+<p>Matrix multiplication can be performed when the <em>number of columns
+in the first matrix is equal to the number of rows in the second
+matrix</em>, to produce a matrix product with the <em>same number of
+rows as the first matrix</em> and the <em>same number of columns as the
+second matrix</em>.</p>
+<p>For example, if we had matrix <span
+class="math inline">\(A_{ij}\)</span> and matrix <span
+class="math inline">\(B_{jn}\)</span>, the product matrix <span
+class="math inline">\(AB\)</span> would be <span
+class="math inline">\(AB_{in}\)</span>. Each entry in the new matrix
+<span class="math inline">\(AB\)</span> is found by taking the <em>dot
+product</em> of the <span class="math inline">\(i\)</span>-th row of
+matrix <span class="math inline">\(A\)</span> and the <span
+class="math inline">\(n\)</span>-th column of matrix <span
+class="math inline">\(B\)</span>.</p>
+<p>So, e.g., for matrices <span class="math inline">\(A\)</span> (2 x 2)
+and <span class="math inline">\(B\)</span> (2 x 3):</p>
+<p><img src="images/matrixmultiplication.png" /></p>
+<p>In R, matrix multiplication for two matrices is given by
+<code>%*%</code>:</p>
+<pre class="r"><code>t(X) %*% X</code></pre>
+<pre><code>##         covar
+##       3     0
+## covar 0     2</code></pre>
+<p>For the example above:</p>
+<pre class="r"><code>A &lt;- rbind(c(1,5), c(4,3))
+B &lt;- rbind(c(3,1,2), c(1,4,5))
+A %*% B</code></pre>
+<pre><code>##      [,1] [,2] [,3]
+## [1,]    8   21   27
+## [2,]   15   16   23</code></pre>
+</div>
+<div id="what-is-an-inverse" class="section level3" number="3.1.2">
+<h3><span class="header-section-number">3.1.2</span> What is an
+“inverse”?</h3>
+<p>The next step in our solution is to take the inverse of <span
+class="math inline">\(X^TX\)</span>, such that <span
+class="math inline">\(({\bf X}^T{\bf X})^{-1}\)</span>. <em>Note - you
+can ONLY take the inverse of a square matrix.</em></p>
+<p>The inverse of a matrix is defined by a very special property, that
+the product of a matrix by its inverse is equivalent to its identity
+matrix <span class="math inline">\(I\)</span>:</p>
+<p><span class="math display">\[{\bf X}^{-1}{\bf X} = I\]</span></p>
+<p>(Note also that usually multiplying two matrices is not
+<em>commutative</em>, e.g. <span class="math inline">\(AB \neq
+BA\)</span> - however, when you multiply a matrix by its inverse, it
+<em>is</em> commutative, e.g., <span
+class="math inline">\(AA^{-1}=A^{-1}A\)</span> - this means for our
+equation, that <span class="math inline">\(X^{-1}X = XX^{-1} =
+I\)</span> ).</p>
+<p>What is an identity matrix <span class="math inline">\(I\)</span>?
+It’s what you would multiply a matrix by to get itself, such that <span
+class="math inline">\(X*?=X\)</span>. If you work it out, the <span
+class="math inline">\(?\)</span> ends up being a matrix of almost all
+0’s, with 1’s in the diagonal. So, for an example matrix <span
+class="math inline">\(A\)</span> (2 x 2):</p>
+<p><img src="images/identitymatrix.png" /></p>
+<p>Getting the inverse of a matrix is actually not easy - it requires
+some time-intensive algebra, since you have to solve the equation <span
+class="math inline">\(X^{-1}X = I\)</span> for the unknown component,
+the inverse matrix, <span class="math inline">\(X^{-1}\)</span>. In
+complicated, multi-dimensional regression models, it is <strong>this
+step</strong> which causes the computer the most grief.</p>
+<p>The R function for inverting a matrix is <code>solve()</code>:</p>
+<pre class="r"><code>A &lt;- matrix(1:4, ncol = 2)
+solve(A)</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]   -2  1.5
+## [2,]    1 -0.5</code></pre>
+<pre class="r"><code>A %*% solve(A)</code></pre>
+<pre><code>##      [,1] [,2]
+## [1,]    1    0
+## [2,]    0    1</code></pre>
+<p>For our mini-dataset:</p>
+<pre class="r"><code>solve(t(X) %*% X)</code></pre>
+<pre><code>##                 covar
+##       0.3333333   0.0
+## covar 0.0000000   0.5</code></pre>
+</div>
+<div id="putting-everything-together" class="section level3"
+number="3.1.3">
+<h3><span class="header-section-number">3.1.3</span> Putting everything
+together</h3>
+<p>The next step in our solution is to get the “hat matrix” (converting
+<span class="math inline">\(Y\)</span> to <span
+class="math inline">\(\widehat Y\)</span>), which is this inverse
+product multiplied by the transpose of <span class="math inline">\({\bf
+X}\)</span> (<span class="math inline">\({\bf X}^T\)</span>):</p>
+<pre class="r"><code>solve(t(X) %*% X) %*% t(X)</code></pre>
+<pre><code>##             [,1]      [,2]      [,3]
+##        0.3333333 0.3333333 0.3333333
+## covar -0.5000000 0.0000000 0.5000000</code></pre>
+<p>Finally we multiply by <span class="math inline">\(Y\)</span> to get
+<span class="math inline">\(\widehat{\beta}\)</span>:</p>
+<pre class="r"><code>beta_hat &lt;- solve(t(X) %*% X) %*% t(X) %*% Y
+beta_hat</code></pre>
+<pre><code>##       [,1]
+##          2
+## covar    1</code></pre>
+<p>So, our intercept estimate, <span
+class="math inline">\(\widehat{\beta_0}\)</span>, is 2 and our slope
+estimate, <span class="math inline">\(\widehat{\beta}\)</span>, is also
+1.</p>
+<p>To get our predicted values of Y (<span
+class="math inline">\(\widehat Y\)</span>), we multiply our <span
+class="math inline">\(\widehat \beta\)</span> by our design matrix,
+<span class="math inline">\(X\)</span>:</p>
+<pre class="r"><code>Y_hat &lt;- X %*% beta_hat
+Y_hat</code></pre>
+<pre><code>##      [,1]
+## [1,]    1
+## [2,]    2
+## [3,]    3</code></pre>
+<p>We can also estimate the residual variance, <span
+class="math inline">\(\widehat {\sigma^2}\)</span>, as:</p>
+<p><span class="math display">\[\widehat {\sigma^2}=
+\frac{1}{n-k}(Y-\widehat Y)^T(Y-\widehat Y) \]</span> Where <span
+class="math inline">\(n\)</span> is our number of observations and <span
+class="math inline">\(k\)</span> is our number of parameters.</p>
+<pre class="r"><code>sigma_hat &lt;- t(Y-Y_hat) %*% (Y-Y_hat)/(nrow(X)-ncol(X))
+sigma_hat</code></pre>
+<pre><code>##      [,1]
+## [1,]    0</code></pre>
+<p>We can plot our observations with our predicted model as:</p>
+<pre class="r"><code>plot(covar, Y)
+abline(a = beta_hat[1,], b = beta_hat[2,], col = &quot;red&quot;)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p>(Note: see <a
+href="https://eligurarie.github.io/MiscellaneousLectures/lectures/MatricesInEcology/matrices.html">link</a>
+and <a
+href="https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic3/Lecture12.html">link</a>
+for more of Elie’s lectures on this)</p>
+<p>Let’s crank through this with out original (simulated) data set:</p>
+<pre class="r"><code>par(mar = c(3,3,2,2), bty = &quot;l&quot;); set.seed(1)
+alpha &lt;- -1; beta &lt;- 0.5; sigma &lt;- 1
+X &lt;- 1:20
+Y &lt;- alpha + beta * X + rnorm(length(X), 0, sd = sigma)</code></pre>
+<pre class="r"><code>X.M &lt;- cbind(rep(1, length(X)), X)
+solve(t(X.M) %*% X.M) %*% t(X.M) %*% Y</code></pre>
+<pre><code>##         [,1]
+##   -1.0360928
+## X  0.5215825</code></pre>
+<p>Voilá, like magic:</p>
+<pre class="r"><code>lm(Y~X)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Coefficients:
+## (Intercept)            X  
+##     -1.0361       0.5216</code></pre>
+</div>
+</div>
+</div>
+<div id="maximum-likelihood-estimates" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Maximum Likelihood
+Estimates</h1>
+<p>So, what’s the difference between OLS and MLE (maximum likelihood
+estimation) for linear regression?</p>
+<p>Both are methods to estimate <span class="math inline">\(\widehat
+\beta\)</span> but OLS minimizes the sum of squared residuals (<span
+class="math inline">\(RSS\)</span>) and MLE <em>finds the parameters
+that maximizes the likelihood of the Gaussian model.</em></p>
+<blockquote>
+<p><strong>Spoiler alert:</strong> For the very specific case of a
+linear model with Gaussian residuals, the OLS estimates happen to be
+equal to the MLE estimates. But OLS breaks down for more complicated
+models, so ML is more generally useful.</p>
+</blockquote>
+<p>Remember also from our Likelihoods lecture that using likelihoods
+with MLE “turns probabilities on their heads”. So with OLS, we fit a
+probability model to determine the probability of getting our data <span
+class="math inline">\(X\)</span> given a particular model with
+particular parameters (e.g., <span class="math inline">\(\mu\)</span>
+and <span class="math inline">\(\sigma\)</span> for an intercept-only
+linear regression):</p>
+<p><span class="math display">\[Pr(X|\mu,\sigma)\]</span> …Whereas with
+a likelihood model, we determine the likelihood of a particular model
+with particular parameters (e.g., <span
+class="math inline">\(\mu\)</span>, <span
+class="math inline">\(\sigma\)</span>), given our data <span
+class="math inline">\(X\)</span>:</p>
+<p><span class="math display">\[\cal L(\mu,\sigma|X)\]</span></p>
+<p>Both OLS and the MLE make the same assumptions, except OLS is
+focussed on the <em>residuals</em> (<span
+class="math inline">\(\epsilon_i \sim {\cal N}(0,\sigma^2)\)</span>),
+whereas MLE is best thought of as modeling the <em>entire</em>
+probability function (<span class="math inline">\(Y \sim {\cal N}({\bf
+X}\beta, \sigma^2)\)</span>). Again - they’ll be the same in this case,
+as the following real-data example should demonstrate.</p>
+<div id="example-mammal-allometry" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Example: Mammal
+Allometry</h2>
+<p>We are going to use an example dataset from the <code>MASS</code>
+package, called <code>mammals</code>, which contains brain and body size
+weights for a variety of terrestrial mammals (<span
+class="math inline">\(n\)</span> = 62 species).</p>
+<pre class="r"><code>require(MASS)</code></pre>
+<pre><code>## Loading required package: MASS</code></pre>
+<pre class="r"><code>data(mammals)</code></pre>
+<p>A call to <code>help(mammals)</code> shows the description of this
+dataset, which contains average brain and body weights (in kg and g,
+respectively) for different species.</p>
+<p>Fascinatingly, research has shown (see <a
+href="https://academic.oup.com/jmammal/article-abstract/100/2/276/5436908">Burger
+et al 2019</a>) that there is a consistent allometric relationship
+between mammal brain and body sizes, with brain sizes consistently
+scaling to the 3/4th power of body size (e.g., <span
+class="math inline">\(Brain Size = -1.26(Body)^{0.75}\)</span>).</p>
+<p><img src="images/mammal_allometry.png"
+alt="Burger et al 2019, Fig 1" /> Let’s investigate the relationship
+between brain and body size ourselves, using this <code>mammals</code>
+dataset and the hypothesis that there is a strong linear (log-log)
+relationship present.</p>
+<p>Before digging into our analysis, let’s visualize and process our
+data a bit.</p>
+<pre class="r"><code>str(mammals)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    62 obs. of  2 variables:
+##  $ body : num  3.38 0.48 1.35 465 36.33 ...
+##  $ brain: num  44.5 15.5 8.1 423 119.5 ...</code></pre>
+<p>The names of the species are stored in the <code>row.names</code> of
+the dataframe:</p>
+<pre class="r"><code>row.names(mammals)</code></pre>
+<pre><code>##  [1] &quot;Arctic fox&quot;                &quot;Owl monkey&quot;               
+##  [3] &quot;Mountain beaver&quot;           &quot;Cow&quot;                      
+##  [5] &quot;Grey wolf&quot;                 &quot;Goat&quot;                     
+##  [7] &quot;Roe deer&quot;                  &quot;Guinea pig&quot;               
+##  [9] &quot;Verbet&quot;                    &quot;Chinchilla&quot;               
+## [11] &quot;Ground squirrel&quot;           &quot;Arctic ground squirrel&quot;   
+## [13] &quot;African giant pouched rat&quot; &quot;Lesser short-tailed shrew&quot;
+## [15] &quot;Star-nosed mole&quot;           &quot;Nine-banded armadillo&quot;    
+## [17] &quot;Tree hyrax&quot;                &quot;N.A. opossum&quot;             
+## [19] &quot;Asian elephant&quot;            &quot;Big brown bat&quot;            
+## [21] &quot;Donkey&quot;                    &quot;Horse&quot;                    
+## [23] &quot;European hedgehog&quot;         &quot;Patas monkey&quot;             
+## [25] &quot;Cat&quot;                       &quot;Galago&quot;                   
+## [27] &quot;Genet&quot;                     &quot;Giraffe&quot;                  
+## [29] &quot;Gorilla&quot;                   &quot;Grey seal&quot;                
+## [31] &quot;Rock hyrax-a&quot;              &quot;Human&quot;                    
+## [33] &quot;African elephant&quot;          &quot;Water opossum&quot;            
+## [35] &quot;Rhesus monkey&quot;             &quot;Kangaroo&quot;                 
+## [37] &quot;Yellow-bellied marmot&quot;     &quot;Golden hamster&quot;           
+## [39] &quot;Mouse&quot;                     &quot;Little brown bat&quot;         
+## [41] &quot;Slow loris&quot;                &quot;Okapi&quot;                    
+## [43] &quot;Rabbit&quot;                    &quot;Sheep&quot;                    
+## [45] &quot;Jaguar&quot;                    &quot;Chimpanzee&quot;               
+## [47] &quot;Baboon&quot;                    &quot;Desert hedgehog&quot;          
+## [49] &quot;Giant armadillo&quot;           &quot;Rock hyrax-b&quot;             
+## [51] &quot;Raccoon&quot;                   &quot;Rat&quot;                      
+## [53] &quot;E. American mole&quot;          &quot;Mole rat&quot;                 
+## [55] &quot;Musk shrew&quot;                &quot;Pig&quot;                      
+## [57] &quot;Echidna&quot;                   &quot;Brazilian tapir&quot;          
+## [59] &quot;Tenrec&quot;                    &quot;Phalanger&quot;                
+## [61] &quot;Tree shrew&quot;                &quot;Red fox&quot;</code></pre>
+<p>First we need to convert our body size column to grams (currently, in
+kg) to match our brain weight column:</p>
+<pre class="r"><code>mammals$body &lt;- mammals$body*1000
+
+head(mammals)</code></pre>
+<pre><code>##                   body brain
+## Arctic fox        3385  44.5
+## Owl monkey         480  15.5
+## Mountain beaver   1350   8.1
+## Cow             465000 423.0
+## Grey wolf        36330 119.5
+## Goat             27660 115.0</code></pre>
+<p>Now let’s make a quick plot of the brain vs body sizes:</p>
+<pre class="r"><code>with(mammals, plot(brain ~ body))</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p>It’s not very pretty! Currently, both our brain and body size
+variables are skewed (lots of smaller weights, very few large weights),
+so a log-log transformation is appropriate.</p>
+<pre class="r"><code>hist(mammals$body)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<pre class="r"><code>mammals$log_brain &lt;- log(mammals$brain)
+mammals$log_body &lt;- log(mammals$body)</code></pre>
+<p>Log-transformation makes the data much more reasonable to
+compare.</p>
+<pre class="r"><code>hist(mammals$log_body)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p>We can make a plot of our log-log relationship (including species
+names to see the range)- definitely looking pretty linear!</p>
+<pre class="r"><code>with(mammals,{
+  plot(log_brain ~ log_body)
+  text(log_body, log_brain, row.names(mammals), cex = 0.5, pos = 4, xpd = NA)
+  })</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p>Our general model, now that we have log-transformed both our <span
+class="math inline">\(X\)</span> and <span
+class="math inline">\(Y\)</span> variables, is:</p>
+<p><span class="math display">\[\log(Y) = \beta_0 + \beta_1
+\log(X)\]</span></p>
+<p>Notably, we can back-transform our variables by taking the exponent
+(<code>exp</code>):</p>
+<p><span class="math display">\[Y = \exp(\beta_0 + \beta_1
+\log(X))\]</span> <span class="math display">\[Y = e^{\beta_0}
+e^{\beta_1 \log(X)}\]</span></p>
+<p><span class="math display">\[Y =  e^{\beta_0} \, \exp
+\left(\log(X^\beta_1)\right)\]</span></p>
+<p>Which eventually gets us to:</p>
+<p><span class="math display">\[Y =  \alpha \, X^{\beta_1}\]</span> Does
+this formula look familiar? It’s the allometric scaling relationship for
+these two variables <span class="math inline">\(Y\)</span> and <span
+class="math inline">\(X\)</span>, where <span
+class="math inline">\(\alpha\)</span> is <span
+class="math inline">\(e^{\beta_0}\)</span> and <span
+class="math inline">\(\beta_1\)</span> is the <em>scaling
+coefficient</em>.</p>
+<p>Let’s see if we can get the same scaling coefficient (0.75) as <a
+href="https://academic.oup.com/jmammal/article-abstract/100/2/276/5436908">Burger
+et al</a>!</p>
+<p>We will try a couple models, first an intercept-only (null)
+model:</p>
+<p><span class="math display">\[M0: Y_i = \beta_0 + \epsilon_i\]</span>
+And second, a simple linear regression model:</p>
+<p><span class="math display">\[M1: Y_i = \beta_0 + \beta_1 X_i +
+\epsilon_i\]</span></p>
+<p>where <span class="math inline">\(\epsilon\)</span> represents errors
+that are i.i.d. Gaussian. Independent and identically distributed</p>
+<p>For our mammals data, our variables are <span class="math inline">\(Y
+= Brain Size_{log}\)</span> and <span class="math inline">\(X = Body
+Size_{log}\)</span>.</p>
+</div>
+<div id="the-null-model" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> The null model</h2>
+<div id="mle" class="section level3" number="4.2.1">
+<h3><span class="header-section-number">4.2.1</span> MLE</h3>
+<p>To use MLE, we first define our likelihood function, including the
+parameters for our chosen probability distribution (here, the normal
+distribution, so <code>mu</code> and <code>sigma</code>) and our
+observations <span class="math inline">\(Y\)</span>. So, we can write
+out our Likelihood function as:</p>
+<p><span class="math display">\[\cal L(\mu,\sigma|\bf Y)\]</span></p>
+<p>We will define a function to determine the (log)-probability of
+observing specific <code>mu</code> and <code>sigma</code> values, given
+our <span class="math inline">\(Y\)</span> data (brain size). Refreshing
+your memory back to the “Likelihood_slides” lecture html, we can use the
+<code>dnorm</code> R function to generate the likelihood of a specific
+<code>mu</code> and <code>sigma</code>, given our data <span
+class="math inline">\(Y\)</span> (there is also an option for
+<code>log = TRUE</code> to get the log-likelihood).</p>
+<p>Remember also that to get the <em>Joint Likelihood</em>, or
+likelihood for many observations, we have to take the <em>product</em>
+of the likelihoods calculated for each observation. Remember also also
+that when we have <em>log</em>-likelihoods, you actually take the
+<em>sum</em> of the log-likelihoods (due to that fun <em>product
+rule</em> for logarithms, e.g., <span class="math inline">\(log(a*b) =
+log(a) + log(b)\)</span>).</p>
+<p>Of note, to “maximize the (log)-Likelihood” in R, we use the
+<code>optim</code> function, and confusingly, it technically optimizes
+by taking the <em>minimum</em> of the <em>negative</em> log-likelihood.
+So, anytime we want to use <code>optim</code>, we have to make sure our
+log-likelihood is negative.</p>
+<pre class="r"><code>neglogLik_Model0 &lt;- function(par = c(mu, sigma), # all the parameters must be in 1 vector
+                          Y){
+  
+  logProb &lt;- dnorm(Y, 
+                   mean = par[&#39;mu&#39;], 
+                   sd = par[&#39;sigma&#39;], 
+                   log = TRUE)
+  # minimizing the NEGATIVE log-likelihood
+  -sum(logProb)
+}</code></pre>
+<p>Remember that since we got the <em>negative</em> log-likelihood with
+our function, we want to <em>minimize</em> this value.</p>
+<p>Can you minimize this value manually, with different values for
+<code>mu</code> and <code>sigma</code>?</p>
+<pre class="r"><code>neglogLik_Model0(par = c(mu= 2, sigma = 2), 
+                 Y = mammals$log_brain)</code></pre>
+<pre><code>## [1] 155.6635</code></pre>
+<p>To formally initialize optim, you need to provide initial values for
+<code>mu</code> and <code>sigm</code>, preferably your “best guess” for
+what these values should be. This just gives the function somewhere to
+start.</p>
+<pre class="r"><code>fit_nullmodel &lt;- optim(par = c(mu = 2, sigma = 2), neglogLik_Model0, 
+      Y = mammals$log_brain)
+
+fit_nullmodel</code></pre>
+<pre><code>## $par
+##       mu    sigma 
+## 3.139816 2.426684 
+## 
+## $value
+## [1] 142.9392
+## 
+## $counts
+## function gradient 
+##       59       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL</code></pre>
+<p>The output of our fitted object gives us the estimates (within
+<code>par</code>) for <code>mu</code> and <code>sigma</code> and our
+(negative) log-likelihood value (within <code>value</code>).</p>
+<p>For a null model, where we just have <code>mu</code> and
+<code>sigma</code> parameters, we can also use <em>Methods of Moments
+Estimators</em> (MME) to estimate these parameters. We can use these
+values (sample mean and variance, e.g., first and second moments
+respectively) to define the theoretical <code>mu</code> and
+<code>sigma</code> parameters, if we have a large enough sample
+size.</p>
+<pre class="r"><code>mean(mammals$log_brain)</code></pre>
+<pre><code>## [1] 3.140198</code></pre>
+<pre class="r"><code>sd(mammals$log_brain)</code></pre>
+<pre><code>## [1] 2.446512</code></pre>
+<p>Looks like our MME values are pretty spot on to our
+<code>optim</code> values for <code>mu</code> and
+<code>sigma</code>!</p>
+<p>We can also get standard errors for each of our parameter estimates
+by specifying <code>hessian = TRUE</code> in <code>optim</code>.</p>
+<pre class="r"><code>fit_nullmodel &lt;- optim(par = c(mu = 2, sigma = 2), neglogLik_Model0, 
+      Y = mammals$log_brain, hessian = TRUE)
+
+fit_nullmodel</code></pre>
+<pre><code>## $par
+##       mu    sigma 
+## 3.139816 2.426684 
+## 
+## $value
+## [1] 142.9392
+## 
+## $counts
+## function gradient 
+##       59       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+## 
+## $hessian
+##                 mu        sigma
+## mu    10.528468884  0.003314227
+## sigma  0.003314227 21.057433827</code></pre>
+<p>Remember that the Hessian is a matrix and to get the standard errors,
+we need to take the inverse of the Hessian matrix (using
+<code>solve</code>) and then the square root of the diagonal:</p>
+<pre class="r"><code>se &lt;- diag(sqrt(solve(fit_nullmodel$hessian)))
+
+se</code></pre>
+<pre><code>##        mu     sigma 
+## 0.3081892 0.2179201</code></pre>
+<p>We can then calculate our 95 percent confidence intervals:</p>
+<pre class="r"><code>data.frame(estimate = fit_nullmodel$par, 
+           se = se, 
+           CI.low = fit_nullmodel$par - 1.95*se,
+           CI.high = fit_nullmodel$par + 1.95*se)</code></pre>
+<pre><code>##       estimate        se   CI.low  CI.high
+## mu    3.139816 0.3081892 2.538847 3.740785
+## sigma 2.426684 0.2179201 2.001740 2.851628</code></pre>
+</div>
+<div id="ols" class="section level3" number="4.2.2">
+<h3><span class="header-section-number">4.2.2</span> OLS</h3>
+<p>Now let’s compare our MLE null model to an OLS null model, using the
+<code>lm</code> function:</p>
+<pre class="r"><code>ols_nullmodel &lt;- lm(log_brain ~ 1, data = mammals)
+
+summary(ols_nullmodel)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_brain ~ 1, data = mammals)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -5.1063 -1.6981 -0.2925  1.9713  5.5101 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   3.1402     0.3107   10.11 1.19e-14 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2.447 on 61 degrees of freedom</code></pre>
+<p>Our MLE estimates look practically identical.</p>
+</div>
+</div>
+<div id="model-1-linear-model" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Model 1: Linear
+Model</h2>
+<div id="mle-1" class="section level3" number="4.3.1">
+<h3><span class="header-section-number">4.3.1</span> MLE</h3>
+<p>Now we will define our alternative model, the simple linear
+model.</p>
+<p>Now, instead of <code>mu</code> we have our <span
+class="math inline">\(\beta\)</span> parameters, specifically <span
+class="math inline">\(\beta_0\)</span> and <span
+class="math inline">\(\beta\)</span> (intercept <code>beta0</code> and
+slope <code>beta1</code>), along with <code>sigma</code>. It’s always
+<em>very important</em> to count your parameters AND name them!</p>
+<p>For our likelihood function, we first use the defined
+<code>beta0</code> and <code>beta1</code> parameters with our
+observations for <span class="math inline">\(X\)</span> to determine
+<span class="math inline">\(\widehat Y\)</span> (<code>Y_hat</code>). We
+can write out our Likelihood function as:</p>
+<p><span class="math display">\[\cal L(\beta_0, \beta_1, \sigma|\bf
+Y)\]</span></p>
+<p>From this we calculate our residuals (<span
+class="math inline">\(\widehat Y - Y\)</span>) and then define our
+probability function with our specified value of <code>sigma</code> and
+our mean or <code>mu</code> of zero. Note that a <code>mu</code> of zero
+is an important assumption in linear regression, stating that the error
+term <code>sigma</code> (or <span
+class="math inline">\(\epsilon\)</span>, formally) should have a mean of
+zero to ensure that <span class="math inline">\(\beta_0\)</span> and
+<span class="math inline">\(\beta\)</span> are not skewed by <span
+class="math inline">\(\epsilon\)</span>.</p>
+<pre class="r"><code>neglogLik_Model1 &lt;- function(par = c(beta0, beta1, sigma),
+                          X, Y){
+  Y_hat &lt;- par[&quot;beta0&quot;] + par[&quot;beta1&quot;] * X
+  residuals &lt;- Y_hat - Y
+  logProb &lt;- dnorm(residuals, mean = 0, sd = par[&#39;sigma&#39;], log = TRUE)
+  
+  # minimizing the NEGATIVE log-likelihood
+  -sum(logProb)
+}</code></pre>
+<p>We use <code>optim</code> with our defined likelihood function, some
+starting values for our parameters, and our observed <span
+class="math inline">\(X\)</span> and <span
+class="math inline">\(Y\)</span> values to find our <span
+class="math inline">\(\beta_0\)</span>, <span
+class="math inline">\(\beta\)</span>, and <span
+class="math inline">\(\epsilon\)</span> values:</p>
+<pre class="r"><code>fit_model1 &lt;- optim(par = c(beta0 = 0, beta1 = 1, sigma = 2), 
+      neglogLik_Model1, 
+      Y = mammals$log_brain, 
+      X = mammals$log_body,
+      hessian = TRUE)
+
+fit_model1</code></pre>
+<pre><code>## $par
+##      beta0      beta1      sigma 
+## -3.0574623  0.7516786  0.6829428 
+## 
+## $value
+## [1] 64.33647
+## 
+## $counts
+## function gradient 
+##      158       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+## 
+## $hessian
+##               beta0         beta1        sigma
+## beta0  132.93000449  1096.0470017  -0.05875568
+## beta1 1096.04700172 10312.9067883  -0.45700315
+## sigma   -0.05875568    -0.4570031 265.93736830</code></pre>
+<p>We can get our standard errors and 95% confidence intervals as
+before:</p>
+<pre class="r"><code>se &lt;- diag(sqrt(solve(fit_model1$hessian)))
+
+se</code></pre>
+<pre><code>##      beta0      beta1      sigma 
+## 0.24660889 0.02799817 0.06132116</code></pre>
+<pre class="r"><code>data.frame(estimate = fit_model1$par, 
+           se = se, 
+           CI.low = fit_model1$par - 1.95*se,
+           CI.high = fit_model1$par + 1.95*se)</code></pre>
+<pre><code>##         estimate         se     CI.low    CI.high
+## beta0 -3.0574623 0.24660889 -3.5383496 -2.5765750
+## beta1  0.7516786 0.02799817  0.6970822  0.8062750
+## sigma  0.6829428 0.06132116  0.5633666  0.8025191</code></pre>
+</div>
+<div id="ols-1" class="section level3" number="4.3.2">
+<h3><span class="header-section-number">4.3.2</span> OLS</h3>
+<p>Now we can compare our MLE estimates with the output of
+<code>lm</code>:</p>
+<pre class="r"><code>ols_model1 &lt;- lm(log_brain ~ log_body, data = mammals)
+summary(ols_model1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log_brain ~ log_body, data = mammals)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.71550 -0.49228 -0.06162  0.43597  1.94829 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -3.05767    0.25071  -12.20   &lt;2e-16 ***
+## log_body     0.75169    0.02846   26.41   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.6943 on 60 degrees of freedom
+## Multiple R-squared:  0.9208, Adjusted R-squared:  0.9195 
+## F-statistic: 697.4 on 1 and 60 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Basically identical!</p>
+</div>
+</div>
+<div id="comparing-models" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Comparing models</h2>
+<p>Model selection <em>can be</em> one of the most convoluted areas of
+ecological statistics. We have quantitative metrics to “score” and
+compare models based on “best fit”. However, these should always be
+taken with a grain of salt, as a model is just a model and you, the
+biologist, know your system the best and what models/variables are the
+most likely and “best” explanations of the patterns and data you
+see.</p>
+<p>Of note, there is a push in ecological modeling to move away from
+“null hypothesis testing”, e.g., p-values and even AIC/BIC type
+selection processes, towards using effects sizes and their uncertainty
+(e.g., point estimates and confidence intervals, a.k.a “compatability
+intervals”) (see <a
+href="https://academic.oup.com/jeb/article/35/6/777/7317859">Berner and
+Amrhein 2022</a> for more discussion).</p>
+<p>BUT, if you <em>did</em> want to do some good old fashioned
+hypothesis testing (by my recommendation, in complement to compatability
+intervals), you can use Likelihood Ratio Tests (LRT) or information
+criterion scores (AIC, BIC).</p>
+<div id="likelihood-ratio-test" class="section level3" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Likelihood Ratio
+Test</h3>
+<p>If your models are <em>nested</em> (e.g., model 1 adds parameters in
+addition to the null model’s parameters, e.g., model 1 is an
+<em>extension</em> of the null model, with both using the same data),
+you can use a Likelihood Ratio Test or LRT to compare them.</p>
+<p>If you have the (log)-likelihoods for each model (e.g., <span
+class="math inline">\(L_0\)</span> and <span
+class="math inline">\(L_1\)</span>), the LRT (<span
+class="math inline">\(\Lambda\)</span>) can be calculated as:</p>
+<p><span class="math display">\[\Lambda = -2 \log \left(
+\frac{L_0}{L_1}  \right) = 2 (l_1 - l_0)\]</span></p>
+<p>Remember that <code>optim</code> gives us the <em>negative</em>
+log-likelihood values in its output, so we simply need to extract this
+value and take the negative of it to get our log-likelihood value for
+each model:</p>
+<pre class="r"><code>LL0 &lt;- -fit_nullmodel$value
+LL1 &lt;- -fit_model1$value</code></pre>
+<pre class="r"><code>LL0</code></pre>
+<pre><code>## [1] -142.9392</code></pre>
+<pre class="r"><code>LL1</code></pre>
+<pre><code>## [1] -64.33647</code></pre>
+<p>We want a <em>higher</em> likelihood (maximized!) - model 1 gives us
+a larger value and is likely preferred. But we can formally test using
+the LRT formula:</p>
+<pre class="r"><code>LRT &lt;- 2*( LL1 - LL0)
+
+LRT</code></pre>
+<pre><code>## [1] 157.2055</code></pre>
+<p>This is a very large LRT value! Indicates that these models are
+<em>largely</em> different but we can get a p-value to test
+“significance”.</p>
+<p>We can calculate a p-value for our LRT using the <code>pchisq</code>
+function:</p>
+<pre class="r"><code>1-pchisq(LRT, 1)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>Our p-value is very small (essentially 0), which is far below the
+cut-off of 0.05 and suggests that we do not have sufficient evidence for
+our null model (our alternative model, Model 1, is
+<em>significantly</em> preferred).</p>
+<p>To emphasize how big our LRT value was (a.k.a, how massively
+different the two models are), we can plot our data and show what an LRT
+of just 4 would give:</p>
+<pre class="r"><code>curve(dchisq(x, 1), xlim = c(0,10))
+abline(v = 4)</code></pre>
+<p><img src="Lab_MLE_Regression_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<pre class="r"><code>1-pchisq(4, 1)</code></pre>
+<pre><code>## [1] 0.04550026</code></pre>
+<p>Still significant!</p>
+<p>We can also compare our <code>lm</code>, OLS models using LRT, with
+the <code>anova</code> function:</p>
+<pre class="r"><code>anova(ols_nullmodel, ols_model1)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: log_brain ~ 1
+## Model 2: log_brain ~ log_body
+##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
+## 1     61 365.11                                  
+## 2     60  28.92  1    336.19 697.42 &lt; 2.2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="aic" class="section level3" number="4.4.2">
+<h3><span class="header-section-number">4.4.2</span> AIC</h3>
+<p>An alternative to LRT, especially if your models are not nested, is
+to compare them using AIC (Akaike information criterion) values. AIC
+values penalize the likelihood of a model for its number of parameters,
+thereby making it more “fair” to compare models with differing number of
+parameters (as likelihoods tend to be higher for models with more
+parameters). AIC chooses models based on their fit (likelihood) and
+their parsimony (penalizing for a large number of parameters).</p>
+<p>The formula for AIC is:</p>
+<p><span class="math display">\[ AIC =  - 2 \log(\cal L) + 2
+k\]</span></p>
+<p>(this is why it’s useful to know the number of your model parameters,
+<span class="math inline">\(k\)</span>!)</p>
+<p>We can calculate the AIC values for our models using the formula and
+our log-likelihood values:</p>
+<pre class="r"><code>AIC0 &lt;- -2*LL0 + 2*2
+AIC1 &lt;- -2*LL1 + 2*3
+
+data.frame(AIC0, AIC1)</code></pre>
+<pre><code>##       AIC0     AIC1
+## 1 289.8785 134.6729</code></pre>
+<p>Unlike our likelihood values, we want <em>smaller</em> AIC values.
+Here our model 1 has a (much) smaller AIC value. As a note, when
+comparing models with AIC, a difference &gt; 4 indicates preference for
+the second model - we have a differing value
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4!</p>
+<pre class="r"><code>delta_AIC &lt;- abs(AIC0 - AIC1)
+
+delta_AIC</code></pre>
+<pre><code>## [1] 155.2055</code></pre>
+<p>We can also get AIC values from our <code>lm</code> models, using the
+<code>AIC</code> function:</p>
+<pre class="r"><code>AIC(ols_nullmodel, ols_model1)</code></pre>
+<pre><code>##               df      AIC
+## ols_nullmodel  2 289.8785
+## ols_model1     3 134.6729</code></pre>
+</div>
+</div>
+</div>
+<div id="conclusions" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Conclusions</h1>
+<p>For Gaussian models, OLS and MLE give (theoretically) the exact same
+result. The OLS approach is more exact, while the MLE relies on an
+optimization algorithm (though, sometimes MLE can be faster, because of
+the OLS dependence on completely inverting matrices).</p>
+<p>However, OLS basically falls apart for any non-Gaussian model. So
+Maximum Likelihood is more generally useful.</p>
+<p>As for our mammals example, our simple linear model was preferred
+based on AIC and LRT AND our <span
+class="math inline">\(\beta_0\)</span> value was (drumroll please…)</p>
+<pre class="r"><code>fit_model1$par[2]</code></pre>
+<pre><code>##     beta1 
+## 0.7516786</code></pre>
+<p>… 0.75! Good job team, looks like we were able to uphold the results
+of Burger et al. Up next - Generalized linear models (GLM’s) and
+logistic regression!</p>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>“Regression” is an entire field of statistics, with
+countless courses and books devoted to it, etc. But - the word itself is
+<strong>highly problematic</strong>. It refers to a “regression to the
+mean” - a major obsession for <a
+href="https://en.wikipedia.org/wiki/Francis_Galton">Francis Dalton</a>
+and a large generation and half of 19th century
+eugenecists/biometricians who developed some of these tools - when
+comparing a generation of fathers against a generation of sons. It is
+problematic in part because of that history, but also because - as a
+statistical approach - it is very, very rarely applied for a process
+where you are modeling the same thing against itself (except in cases of
+exploruing auto-<em>regression</em>, the one case where it is an
+appropriate term). We will try use the work <em>linear modeling</em> as
+much as possible, but will not always succeed.<a href="#fnref1"
+class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>Residuals are often called “errors”, and
+<em>sometimes</em> they do reflect “errors” in the sense of measurement
+error. But in ecology - far more often than not - the residuals are due
+to other biological sources of variation which we are not accounting for
+more so than measurement error. The process is broken down in to the
+<em>modeled bit</em> (i.e. the linear predictor, or <span
+class="math inline">\(\widehat Y\)</span>) and the <em>left-over</em>
+bit (i.e. the <em>residual</em>, <span
+class="math inline">\(\epsilon\)</span>).<a href="#fnref2"
+class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

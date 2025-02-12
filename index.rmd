@@ -17,6 +17,11 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
 - [**Lecture/Lab 1**: All the Distributions Are Related](./lectures/PSQE_2025/Lab01_RandomNumbers/AllTheDistributionsAreRelated.html)
 - [**Lecture 2**: Introduction to Likelihoods and Likelihood Theory](https://eligurarie.github.io/MovementEcologyBook/part3_statistical_foundations/likelihoods.html)
   - This lecture comes from our [movement ecology book (in progress)](https://eligurarie.github.io/MovementEcologyBook)
+- [**Lecture/Lab 3**: Linear Regression with Matrices and Likelihoods](lectures/PSQE_2025/Lab_MLE_Regression.html)
+- [**Lecture/Lab 4**: Generalized Linear Modeling and Logistic Regression](lectures/PSQE_2025/Lab_MLE_GLM_LogisticRegression.html)
+
+![](lectures/PSQE_2025/bg.jpg)
+
 
 # Survival 101
 
