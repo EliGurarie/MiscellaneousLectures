@@ -1,0 +1,1092 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jeremiah and Elie" />
+
+<meta name="date" content="2025-02-10" />
+
+<title>Linear Mixed Effects Models with Turtles</title>
+
+<script src="MixedEffectsModelsWithTurtles_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="MixedEffectsModelsWithTurtles_files/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="MixedEffectsModelsWithTurtles_files/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/navigation-1.1/tabsets.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/htmltools-fill-0.5.8.1/fill.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/htmlwidgets-1.6.4/htmlwidgets.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/leaflet-1.3.1/leaflet.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/proj4-2.6.2/proj4.min.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/leaflet-binding-2.2.2/leaflet.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/leaflet-providers-2.0.0/leaflet-providers_2.0.0.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/leaflet-providers-plugin-2.2.2/leaflet-providers-plugin.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/HomeButton-0.0.1/home-button.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/HomeButton-0.0.1/home-button.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/HomeButton-0.0.1/easy-button-src.min.js"></script>
+<script src="MixedEffectsModelsWithTurtles_files/clipboard-0.0.1/setClipboardText.js"></script>
+<link href="MixedEffectsModelsWithTurtles_files/mapviewCSS-0.0.1/mapview-popup.css" rel="stylesheet" />
+<link href="MixedEffectsModelsWithTurtles_files/mapviewCSS-0.0.1/mapview.css" rel="stylesheet" />
+<link href="MixedEffectsModelsWithTurtles_files/pagedtable-1.1/css/pagedtable.css" rel="stylesheet" />
+<script src="MixedEffectsModelsWithTurtles_files/pagedtable-1.1/js/pagedtable.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Mixed Effects Models with
+Turtles</h1>
+<h4 class="author">Jeremiah and Elie</h4>
+<h4 class="date">2025-02-10</h4>
+
+</div>
+
+
+<blockquote>
+<p><strong>Goals</strong>: Learn to fit &amp; interpret linear mixed
+effects models in R</p>
+<p>Useful link comparing different lme tools: <a
+href="https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html"
+class="uri">https://bbolker.github.io/mixedmodels-misc/glmmFAQ.html</a></p>
+<p>A nice example using chicken growth data: <a
+href="https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic3/Lecture16_MixedEffectsModels.html"
+class="uri">https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic3/Lecture16_MixedEffectsModels.html</a></p>
+</blockquote>
+<img src="turtlepic.jpg" />
+<center>
+A very handsome snapping Turtle (<em>Chelydra serpentina</em>) - photo
+by Jeremiah
+</center>
+<div id="the-study-and-data" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> The study and data</h1>
+<p>The study was of mercury (Hg) contamination in snapping turtles
+around several watersheds in central New York State. Multiple (but very
+variable) numbers of indvidual turtles were captured and teo-clips taken
+and analyzed, in several different types of water bodies.</p>
+<p>Hypotheses going in to the study were that Hg concentrations would be
+greater for larger animals, greater for males than females (which shed
+Hg when laying eggs), greater in more urban or contaminated settings,
+perhaps may depend on the amount of open water or wetland in the water
+bodies as indicators of trophic depth.</p>
+<p>Here are the first few rows of the data:</p>
+<pre class="r"><code>require(plyr)
+require(rmarkdown)
+turtles &lt;- read.csv(&quot;data/Analyzed_turtle_toenails_R_v5.csv&quot;) |&gt; 
+  subset(sex != &quot;&quot;)
+head(turtles)</code></pre>
+<pre><code>##   sort.ID study    Site_type     Waterbody Waterbody_Type turtle.id Site
+## 1     443    GE Seneca River Onondaga Lake   Contaminated   SR-CS-1 SRN3
+## 2     444    GE Seneca River Onondaga Lake   Contaminated   SR-CS-2 SRN5
+## 3     445    GE Seneca River Onondaga Lake   Contaminated   SR-CS-3 SRS2
+## 4     446    GE Seneca River Onondaga Lake   Contaminated   SR-CS-4 SRS3
+## 5     447    GE Seneca River Onondaga Lake   Contaminated   SR-CS-5 SRS3
+## 6     472    GE Seneca River Onondaga Lake   Contaminated   SR-CS-6 SRN2
+##        Lat       Lon Wetland_area Wetland_area_ha Open_water_area
+## 1 43.13287 -76.24400     24921900        2492.190         1.2e+07
+## 2 43.13704 -76.23917     24838689        2483.869         1.2e+07
+## 3 43.12300 -76.26718     24838689        2483.869         1.2e+07
+## 4 43.12449 -76.26969     24838689        2483.869         1.2e+07
+## 5 43.12449 -76.26969     24838689        2483.869         1.2e+07
+## 6 43.13120 -76.24620     24838689        2483.869         1.2e+07
+##   Open_water_area_ha Open_water_to_wetland nail_code    date
+## 1               1200             0.4815042       Yes  9/9/09
+## 2               1200             0.4831173       Yes  9/9/09
+## 3               1200             0.4831173       Yes  9/9/09
+## 4               1200             0.4831173       Yes  9/9/09
+## 5               1200             0.4831173       Yes  9/9/09
+## 6               1200             0.4831173       Yes 9/10/09
+##               species sex nail.sample.confirmed. mass_g photographed.
+## 1 Chelydra serpentina   M                      Y 0.3794             Y
+## 2 Chelydra serpentina   M                      Y 0.3137             Y
+## 3 Chelydra serpentina   M                      Y 0.2689             Y
+## 4 Chelydra serpentina   M                      Y 0.2921             Y
+## 5 Chelydra serpentina   F                      Y 0.0826             Y
+## 6 Chelydra serpentina   M                      Y 0.3367             Y
+##   nail_length_mm nail_area_mm2 homgenized. THg_ng_g THg_ppm carapace_length
+## 1             NA            NA           Y     8833    8.83             345
+## 2             NA            NA           Y    13397   13.40             362
+## 3             NA            NA           Y     1224    1.22             335
+## 4             NA            NA           Y     6997    7.00             390
+## 5             NA            NA           Y     2147    2.15             262
+## 6             NA            NA           Y     9736    9.74             377
+##   carapace_length_cm plastron_length plastron_length_cm weight_kg
+## 1               34.5             248               24.8      9.16
+## 2               36.2             258               25.8     10.95
+## 3               33.5             233               23.3      8.80
+## 4               39.0             297               29.7     15.64
+## 5               26.2             203               20.3      4.82
+## 6               37.7              NA                 NA     13.98</code></pre>
+<div id="mapping" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> mapping</h2>
+<p>Mapping collection sites of turtles in Onondaga and Cayuga
+counties:</p>
+<pre class="r"><code>require(sf)
+turtles.sf &lt;- st_as_sf(turtles, coords = c(&quot;Lon&quot;,&quot;Lat&quot;), crs = 4326)
+require(mapview)
+mapview(turtles.sf[,&quot;Waterbody_Type&quot;])</code></pre>
+<div class="leaflet html-widget html-fill-item" id="htmlwidget-d99a2c1bf64508a3b2fe" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-d99a2c1bf64508a3b2fe">{"x":{"options":{"minZoom":1,"maxZoom":52,"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"preferCanvas":false,"bounceAtZoomLimits":false,"maxBounds":[[[-90,-370]],[[90,370]]]},"calls":[{"method":"addProviderTiles","args":["CartoDB.Positron","CartoDB.Positron","CartoDB.Positron",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["CartoDB.DarkMatter","CartoDB.DarkMatter","CartoDB.DarkMatter",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenStreetMap","OpenStreetMap","OpenStreetMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["Esri.WorldImagery","Esri.WorldImagery","Esri.WorldImagery",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"addProviderTiles","args":["OpenTopoMap","OpenTopoMap","OpenTopoMap",{"errorTileUrl":"","noWrap":false,"detectRetina":false,"pane":"tilePane"}]},{"method":"createMapPane","args":["point",440]},{"method":"addCircleMarkers","args":[[43.13287,43.13704,43.123,43.12449,43.12449,43.1312,43.13287,43.13287,43.13287,43.13704,43.123,43.12318,43.10568,43.06324,43.10568,43.06686,42.83908,42.83638,42.83638,42.84007,43.211768,43.211768,43.211768,43.1955297,43.1955297,43.1955297,43.197551,43.197551,43.197551,43.200806,43.200806,43.200806,43.211768,43.1955297,43.1955297,43.197551,43.119308,43.119308,43.119308,43.119308,43.059873,43.059873,43.059873,43.059873,43.059873,43.051399,43.051399,43.051399,43.048428,43.048428,43.048428,43.048428,43.048428,43.048428,43.048428,43.119308,43.124355,43.048428,43.048428,43.048428,43.048428,43.059873,43.051399,43.048428,43.119308,43.127267,43.130142,43.128626,43.128626,43.128626,43.128626,43.127077,43.127077,43.126288,43.126288,43.125366,43.127077,43.128626,43.126288,43.125366,43.124783,43.126288,43.130861,43.130861,43.134619,43.134619,43.126464,43.126464,43.126464,43.126464,43.130666,43.134619,43.130666,43.134619,43.057034,43.052387,43.052387,43.049082,43.049082,43.053939,43.053939,43.053939,43.052443,43.04967,43.169263,43.169263,43.170931,43.170931,43.1757845,43.1757845,43.1757845,43.17172,43.17172,43.159449,43.159449,43.160935,43.170931,43.160935,43.159449,43.159449,43.181289,43.198312,43.198312,43.198312,43.20495,43.20495,43.193356,43.209978,43.209978,43.20386,43.20495,43.20495,43.20495,43.193356,43.181289,43.181289,43.208572,43.208572,43.117149,43.117149,43.117149,43.117149,43.207323,43.197551,43.197551,43.197551,43.197551,43.197551,43.197551,43.029033,43.029033,43.029033,43.029033,43.208572,43.207975,43.208572,43.208572,43.117149,43.117149,43.029033,43.029033,43.029033,43.029033,43.029033,43.183041,43.183041,43.183041,43.183041,43.03595,43.056762,43.056762,43.056857,43.056857,43.056857,43.123367,43.123367,43.123367,43.183041,43.183041,43.056762,43.056857,43.056857,43.056762,43.056762,43.0738376,43.087801,43.065989,43.065989,43.065989,43.06645,43.06645,43.074432,43.074432,43.074432,43.074432,43.087801,43.087801,43.065989,43.0738376,43.0738376,43.0738376,43.064899,43.205815,43.205815,43.208572,43.2001246,43.208572,43.2001246,43.207323,43.207323,43.200235,43.029033,43.029033,42.995323,42.995323,42.995323,42.995323,43.029033,42.995323,42.995323,42.995323,43.18175,43.18175,43.18175,43.181289,43.192733,43.201523,43.18192,43.192733,43.192733,43.192733,43.201523,43.201523,43.201523,43.0739648,43.0747091,43.0737768,43.0737768,43.0747091,43.0739648,43.0746754,43.033876,43.0468751,43.0472274,43.0472274,43.20495,43.20386,43.20386,43.20386,43.198312,43.198312,43.20495,43.20495,43.20495,43.19171,43.198312,43.20495,43.20495,43.20386,43.20495,43.20386],[-76.244,-76.23917,-76.26718,-76.26969,-76.26969,-76.2462,-76.244,-76.244,-76.244,-76.23917,-76.26718,-76.2762,-76.24351,-76.1859,-76.24351,-76.17923,-76.24487000000001,-76.24574,-76.24574,-76.24499,-76.321471,-76.321471,-76.321471,-76.3141504,-76.3141504,-76.3141504,-76.30980700000001,-76.30980700000001,-76.30980700000001,-76.313839,-76.313839,-76.313839,-76.321471,-76.3141504,-76.3141504,-76.30980700000001,-76.076762,-76.076762,-76.076762,-76.076762,-76.060756,-76.060756,-76.060756,-76.060756,-76.060756,-76.063789,-76.063789,-76.063789,-76.06777,-76.06777,-76.06777,-76.06777,-76.06777,-76.06777,-76.06777,-76.076762,-76.071496,-76.06777,-76.06777,-76.06777,-76.06777,-76.060756,-76.063789,-76.06777,-76.076762,-76.027964,-76.02090699999999,-76.01665,-76.01665,-76.01665,-76.01665,-76.032191,-76.032191,-76.020303,-76.020303,-76.025206,-76.032191,-76.01665,-76.020303,-76.025206,-76.021118,-76.020303,-76.341624,-76.341624,-76.317727,-76.317727,-76.306012,-76.306012,-76.306012,-76.306012,-76.315236,-76.317727,-76.315236,-76.317727,-76.01206999999999,-76.008858,-76.008858,-76.012039,-76.012039,-76.010413,-76.010413,-76.010413,-76.004884,-76.010052,-76.05535,-76.05535,-76.052229,-76.052229,-76.0537253,-76.0537253,-76.0537253,-76.048404,-76.048404,-76.048458,-76.048458,-76.049496,-76.052229,-76.049496,-76.048458,-76.048458,-76.280918,-76.299094,-76.299094,-76.299094,-76.29142899999999,-76.29142899999999,-76.294422,-76.28833,-76.28833,-76.29501500000001,-76.29142899999999,-76.29142899999999,-76.29142899999999,-76.294422,-76.280918,-76.280918,-76.29774399999999,-76.29774399999999,-76.204528,-76.204528,-76.204528,-76.204528,-76.29790300000001,-76.30980700000001,-76.30980700000001,-76.30980700000001,-76.30980700000001,-76.30980700000001,-76.30980700000001,-76.114965,-76.114965,-76.114965,-76.114965,-76.29774399999999,-76.29924699999999,-76.29774399999999,-76.29774399999999,-76.204528,-76.204528,-76.114965,-76.114965,-76.114965,-76.114965,-76.114965,-76.109846,-76.109846,-76.109846,-76.109846,-76.02175,-76.09077499999999,-76.09077499999999,-76.095303,-76.095303,-76.095303,-76.1044,-76.1044,-76.1044,-76.109846,-76.109846,-76.09077499999999,-76.095303,-76.095303,-76.09077499999999,-76.09077499999999,-76.66739440000001,-76.66554499999999,-76.684247,-76.684247,-76.684247,-76.697474,-76.697474,-76.688255,-76.688255,-76.688255,-76.688255,-76.66554499999999,-76.66554499999999,-76.684247,-76.66739440000001,-76.66739440000001,-76.66739440000001,-76.698508,-76.30085,-76.30085,-76.29774399999999,-76.3458701,-76.29774399999999,-76.3458701,-76.29790300000001,-76.29790300000001,-76.30312000000001,-76.114965,-76.114965,-76.15388,-76.15388,-76.15388,-76.15388,-76.114965,-76.15388,-76.15388,-76.15388,-76.27265300000001,-76.27265300000001,-76.27265300000001,-76.280918,-76.28859,-76.290908,-76.265236,-76.28859,-76.28859,-76.28859,-76.290908,-76.290908,-76.290908,-76.0702285,-76.0675979,-76.071698,-76.071698,-76.0675979,-76.0702285,-76.06920409999999,-76.33494399999999,-76.36257980000001,-76.3636454,-76.3636454,-76.29142899999999,-76.29501500000001,-76.29501500000001,-76.29501500000001,-76.299094,-76.299094,-76.29142899999999,-76.29142899999999,-76.29142899999999,-76.300832,-76.299094,-76.29142899999999,-76.29142899999999,-76.29501500000001,-76.29142899999999,-76.29501500000001],6,null,"turtles.sf[, \"Waterbody_Type\"]",{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}},"pane":"point","stroke":true,"color":"#333333","weight":1,"opacity":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.9],"fill":true,"fillColor":["#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#4B0055","#009B95","#009B95","#009B95","#009B95","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#53CC67","#53CC67","#53CC67","#00588B","#53CC67","#53CC67","#53CC67","#FDE333","#00588B","#00588B","#00588B","#00588B","#00588B","#FDE333","#FDE333","#FDE333","#00588B","#00588B","#00588B","#00588B","#FDE333","#FDE333","#FDE333","#53CC67","#53CC67","#FDE333","#FDE333","#FDE333","#FDE333","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#FDE333","#FDE333","#FDE333","#FDE333","#53CC67","#53CC67","#53CC67","#53CC67","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#53CC67","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#00588B","#00588B","#00588B","#FDE333","#FDE333","#FDE333","#00588B","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#FDE333","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B","#00588B"],"fillOpacity":[0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6,0.6]},null,null,["<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>1&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>2&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>3&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>4&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>5&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>6&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>7&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>8&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>9&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>10&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>11&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>12&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>13&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>14&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>15&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>16&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Contaminated&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>17&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Lake&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>18&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Lake&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>19&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Lake&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>20&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Lake&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>21&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>22&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>23&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>24&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>25&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>26&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>27&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>28&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>29&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>30&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>31&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>32&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>33&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>34&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>35&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>36&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>37&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>38&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>39&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>40&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>41&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>42&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>43&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>44&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>45&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>46&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>47&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>48&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>49&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>50&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>51&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>52&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>53&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>54&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>55&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>56&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>57&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>58&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>59&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>60&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>61&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>62&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>63&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>64&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>65&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>66&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>67&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>68&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>69&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>70&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>71&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>72&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>73&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>74&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>75&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>76&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>77&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>78&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>79&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>80&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>81&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>82&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>83&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>84&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>85&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>86&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>87&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>88&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>89&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>90&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>91&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>92&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>93&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>94&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>95&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>96&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>97&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>98&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>99&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>100&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>101&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>102&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>103&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>104&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>105&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>106&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>107&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>108&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>109&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>110&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>111&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>112&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>113&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>114&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>115&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>116&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>117&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>118&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>119&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>120&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>121&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>122&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>123&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>124&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>125&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>126&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>127&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>128&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>129&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>130&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>131&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>132&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>133&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>134&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>135&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>136&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>137&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>138&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>139&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>140&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>141&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>142&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>143&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>144&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>145&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>146&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>147&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>148&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>149&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>150&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>151&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>152&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>153&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>154&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>155&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>156&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>157&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>158&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>159&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>160&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>161&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>162&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>163&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>164&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>165&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>166&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>167&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>168&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>169&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>170&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>171&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>172&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>173&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>174&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>175&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>176&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>177&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>178&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>179&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>180&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>181&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>182&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>183&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>184&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>185&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>186&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>187&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>188&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>189&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>190&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>191&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>192&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>193&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>194&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>195&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>196&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>197&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>198&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>199&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>200&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>201&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>202&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>203&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>204&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>205&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>206&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>207&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>208&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>209&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>210&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>211&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Protected Area&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>212&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>213&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>214&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>215&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>216&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>217&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>218&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>219&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>220&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>221&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>222&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>223&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>224&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>225&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>226&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>227&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>228&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>229&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>230&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>231&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>232&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>233&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>234&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>235&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>236&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>237&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>238&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>239&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>240&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>241&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Urban Pond&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>242&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>243&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>244&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>245&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>246&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>247&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>248&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>249&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>250&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>251&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>252&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>253&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>254&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>255&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>256&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>257&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>258&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>259&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>260&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>","<div class='scrollableContainer'><table class=mapview-popup id='popup'><tr class='coord'><td><\/td><th><b>Feature ID&emsp;<\/b><\/th><td>261&emsp;<\/td><\/tr><tr><td>1<\/td><th>Waterbody_Type&emsp;<\/th><td>Golf Course&emsp;<\/td><\/tr><tr><td>2<\/td><th>geometry&emsp;<\/th><td>sfc_POINT&emsp;<\/td><\/tr><\/table><\/div>"],{"maxWidth":800,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"closeOnClick":true,"className":""},["Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Contaminated","Lake","Lake","Lake","Lake","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Protected Area","Protected Area","Protected Area","Golf Course","Protected Area","Protected Area","Protected Area","Urban Pond","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Urban Pond","Urban Pond","Urban Pond","Golf Course","Golf Course","Golf Course","Golf Course","Urban Pond","Urban Pond","Urban Pond","Protected Area","Protected Area","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Protected Area","Protected Area","Protected Area","Protected Area","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Protected Area","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Golf Course","Golf Course","Golf Course","Urban Pond","Urban Pond","Urban Pond","Golf Course","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Urban Pond","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course","Golf Course"],{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addScaleBar","args":[{"maxWidth":100,"metric":true,"imperial":true,"updateWhenIdle":true,"position":"bottomleft"}]},{"method":"addHomeButton","args":[-76.698508,42.83638,-76.004884,43.211768,true,"turtles.sf[, \"Waterbody_Type\"]","Zoom to turtles.sf[, \"Waterbody_Type\"]","<strong> turtles.sf[, \"Waterbody_Type\"] <\/strong>","bottomright"]},{"method":"addLayersControl","args":[["CartoDB.Positron","CartoDB.DarkMatter","OpenStreetMap","Esri.WorldImagery","OpenTopoMap"],"turtles.sf[, \"Waterbody_Type\"]",{"collapsed":true,"autoZIndex":true,"position":"topleft"}]},{"method":"addLegend","args":[{"colors":["#4B0055","#00588B","#009B95","#53CC67","#FDE333"],"labels":["Contaminated","Golf Course","Lake","Protected Area","Urban Pond"],"na_color":null,"na_label":"NA","opacity":1,"position":"topright","type":"factor","title":"turtles.sf[, \"Waterbody_Type\"]","extra":null,"layerId":null,"className":"info legend","group":"turtles.sf[, \"Waterbody_Type\"]"}]}],"limits":{"lat":[42.83638,43.211768],"lng":[-76.698508,-76.004884]},"fitBounds":[42.83638,-76.698508,43.211768,-76.004884,[]]},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find('#' + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement('div'));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass('lnlt');\n      newDiv.css({\n      'position': 'relative',\n      'bottomleft':  '0px',\n      'background-color': 'rgba(255, 255, 255, 0.7)',\n      'box-shadow': '0 0 2px #bbb',\n      'background-clip': 'padding-box',\n      'margin': '0',\n      'padding-left': '5px',\n      'color': '#333',\n      'font': '9px/1.5 \"Helvetica Neue\", Arial, Helvetica, sans-serif',\n      'z-index': '700',\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find('.lnlt');\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on('mousemove', function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                           ' lon: ' + (e.latlng.lng).toFixed(5) +\n                           ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                           ' | zoom: ' + map.getZoom() +\n                           ' | x: ' + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           ' | y: ' + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           ' | epsg: 3857 ' +\n                           ' | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs ');\n      } else {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on('mouseout', function (e) {\n      var strip = document.querySelector('.lnlt');\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on('preclick', function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      var txt = document.querySelector('.lnlt').textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText('\"' + txt + '\"');\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}","data":null},{"code":"function(el, x, data) {\n  return (function(el,x,data){\n           var map = this;\n\n           map.on('keypress', function(e) {\n               console.log(e.originalEvent.code);\n               var key = e.originalEvent.code;\n               if (key === 'KeyE') {\n                   var bb = this.getBounds();\n                   var txt = JSON.stringify(bb);\n                   console.log(txt);\n\n                   setClipboardText('\\'' + txt + '\\'');\n               }\n           })\n        }).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+</div>
+<div id="respons-variable" class="section level2" number="1.2">
+<h2><span class="header-section-number">1.2</span> respons variable</h2>
+<p>is Mercury Concentration - parts per million:</p>
+<pre class="r"><code>summary(turtles$THg_ppm)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA&#39;s 
+##   0.090   0.610   1.410   2.092   2.470  16.350       8</code></pre>
+<p>This is highly skewed - we’ll get better behavior with a
+log-transform (this is a common practice for Hg concentrations):</p>
+<pre class="r"><code>hist(log(turtles$THg_ppm), breaks = 20)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="predictors" class="section level2" number="1.3">
+<h2><span class="header-section-number">1.3</span> predictors</h2>
+<p>Several different predictors of interest:</p>
+<ul>
+<li>Continuous
+<ul>
+<li>Wetland Area</li>
+<li>Open Water Area</li>
+<li>Carapace Length</li>
+</ul></li>
+<li>Categorical
+<ul>
+<li>Sex</li>
+<li>Waterbody Type</li>
+</ul></li>
+</ul>
+<pre class="r"><code>require(ggplot2)
+
+ggplot(turtles, 
+       aes(carapace_length_cm, log(THg_ppm), col = Waterbody_Type)) + 
+        geom_point() + geom_smooth(method = &quot;lm&quot;) + 
+  facet_wrap(.~sex) + ggtitle(&quot;Carapace Length&quot;)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(turtles, 
+       aes(log(Wetland_area), log(THg_ppm), col = Waterbody_Type)) + 
+        geom_point() + geom_smooth(method = &quot;lm&quot;) + 
+  facet_wrap(.~sex) + ggtitle(&quot;Wetland Area&quot;)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(turtles, 
+       aes(log(Open_water_area), log(THg_ppm), col = Waterbody_Type)) + 
+        geom_point() + geom_smooth(method = &quot;lm&quot;) + 
+  facet_wrap(.~sex) + ggtitle(&quot;Open water Area&quot;)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-5-3.png" width="672" /></p>
+<pre class="r"><code>with(turtles, table(Waterbody_Type))</code></pre>
+<pre><code>## Waterbody_Type
+##   Contaminated    Golf Course           Lake Protected Area     Urban Pond 
+##             16             82              4             62             97</code></pre>
+<pre class="r"><code>table(turtles$Waterbody_Type)
+with(turtles, lm(carapace_length ~ plastron_length)) |&gt; plot()
+with(turtles, plot(carapace_length ~ plastron_length))</code></pre>
+</div>
+<div id="questions" class="section level2" number="1.4">
+<h2><span class="header-section-number">1.4</span> questions:</h2>
+<p>In this short analysis we will look at:</p>
+<p><strong>Q1:</strong> Do waterbody characteristics (wetland area and
+open water area) impact mercury exposure in turtles?</p>
+<p><strong>Q2:</strong> Are biological characteristics (sex and carapace
+length) predictors of mercury concentration in turtles?</p>
+</div>
+</div>
+<div id="models" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> models</h1>
+<p><strong>Goals:</strong> compare fixed-effects (lm) &amp; mixed
+effects models (lmer)</p>
+<ul>
+<li>Include 3 continuous predictors (carapace length / wetland area /
+open water area)</li>
+<li>Sex - to explore hypothesis depuration of Hg via egg-laying</li>
+<li>Sites nested within waterbody type</li>
+</ul>
+<p>Model comparisons</p>
+</div>
+<div id="linear-models-fixed-effects---tips-tricks"
+class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Linear Models (fixed
+effects) - Tips &amp; Tricks</h1>
+<p>Compare a bunch of models:</p>
+<pre class="r"><code>formulae &lt;- list(
+  M0 = log(THg_ppm) ~ 1,
+  M1 = log(THg_ppm) ~ carapace_length,
+  M2 = log(THg_ppm) ~ carapace_length + log(Open_water_area),
+  M3 = log(THg_ppm) ~ carapace_length * sex,
+  M4 = log(THg_ppm) ~ carapace_length + sex,
+  M5 = log(THg_ppm) ~ carapace_length + log(Open_water_area) + sex,
+  M6 = log(THg_ppm) ~ (carapace_length + log(Open_water_area)) * sex,
+  M7 = log(THg_ppm) ~ log(Open_water_area) * sex
+)</code></pre>
+<p>Build an AIC table by hand:</p>
+<pre class="r"><code>require(plyr)
+my_lms &lt;- llply(formulae, 
+      function(f) lm(f, data = turtles))
+
+data.frame(as.character(formulae), ldply(my_lms, AIC))</code></pre>
+<pre><code>##                                          as.character.formulae. .id       V1
+## 1                                              log(THg_ppm) ~ 1  M0 736.0155
+## 2                                log(THg_ppm) ~ carapace_length  M1 728.2779
+## 3         log(THg_ppm) ~ carapace_length + log(Open_water_area)  M2 719.0779
+## 4                          log(THg_ppm) ~ carapace_length * sex  M3 732.0917
+## 5                          log(THg_ppm) ~ carapace_length + sex  M4 729.2313
+## 6   log(THg_ppm) ~ carapace_length + log(Open_water_area) + sex  M5 720.3498
+## 7 log(THg_ppm) ~ (carapace_length + log(Open_water_area)) * sex  M6 725.9366
+## 8                     log(THg_ppm) ~ log(Open_water_area) * sex  M7 725.6957</code></pre>
+<p>AIC (Akaike information criterion) evaluates how well a model fits
+the data. A smaller AIC indicates a better fit for the model. The best
+models based on AIC are M2 and and M5. Models with interactions had poor
+fits and relatively high AICs. Article on model selection: <a
+href="https://iowabiostat.github.io/research-highlights/joe/Cavanaugh_Neath_2019.pdf"
+class="uri">https://iowabiostat.github.io/research-highlights/joe/Cavanaugh_Neath_2019.pdf</a></p>
+<div id="dredging-model-selection" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Dredging &amp; model
+selection</h2>
+<p>Much of this can be done with the model averaging package:
+<code>MuMIn</code>:</p>
+<pre class="r"><code>require(MuMIn)</code></pre>
+<p>First - build a model that includes all the effects you’re interested
+in. But to do that, you have to make sure there are no missing data:</p>
+<pre class="r"><code>turtles_tidy &lt;- turtles[,c(&quot;THg_ppm&quot;, &quot;carapace_length_cm&quot;, 
+                &quot;Open_water_area_ha&quot;, &quot;sex&quot;,
+                &quot;Site&quot;, &quot;Waterbody_Type&quot;)] |&gt; na.omit()
+
+big_lm &lt;- lm(log(THg_ppm) ~ carapace_length_cm * log(Open_water_area_ha) * sex, 
+             data = turtles_tidy, na.action = na.fail)</code></pre>
+<p>Next - run the “dredge” command. It’s fast (for <code>lm</code>) and
+goes through every combination / iteration of parameters, ranks them (by
+a slight AIC variant called “corrected AIC” - or AICc - details
+unimportant) and also calculates “model weights”. This is an efficient
+way to explore - in a regression - the contribution of various factors
+and their potential interactions. The output</p>
+<pre class="r"><code>big_lm_dredge &lt;- dredge(big_lm)
+big_lm_dredge</code></pre>
+<pre><code>## Global model call: lm(formula = log(THg_ppm) ~ carapace_length_cm * log(Open_water_area_ha) * 
+##     sex, data = turtles_tidy, na.action = na.fail)
+## ---
+## Model selection table 
+##        (Int) crp_lng_cm log(Opn_wtr_are_ha) sex crp_lng_cm:log(Opn_wtr_are_ha)
+## 4   -0.41430   0.024690             0.08705                                   
+## 12  -0.44880   0.025060            -0.07681                           0.005444
+## 8   -0.54980   0.034410             0.08546   +                               
+## 16  -0.54430   0.033500            -0.09479   +                       0.005996
+## 3    0.26640                        0.10230                                   
+## 24   0.24420   0.003232             0.08677   +                               
+## 40  -0.49340   0.031910             0.06798   +                               
+## 7    0.33210                        0.10070   +                               
+## 32   0.14050   0.006683            -0.07555   +                       0.005395
+## 48  -0.52510   0.032890            -0.05919   +                       0.004825
+## 39   0.32130                        0.07421   +                               
+## 56   0.19430   0.004976             0.07324   +                               
+## 128  0.24800   0.003419             0.33370   +                      -0.009888
+## 2   -0.72120   0.035150                                                       
+## 64   0.16750   0.005753            -0.05668   +                       0.004932
+## 6   -0.88920   0.046370                       +                               
+## 22  -0.07581   0.014420                       +                               
+## 1    0.24300                                                                  
+## 5    0.29110                                  +                               
+##     crp_lng_cm:sex log(Opn_wtr_are_ha):sex crp_lng_cm:log(Opn_wtr_are_ha):sex
+## 4                                                                            
+## 12                                                                           
+## 8                                                                            
+## 16                                                                           
+## 3                                                                            
+## 24               +                                                           
+## 40                                       +                                   
+## 7                                                                            
+## 32               +                                                           
+## 48                                       +                                   
+## 39                                       +                                   
+## 56               +                       +                                   
+## 128              +                       +                                  +
+## 2                                                                            
+## 64               +                       +                                   
+## 6                                                                            
+## 22               +                                                           
+## 1                                                                            
+## 5                                                                            
+##     df   logLik  AICc delta weight
+## 4    4 -355.539 719.2  0.00  0.289
+## 12   5 -354.793 719.8  0.59  0.216
+## 8    6 -354.175 720.7  1.45  0.140
+## 16   7 -353.292 721.0  1.80  0.118
+## 3    3 -357.886 721.9  2.63  0.078
+## 24   8 -353.457 723.5  4.26  0.034
+## 40   8 -353.466 723.5  4.28  0.034
+## 7    5 -356.988 724.2  4.98  0.024
+## 32   9 -352.750 724.2  5.00  0.024
+## 48   9 -353.195 725.1  5.89  0.015
+## 39   7 -355.848 726.2  6.91  0.009
+## 56  10 -352.968 726.8  7.61  0.006
+## 128 13 -349.935 727.4  8.15  0.005
+## 2    3 -361.139 728.4  9.14  0.003
+## 64  11 -352.685 728.5  9.23  0.003
+## 6    5 -359.616 729.5 10.24  0.002
+## 22   7 -359.046 732.5 13.31  0.000
+## 1    2 -366.008 736.1 16.82  0.000
+## 5    4 -364.786 737.7 18.49  0.000
+## Models ranked by AICc(x)</code></pre>
+<p>Perhaps better to visualize:</p>
+<pre class="r"><code>plot(big_lm_dredge)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>From this table, you can see that there 4 models with a <span
+class="math inline">\(\Delta\)</span>AIC &lt; 2, and they all include
+carapace length, log(Open Water) and #’s 3&amp;4 have sex as well, with
+relatively few interactions.</p>
+<p>Let’s check out the coefficients for the most complete of these
+models. Here, it can be handy to use the <code>tidy</code> function in
+the <code>broom</code> package, which extracts useful coefficients from
+fitted models:</p>
+<pre class="r"><code>require(broom)
+get.models(big_lm_dredge, 1:4) |&gt; lapply(summary)</code></pre>
+<pre><code>## $`4`
+## 
+## Call:
+## lm(formula = log(THg_ppm) ~ carapace_length_cm + log(Open_water_area_ha) + 
+##     1, data = turtles_tidy, na.action = na.fail)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.7048 -0.6843  0.1221  0.7255  2.1918 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)             -0.41430    0.32076  -1.292 0.197686    
+## carapace_length_cm       0.02469    0.01141   2.164 0.031430 *  
+## log(Open_water_area_ha)  0.08705    0.02588   3.364 0.000889 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9923 on 250 degrees of freedom
+## Multiple R-squared:  0.07943,    Adjusted R-squared:  0.07206 
+## F-statistic: 10.78 on 2 and 250 DF,  p-value: 3.216e-05
+## 
+## 
+## $`12`
+## 
+## Call:
+## lm(formula = log(THg_ppm) ~ carapace_length_cm + log(Open_water_area_ha) + 
+##     carapace_length_cm:log(Open_water_area_ha) + 1, data = turtles_tidy, 
+##     na.action = na.fail)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6988 -0.6582  0.1389  0.7103  2.2599 
+## 
+## Coefficients:
+##                                             Estimate Std. Error t value
+## (Intercept)                                -0.448798   0.321715  -1.395
+## carapace_length_cm                          0.025055   0.011403   2.197
+## log(Open_water_area_ha)                    -0.076811   0.137450  -0.559
+## carapace_length_cm:log(Open_water_area_ha)  0.005444   0.004485   1.214
+##                                            Pr(&gt;|t|)  
+## (Intercept)                                  0.1643  
+## carapace_length_cm                           0.0289 *
+## log(Open_water_area_ha)                      0.5768  
+## carapace_length_cm:log(Open_water_area_ha)   0.2260  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9914 on 249 degrees of freedom
+## Multiple R-squared:  0.08484,    Adjusted R-squared:  0.07381 
+## F-statistic: 7.695 on 3 and 249 DF,  p-value: 6.16e-05
+## 
+## 
+## $`8`
+## 
+## Call:
+## lm(formula = log(THg_ppm) ~ carapace_length_cm + log(Open_water_area_ha) + 
+##     sex + 1, data = turtles_tidy, na.action = na.fail)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.6662 -0.6660  0.1003  0.7406  2.0912 
+## 
+## Coefficients:
+##                         Estimate Std. Error t value Pr(&gt;|t|)   
+## (Intercept)             -0.54981    0.38623  -1.424   0.1558   
+## carapace_length_cm       0.03441    0.01457   2.362   0.0190 * 
+## log(Open_water_area_ha)  0.08546    0.02589   3.301   0.0011 **
+## sexJ                    -0.06960    0.28482  -0.244   0.8072   
+## sexM                    -0.23929    0.14681  -1.630   0.1044   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.991 on 248 degrees of freedom
+## Multiple R-squared:  0.0893, Adjusted R-squared:  0.07461 
+## F-statistic: 6.079 on 4 and 248 DF,  p-value: 0.0001108
+## 
+## 
+## $`16`
+## 
+## Call:
+## lm(formula = log(THg_ppm) ~ carapace_length_cm + log(Open_water_area_ha) + 
+##     sex + carapace_length_cm:log(Open_water_area_ha) + 1, data = turtles_tidy, 
+##     na.action = na.fail)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.65269 -0.68815  0.09415  0.72577  2.18631 
+## 
+## Coefficients:
+##                                             Estimate Std. Error t value
+## (Intercept)                                -0.544294   0.385682  -1.411
+## carapace_length_cm                          0.033499   0.014564   2.300
+## log(Open_water_area_ha)                    -0.094794   0.139441  -0.680
+## sexJ                                       -0.140908   0.289525  -0.487
+## sexM                                       -0.244397   0.146642  -1.667
+## carapace_length_cm:log(Open_water_area_ha)  0.005996   0.004558   1.315
+##                                            Pr(&gt;|t|)  
+## (Intercept)                                  0.1594  
+## carapace_length_cm                           0.0223 *
+## log(Open_water_area_ha)                      0.4973  
+## sexJ                                         0.6269  
+## sexM                                         0.0969 .
+## carapace_length_cm:log(Open_water_area_ha)   0.1896  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9895 on 247 degrees of freedom
+## Multiple R-squared:  0.09564,    Adjusted R-squared:  0.07733 
+## F-statistic: 5.224 on 5 and 247 DF,  p-value: 0.0001407</code></pre>
+<p>Note that the R2 values are relatively low:</p>
+<pre class="r"><code>require(performance)
+lapply(my_lms, r2)</code></pre>
+<pre><code>## $M0
+## # R2 for Linear Regression
+##        R2: 0.000
+##   adj. R2: 0.000
+## 
+## $M1
+## # R2 for Linear Regression
+##        R2: 0.038
+##   adj. R2: 0.034
+## 
+## $M2
+## # R2 for Linear Regression
+##        R2: 0.079
+##   adj. R2: 0.072
+## 
+## $M3
+## # R2 for Linear Regression
+##        R2: 0.054
+##   adj. R2: 0.034
+## 
+## $M4
+## # R2 for Linear Regression
+##        R2: 0.049
+##   adj. R2: 0.038
+## 
+## $M5
+## # R2 for Linear Regression
+##        R2: 0.089
+##   adj. R2: 0.075
+## 
+## $M6
+## # R2 for Linear Regression
+##        R2: 0.098
+##   adj. R2: 0.068
+## 
+## $M7
+## # R2 for Linear Regression
+##        R2: 0.077
+##   adj. R2: 0.058</code></pre>
+<p>All the lm models were weak. The low R<sup>2</sup> values indicate
+that the predictors only explain a small percentage of variance in the
+models.</p>
+<pre class="r"><code>lm(log(THg_ppm) ~ carapace_length + log(Open_water_area), data = turtles) </code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(THg_ppm) ~ carapace_length + log(Open_water_area), 
+##     data = turtles)
+## 
+## Coefficients:
+##          (Intercept)       carapace_length  log(Open_water_area)  
+##            -1.216082              0.002469              0.087053</code></pre>
+</div>
+</div>
+<div id="mixed-effects-models-with-lme4" class="section level1"
+number="4">
+<h1><span class="header-section-number">4</span> Mixed effects models
+with <code>lme4</code></h1>
+<p>There are many packages that can fit straightforward linear mixed
+effects models. The most commonly used ones are <code>lme4</code> and
+<code>nlme</code>. Other - “bigger guns” include <code>glmmTMB</code>
+and <code>brms</code>. Each has different advantages &amp; disadvantages
+- mainly related to the allowable complexity of the models and speed
+&amp; technique of computation.</p>
+<p>This dataset is pretty straightforward - and <code>lme4</code> will
+work just fine. You can read more about the package by checking out the
+vignettes:</p>
+<pre class="r"><code>vignette(&quot;lmer&quot;)</code></pre>
+<div id="random-intercept-model" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Random
+<em>intercept</em> model</h2>
+<p>We’ll take care to specify our models with equations. THe “random
+intercept” model is written:</p>
+<p><span class="math display">\[Y_{ij} = \alpha_i + \beta X_{ij} +
+\epsilon_ij\]</span> Random intercept: <span
+class="math display">\[\alpha_i \sim {\cal N}(\mu_{\alpha},
+\sigma_\alpha^2)\]</span></p>
+<p>Residual variation: <span class="math display">\[\epsilon_i \sim
+{\cal N}(0, \sigma_r^2)\]</span></p>
+<p>We specify that random intercept via: <code>(1|Site)</code>:</p>
+<pre class="r"><code>require(lme4)
+lmer(log(THg_ppm) ~ carapace_length_cm + (1|Site), 
+     data = turtles) |&gt; summary()</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: log(THg_ppm) ~ carapace_length_cm + (1 | Site)
+##    Data: turtles
+## 
+## REML criterion at convergence: 534.4
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.2905 -0.4561 -0.0103  0.4317  3.3156 
+## 
+## Random effects:
+##  Groups   Name        Variance Std.Dev.
+##  Site     (Intercept) 0.6705   0.8188  
+##  Residual             0.2389   0.4888  
+## Number of obs: 253, groups:  Site, 81
+## 
+## Fixed effects:
+##                    Estimate Std. Error t value
+## (Intercept)        0.004674   0.220421   0.021
+## carapace_length_cm 0.018137   0.007113   2.550
+## 
+## Correlation of Fixed Effects:
+##             (Intr)
+## crpc_lngth_ -0.895</code></pre>
+<p>How do we interpret these results?</p>
+<ul>
+<li>Mean of intercepts: <span class="math inline">\(\mu_\alpha =
+0.0047\)</span></li>
+<li>Sd of intercepts: <span class="math inline">\(\sigma_a =
+0.82\)</span></li>
+<li>Sd of residuals: <span class="math inline">\(\sigma_r^2 =
+0.48\)</span></li>
+<li>Main effect of caparapace length: <span class="math inline">\(\beta
+= 0.0181\)</span></li>
+</ul>
+<blockquote>
+<p><strong>Q.</strong> <em>Is the main effect of carapace length
+significant?</em></p>
+</blockquote>
+</div>
+<div id="do-we-need-a-random-effect" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> Do we <em>need</em> a
+random effect?</h2>
+<p>There are complicated statistical reasons why it is hard to
+<em>test</em> whether you <em>need</em> a random effect - lots of
+confusing Stack Exchange treads on the topic. But the
+<code>RLRsim</code> (co-authored by Ben Bolker) package provides a very
+straightforward test of <em>just that</em>!</p>
+<pre class="r"><code>require(RLRsim)
+turtle_lme1 &lt;- lmer(log(THg_ppm) ~ carapace_length_cm +
+                     (1|Site),  data = turtles)
+turtle_lm &lt;- lm(log(THg_ppm) ~ carapace_length_cm, data = turtles)
+exactLRT(turtle_lme1, turtle_lm)</code></pre>
+<pre><code>## 
+##  simulated finite sample distribution of LRT. (p-value based on 10000
+##  simulated values)
+## 
+## data:  
+## LRT = 198.77, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div id="random-slope-model" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Random <em>slope</em>
+model</h2>
+<p>The <em>random slope</em> model looks like this:</p>
+<p><span class="math display">\[Y_{ij} = \alpha_i + \beta_i X_{ij} +
+\epsilon_ij\]</span> <span class="math display">\[\alpha_i \sim {\cal
+N}(\mu_\alpha, \sigma_\alpha^2)\]</span> <span
+class="math display">\[\beta_i \sim {\cal N}(\mu_\beta,
+\sigma_\beta^2)\]</span> <span class="math display">\[\epsilon_i \sim
+{\cal N}(0, \sigma_r^2)\]</span></p>
+<p>The vertical line again indicates that carapace length will be
+modeled with a random slope:</p>
+<pre class="r"><code>lmer(log(THg_ppm) ~ carapace_length_cm + (carapace_length_cm|Site), 
+     data = turtles) |&gt; summary()</code></pre>
+<pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
+## Formula: log(THg_ppm) ~ carapace_length_cm + (carapace_length_cm | Site)
+##    Data: turtles
+## 
+## REML criterion at convergence: 533.5
+## 
+## Scaled residuals: 
+##     Min      1Q  Median      3Q     Max 
+## -2.3482 -0.4489 -0.0152  0.4133  3.3544 
+## 
+## Random effects:
+##  Groups   Name               Variance  Std.Dev. Corr 
+##  Site     (Intercept)        0.6983587 0.8357        
+##           carapace_length_cm 0.0003385 0.0184   -0.34
+##  Residual                    0.2307528 0.4804        
+## Number of obs: 253, groups:  Site, 81
+## 
+## Fixed effects:
+##                    Estimate Std. Error t value
+## (Intercept)        0.007743   0.225543   0.034
+## carapace_length_cm 0.018031   0.007584   2.378
+## 
+## Correlation of Fixed Effects:
+##             (Intr)
+## crpc_lngth_ -0.901
+## optimizer (nloptwrap) convergence code: 0 (OK)
+## Model failed to converge with max|grad| = 0.0604277 (tol = 0.002, component 1)</code></pre>
+<blockquote>
+<p><strong>EXERCISE:</strong> How many parameters were estimated for
+this model? What are they? Did the random slope model change the
+significance of the main effect?</p>
+</blockquote>
+</div>
+<div id="comparing-selecting-models" class="section level2"
+number="4.4">
+<h2><span class="header-section-number">4.4</span> Comparing /selecting
+models?</h2>
+<p>You have to use full Maximum Likelihood (ML) not Restricted Maximum
+Likelihood (REML) when comparing models:</p>
+<ul>
+<li>ML should be used for comparing models with different fixed effects.
+ML can underestimate model variances</li>
+<li>REML can be used to compare models with the same fixed effects even
+with different fixed effect structure. REML corrects for the
+underestimation of model variances.</li>
+</ul>
+<p><a
+href="https://r.qcbs.ca/workshop07/book-en/step-2.-code-potential-models-and-model-selection.html"
+class="uri">https://r.qcbs.ca/workshop07/book-en/step-2.-code-potential-models-and-model-selection.html</a></p>
+<pre class="r"><code>f1 &lt;- log(THg_ppm) ~ carapace_length + (1|Site)
+f2 &lt;- log(THg_ppm) ~ carapace_length + (carapace_length|Site)
+
+fit1 &lt;- lmer(f1, data = turtles, REML = FALSE)
+fit2 &lt;- lmer(f2, data = turtles, REML = FALSE)
+
+AIC(fit1, fit2)</code></pre>
+<pre><code>##      df      AIC
+## fit1  4 531.5100
+## fit2  6 535.2154</code></pre>
+<div id="dredge" class="section level3" number="4.4.1">
+<h3><span class="header-section-number">4.4.1</span> Dredge</h3>
+<p>Start with most complex model. Dredge will fit the original, most
+complex model and then break it down into more simple models and fit
+those as well.</p>
+<ul>
+<li>Carapace length, open water area, and sex used as fixed effects</li>
+<li>Site and waterbody type used as random effects</li>
+</ul>
+<pre class="r"><code>t &lt;- turtles[,c(&quot;THg_ppm&quot;, &quot;carapace_length_cm&quot;, 
+                &quot;Open_water_area_ha&quot;, &quot;sex&quot;,
+                &quot;Site&quot;, &quot;Waterbody_Type&quot;)] |&gt; 
+  mutate(
+    Carapace = carapace_length_cm/100,
+    OpenWater = Open_water_area_ha/100) |&gt; 
+  subset(sex != &quot;J&quot;) |&gt; 
+  na.omit()
+
+big_lmer &lt;- lmer(log(THg_ppm) ~ (Carapace * log(OpenWater) * sex) + 
+                  (1|Site) +
+                   (1|Waterbody_Type), data = t, 
+                 na.action = na.fail, REML = FALSE)
+
+require(MuMIn)
+lmer_dredge &lt;- dredge(big_lmer)</code></pre>
+<pre class="r"><code>require(rmarkdown)
+plot(lmer_dredge)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<pre class="r"><code>paged_table(lmer_dredge)</code></pre>
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["(Intercept)"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["Carapace"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["log(OpenWater)"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["sex"],"name":[4],"type":["fct"],"align":["left"]},{"label":["Carapace:log(OpenWater)"],"name":[5],"type":["dbl"],"align":["right"]},{"label":["Carapace:sex"],"name":[6],"type":["fct"],"align":["left"]},{"label":["log(OpenWater):sex"],"name":[7],"type":["fct"],"align":["left"]},{"label":["Carapace:log(OpenWater):sex"],"name":[8],"type":["fct"],"align":["left"]},{"label":["df"],"name":[9],"type":["int"],"align":["right"]},{"label":["logLik"],"name":[10],"type":["dbl"],"align":["right"]},{"label":["AICc"],"name":[11],"type":["dbl"],"align":["right"]},{"label":["delta"],"name":[12],"type":["dbl"],"align":["right"]},{"label":["weight"],"name":[13],"type":["mdl.wght"],"align":["right"]}],"data":[{"1":"0.1507189230","2":"2.179314","3":"NA","4":"+","5":"NA","6":"NA","7":"NA","8":"NA","9":"6","10":"-232.7630","11":"477.8927","12":"0.000000","13":"0.278579972","_rn_":"6"},{"1":"0.3065701604","2":"2.150787","3":"0.0500475822","4":"+","5":"NA","6":"NA","7":"NA","8":"NA","9":"7","10":"-232.3063","11":"479.1039","12":"1.211168","13":"0.152036553","_rn_":"8"},{"1":"-0.1090876094","2":"3.197914","3":"NA","4":"+","5":"NA","6":"+","7":"NA","8":"NA","9":"7","10":"-232.5885","11":"479.6682","12":"1.775534","13":"0.114656222","_rn_":"22"},{"1":"-0.0003593007","2":"3.171195","3":"-0.0092916015","4":"+","5":"0.2091839","6":"NA","7":"NA","8":"NA","9":"8","10":"-232.1235","11":"480.8814","12":"2.988665","13":"0.062512880","_rn_":"16"},{"1":"0.0432123829","2":"3.189752","3":"0.0505438700","4":"+","5":"NA","6":"+","7":"NA","8":"NA","9":"8","10":"-232.1248","11":"480.8840","12":"2.991312","13":"0.062430207","_rn_":"24"},{"1":"0.2897080795","2":"2.141207","3":"0.0462623295","4":"+","5":"NA","6":"NA","7":"+","8":"NA","9":"8","10":"-232.2875","11":"481.2095","12":"3.316745","13":"0.053055194","_rn_":"40"},{"1":"0.7305249093","2":"NA","3":"NA","4":"+","5":"NA","6":"NA","7":"NA","8":"NA","9":"5","10":"-235.6240","11":"481.5089","12":"3.616210","13":"0.045677234","_rn_":"5"},{"1":"0.6546830465","2":"NA","3":"NA","4":"NA","5":"NA","6":"NA","7":"NA","8":"NA","9":"4","10":"-236.9436","11":"482.0604","12":"4.167664","13":"0.034669938","_rn_":"1"},{"1":"0.3378291799","2":"1.081140","3":"NA","4":"NA","5":"NA","6":"NA","7":"NA","8":"NA","9":"5","10":"-236.0575","11":"482.3759","12":"4.483159","13":"0.029610402","_rn_":"2"},{"1":"0.8929151245","2":"NA","3":"0.0554607504","4":"+","5":"NA","6":"NA","7":"NA","8":"NA","9":"6","10":"-235.0903","11":"482.5475","12":"4.654765","13":"0.027175684","_rn_":"7"},{"1":"-0.3596463861","2":"4.556264","3":"-0.0187176997","4":"+","5":"0.2443039","6":"+","7":"NA","8":"NA","9":"9","10":"-231.8798","11":"482.5561","12":"4.663389","13":"0.027058753","_rn_":"32"},{"1":"-0.0163605727","2":"3.293689","3":"0.0440827233","4":"+","5":"NA","6":"+","7":"+","8":"NA","9":"9","10":"-232.0713","11":"482.9392","12":"5.046438","13":"0.022342400","_rn_":"56"},{"1":"-0.0912350873","2":"3.596363","3":"-0.0259241419","4":"+","5":"0.2926645","6":"NA","7":"+","8":"NA","9":"9","10":"-232.0858","11":"482.9680","12":"5.075305","13":"0.022022239","_rn_":"48"},{"1":"0.8184607991","2":"NA","3":"0.0557353476","4":"NA","5":"NA","6":"NA","7":"NA","8":"NA","9":"5","10":"-236.4104","11":"483.0816","12":"5.188906","13":"0.020806224","_rn_":"3"},{"1":"0.5018643607","2":"1.058370","3":"0.0531655009","4":"NA","5":"NA","6":"NA","7":"NA","8":"NA","9":"6","10":"-235.5619","11":"483.4906","12":"5.597873","13":"0.016958490","_rn_":"4"},{"1":"0.8603155748","2":"NA","3":"0.0490702901","4":"+","5":"NA","6":"NA","7":"+","8":"NA","9":"7","10":"-235.0389","11":"484.5690","12":"6.676294","13":"0.009890338","_rn_":"39"},{"1":"-0.4028956901","2":"4.769740","3":"-0.0287805484","4":"+","5":"0.2952183","6":"+","7":"+","8":"NA","9":"10","10":"-231.8653","11":"484.7084","12":"6.815700","13":"0.009224426","_rn_":"64"},{"1":"0.2293771412","2":"1.963018","3":"0.0003697613","4":"NA","5":"0.1864730","6":"NA","7":"NA","8":"NA","9":"7","10":"-235.4208","11":"485.3328","12":"7.440095","13":"0.006750779","_rn_":"12"},{"1":"-1.5721147316","2":"9.060861","3":"-0.2621026752","4":"+","5":"1.1571929","6":"+","7":"+","8":"+","9":"11","10":"-231.4734","11":"486.1254","12":"8.232648","13":"0.004542063","_rn_":"128"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+<p>The model selection table indicates which model is the best fit for
+the data. The best fit model has a carapace length and sex
+interaction.</p>
+<pre class="r"><code>get.models(lmer_dredge, 1)[[1]] |&gt; summary()</code></pre>
+<pre><code>## Linear mixed model fit by maximum likelihood  [&#39;lmerMod&#39;]
+## Formula: log(THg_ppm) ~ Carapace + sex + (1 | Site) + (1 | Waterbody_Type)
+##    Data: t
+## 
+##      AIC      BIC   logLik deviance df.resid 
+##    477.5    498.3   -232.8    465.5      230 
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.13331 -0.48372 -0.01815  0.49858  3.11003 
+## 
+## Random effects:
+##  Groups         Name        Variance Std.Dev.
+##  Site           (Intercept) 0.3942   0.6279  
+##  Waterbody_Type (Intercept) 0.3513   0.5927  
+##  Residual                   0.2306   0.4802  
+## Number of obs: 236, groups:  Site, 79; Waterbody_Type, 5
+## 
+## Fixed effects:
+##             Estimate Std. Error t value
+## (Intercept)  0.15072    0.37545   0.401
+## Carapace     2.17931    0.90331   2.413
+## sexM        -0.22098    0.08548  -2.585
+## 
+## Correlation of Fixed Effects:
+##          (Intr) Carapc
+## Carapace -0.638       
+## sexM      0.193 -0.470</code></pre>
+<p>All the fixed predictors were weak and do not appear to be
+significant when waterbody type and site were used as random effects in
+the model. The strongest predictor of Hg concentration appears to be
+carapace length.</p>
+<p>Helpful link for interpreting LMER output: <a
+href="http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/Benchmarks/LinearMixedModels_JDS_Dec2010.pdf"
+class="uri">http://bayes.acs.unt.edu:8083/BayesContent/class/Jon/Benchmarks/LinearMixedModels_JDS_Dec2010.pdf</a></p>
+</div>
+</div>
+<div id="the-performance-package" class="section level2" number="4.5">
+<h2><span class="header-section-number">4.5</span> the
+<code>performance</code> package</h2>
+<pre class="r"><code>require(performance)
+get.models(lmer_dredge, 1:5) |&gt; lapply(r2)</code></pre>
+<pre><code>## $`6`
+## # R2 for Mixed Models
+## 
+##   Conditional R2: 0.767
+##      Marginal R2: 0.013
+## 
+## $`8`
+## # R2 for Mixed Models
+## 
+##   Conditional R2: 0.743
+##      Marginal R2: 0.038
+## 
+## $`22`
+## # R2 for Mixed Models
+## 
+##   Conditional R2: 0.769
+##      Marginal R2: 0.013
+## 
+## $`16`
+## # R2 for Mixed Models
+## 
+##   Conditional R2: 0.741
+##      Marginal R2: 0.044
+## 
+## $`24`
+## # R2 for Mixed Models
+## 
+##   Conditional R2: 0.746
+##      Marginal R2: 0.038</code></pre>
+<pre class="r"><code>bestmodel &lt;- get.models(lmer_dredge, 1)[[1]]</code></pre>
+<p>Lots of fascinating helper functions:</p>
+<pre class="r"><code>check_predictions(bestmodel)</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<pre class="r"><code>check_collinearity(bestmodel) |&gt; plot()</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-26-2.png" width="672" /></p>
+<pre class="r"><code>check_distribution(bestmodel) |&gt; plot()</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-26-3.png" width="672" /></p>
+<pre class="r"><code>check_residuals(bestmodel) |&gt; plot()</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-26-4.png" width="672" /></p>
+<pre class="r"><code>compare_performance(bestmodel,  get.models(lmer_dredge, 2)[[1]]) |&gt; plot()</code></pre>
+<p><img src="MixedEffectsModelsWithTurtles_files/figure-html/unnamed-chunk-26-5.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
