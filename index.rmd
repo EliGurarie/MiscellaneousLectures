@@ -20,7 +20,7 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
 - [**Lecture/Lab 3**: Linear Regression with Matrices and Likelihoods](lectures/PSQE_2025/Lab03_LinearModeling/Lab_MLE_Regression.html)
 - [**Lecture/Lab 4**: Generalized Linear Modeling](lectures/PSQE_2025/Lab04_GLM/Lab_MLE_GLM_LogisticRegression.html)
 - [**Lecture/Lab 5**: Mixed Effects Modeling](lectures/PSQE_2025/Lab05_MLE/MixedEffectsModelsWithTurtles.html)
-
+- [**Lecture 6**": Bayesian Inference](https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic4/index.html)
 
 ![](lectures/PSQE_2025/bg.jpg)
 
