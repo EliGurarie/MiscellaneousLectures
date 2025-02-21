@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Chloe and Elie" />
+
+<meta name="date" content="2025-02-18" />
+
+<title>Survival 101</title>
+
+<script src="SurvivalWithChloe_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="SurvivalWithChloe_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="SurvivalWithChloe_files/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="SurvivalWithChloe_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="SurvivalWithChloe_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="SurvivalWithChloe_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="SurvivalWithChloe_files/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="SurvivalWithChloe_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="SurvivalWithChloe_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="SurvivalWithChloe_files/navigation-1.1/tabsets.js"></script>
+<link href="SurvivalWithChloe_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="SurvivalWithChloe_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Survival 101</h1>
+<h4 class="author">Chloe and Elie</h4>
+<h4 class="date">2025-02-18</h4>
+
+</div>
+
+
+<p>Links:</p>
+<ul>
+<li><a
+href="https://stat.ethz.ch/R-manual/R-patched/library/survival/doc/survival.pdf"
+class="uri">https://stat.ethz.ch/R-manual/R-patched/library/survival/doc/survival.pdf</a></li>
+<li><a
+href="https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html"
+class="uri">https://www.emilyzabor.com/tutorials/survival_analysis_in_r_tutorial.html</a></li>
+</ul>
+<p>Some packages (others on the fly):</p>
+<pre class="r"><code>require(dplyr)
+require(sf)
+require(ggplot2)
+require(survival)</code></pre>
+<p>An a picture of caribou (<em>Rangiver tarandus</em>) - hand drawn by
+our own Megan Perra:</p>
+<p><img src="bou.png" /></p>
+<div id="data---loading-and-visualizing" class="section level1"
+number="1">
+<h1><span class="header-section-number">1</span> Data - loading and
+visualizing</h1>
+<pre class="r"><code># load survival data
+load(file = &quot;data/PSQE_survival.rda&quot;)
+
+# load movement data
+load(file = &quot;data/PSQE_move.rda&quot;)</code></pre>
+<p>Survival (collar deployment, end, fate [survived, alive, censored])
+data from 208 barren-ground caribou. Data are maintained by the
+Government of the Northwest Territories and movement data are hosted on
+<a href="https://www.movebank.org/cms/movebank-main">MoveBank</a>.</p>
+<p>Location dates range from 2015-03-14 to 2023-04-01. The location data
+have been anonymized by removing the coordinates. Temperature (Daymet
+Daily Surface Weather Data, 10 km pixel resolution) were accessed via
+Google Earth Engine (Gorelick et al. 2017) and associated with every
+caribou location. We assigned each movement data record to a biological
+season based on its date, using predefined seasonal ranges: winter (Dec
+1–Apr 19), spring (Apr 20–Jun 1), calving (Jun 2–Jun 28), insect
+harassment (Jun 29–Jul 14), late summer (Jul 15–Sep 6), and fall (Sep
+7–Nov 30).</p>
+<pre class="r"><code>ggplot(survival_sub,
+       aes(x = startDate, y = ID)) +
+  geom_segment(aes(x = startDate, xend = endDate,
+                   y = ID, yend = ID, color = Died),
+               linewidth = 2, alpha = .8) +
+    scale_color_manual(values = c(&#39;grey&#39;, &quot;darkred&quot;)) +
+  facet_wrap(~Herd, scales = &quot;free_y&quot;) + 
+  theme_classic() +  
+  theme(axis.text.y = element_blank()) </code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>These figures show deployment and mortality of collared NWT caribou.
+Bars indicate the duration (deployment to end) of each animal, with grey
+indicating censored data while black are animals that were confirmed
+dead.</p>
+</div>
+<div id="surv-data-objects" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> <code>Surv</code> data
+objects</h1>
+<p>Survival data are time-to-event data that consist of a distinct start
+time and end time. Our survival data contain the following
+variables:</p>
+<ul>
+<li><p><strong>days</strong>: observed survival time</p></li>
+<li><p><strong>Died</strong>: death status TRUE=died FALSE=censored</p>
+<p><em>Note</em>: the <code>Surv()</code> function in the {survival}
+package accepts by default TRUE/FALSE, where TRUE is event and FALSE is
+censored; 1/0 where 1 is event and 0 is censored; or 2/1 where 2 is
+event and 1 is censored. <strong>Be sure the event indicator is properly
+formatted.</strong></p></li>
+<li><p><strong>Herd</strong>: “Bluenose East” “Bathurst”
+“Beverly”</p></li>
+</ul>
+<p>The <code>Surv()</code> function from the {survival} package creates
+a survival object to be used as the response variable in a model
+formula. Each entry represents a subject’s survival time, with a +
+symbol indicating a censored observation.</p>
+<pre class="r"><code># make a surv object
+survival_sub$BouSurv &lt;- Surv(survival_sub$days, survival_sub$Died)
+survival_sub$BouSurv[1:20]</code></pre>
+<pre><code>##  [1] 1262+  962+  902+   17  1468+  479   314   129   902+  118   703+  362+
+## [13]  904+  351   164+  915+  387+  196+  115   949+</code></pre>
+</div>
+<div id="non-parametric-survival-estimation" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Non-parametric survival
+estimation</h1>
+<div id="kaplan-meier" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Kaplan-Meier</h2>
+<p>The Kaplan-Meier method is a widely used non-parametric approach for
+estimating survival times and probabilities, producing a step function
+where each step corresponds to an event.</p>
+<p>Kaplan-Meier curves are generated using the <code>survfit()</code>
+function. The left-hand side of the formula specifies a
+<code>Surv</code> object, while the right-hand side includes one or more
+categorical variables to group observations. To create a single survival
+curve, use <code>~ 1</code> on the right-hand side.</p>
+<pre class="r"><code>km1 &lt;- survfit(BouSurv ~ 1, data=survival_sub)
+print(km1)</code></pre>
+<pre><code>## Call: survfit(formula = BouSurv ~ 1, data = survival_sub)
+## 
+##        n events median 0.95LCL 0.95UCL
+## [1,] 208     50     NA    1480      NA</code></pre>
+<pre class="r"><code>plot(km1, xscale=365.25, lwd=2, mark.time=TRUE,
+     xlab=&quot;Years since collaring&quot;, ylab=&quot;Survival&quot;,
+     main = &quot;Kaplan-Maier Estimates&quot;)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>These estimates can be obtained by herd too:</p>
+<pre class="r"><code>km2 &lt;- survfit(BouSurv ~ Herd, data=survival_sub)
+print(km2)</code></pre>
+<pre><code>## Call: survfit(formula = BouSurv ~ Herd, data = survival_sub)
+## 
+##                     n events median 0.95LCL 0.95UCL
+## Herd=Bathurst      95     36   1277     940      NA
+## Herd=Beverly       59      9     NA      NA      NA
+## Herd=Bluenose East 54      5     NA      NA      NA</code></pre>
+<pre class="r"><code>plot(km2, col = 1:3, xscale=365.25, lwd=2, mark.time=TRUE,
+     xlab=&quot;Years since collaring&quot;, ylab=&quot;Survival&quot;,
+     main = &quot;Kaplan-Maier Estimates - by Herd&quot;)
+legend(&quot;bottomleft&quot;, .9, 
+       c(&quot;Bathurst&quot;, &quot;Beverly&quot;, &quot;Bluenose East&quot;),
+       col=1:3, lwd=2, bty=&#39;n&#39;)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Note the output of the summary commands:</p>
+<pre class="r"><code>summary(km2)</code></pre>
+<pre><code>## Call: survfit(formula = BouSurv ~ Herd, data = survival_sub)
+## 
+##                 Herd=Bathurst 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    17     94       1    0.989  0.0106       0.9688        1.000
+##   101     93       1    0.979  0.0149       0.9500        1.000
+##   115     92       1    0.968  0.0181       0.9332        1.000
+##   118     91       1    0.957  0.0208       0.9175        0.999
+##   128     90       1    0.947  0.0231       0.9025        0.993
+##   129     89       1    0.936  0.0252       0.8880        0.987
+##   144     88       1    0.926  0.0271       0.8740        0.980
+##   153     86       1    0.915  0.0288       0.8600        0.973
+##   251     82       1    0.904  0.0306       0.8457        0.966
+##   304     80       1    0.892  0.0322       0.8314        0.958
+##   312     79       1    0.881  0.0337       0.8174        0.950
+##   314     78       1    0.870  0.0351       0.8036        0.941
+##   325     77       1    0.858  0.0364       0.7899        0.933
+##   331     76       1    0.847  0.0377       0.7764        0.924
+##   350     75       1    0.836  0.0388       0.7631        0.915
+##   351     74       1    0.825  0.0399       0.7499        0.907
+##   404     71       1    0.813  0.0410       0.7364        0.897
+##   413     70       1    0.801  0.0420       0.7230        0.888
+##   450     68       1    0.790  0.0430       0.7096        0.879
+##   453     67       1    0.778  0.0440       0.6962        0.869
+##   479     65       1    0.766  0.0449       0.6827        0.859
+##   482     64       1    0.754  0.0458       0.6693        0.849
+##   489     63       1    0.742  0.0466       0.6560        0.839
+##   492     62       1    0.730  0.0473       0.6428        0.829
+##   513     60       1    0.718  0.0481       0.6294        0.818
+##   553     58       1    0.705  0.0488       0.6159        0.808
+##   575     57       1    0.693  0.0495       0.6024        0.797
+##   595     55       1    0.680  0.0502       0.5888        0.786
+##   613     54       1    0.668  0.0508       0.5753        0.775
+##   625     53       1    0.655  0.0514       0.5618        0.764
+##   767     43       1    0.640  0.0524       0.5451        0.751
+##   782     38       1    0.623  0.0537       0.5263        0.738
+##   792     37       1    0.606  0.0548       0.5078        0.724
+##   940     26       1    0.583  0.0574       0.4806        0.707
+##   968     23       1    0.558  0.0603       0.4511        0.689
+##  1277      2       1    0.279  0.1994       0.0686        1.000
+## 
+##                 Herd=Beverly 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##    40     59       1    0.983  0.0168        0.951        1.000
+##   194     54       1    0.965  0.0244        0.918        1.000
+##   265     51       1    0.946  0.0304        0.888        1.000
+##   339     48       1    0.926  0.0356        0.859        0.999
+##   530     38       1    0.902  0.0422        0.823        0.988
+##   552     37       1    0.877  0.0476        0.789        0.976
+##   626     36       1    0.853  0.0521        0.757        0.962
+##   695     35       1    0.829  0.0560        0.726        0.946
+##   714     34       1    0.804  0.0595        0.696        0.930
+## 
+##                 Herd=Bluenose East 
+##  time n.risk n.event survival std.err lower 95% CI upper 95% CI
+##   473     45       1    0.978  0.0220        0.936            1
+##   478     44       1    0.956  0.0307        0.897            1
+##   849     27       1    0.920  0.0456        0.835            1
+##  1005     22       1    0.878  0.0597        0.769            1
+##  1480      8       1    0.769  0.1152        0.573            1</code></pre>
+<p>There is also a <code>ggplot</code> version of this command, which is
+“prettier”, and easily adds confidence intervals:</p>
+<pre class="r"><code>library(ggsurvfit)
+ggsurvfit(km2) + add_confidence_interval()</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>But to understand how this plot is made it is good to delve into the
+structure of this <code>survfit</code> object:</p>
+<pre class="r"><code>herd &lt;- rep(c(&quot;Bathurst&quot;,&quot;Beverly&quot;,&quot;Bluenose East&quot;), times = km2$strata)
+km2_df &lt;- with(km2, 
+     data.frame(time, n.risk, 
+                n.event, n.censor, 
+                surv, std.err, 
+                cumhaz, std.chaz, 
+                lower, upper, 
+                herd))</code></pre>
+<p>With this data frame, you can make your own plots how you like:</p>
+<pre class="r"><code>ggplot(km2_df, aes(time, surv, col = herd, fill = herd, 
+                   ymin = lower, ymax = upper)) + 
+  geom_ribbon(alpha = 0.3) + geom_point() + geom_line()</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<div id="estimating-a-constant-hazard-rate" class="section level3"
+number="3.1.1">
+<h3><span class="header-section-number">3.1.1</span> Estimating a
+constant hazard rate</h3>
+<p>To get an estimate of a <strong>constant hazard</strong> model from
+the <strong>Kaplan-Meier survival estimate</strong> we use the
+relationship between the survival function <span
+class="math inline">\(S(t)\)</span> and the cumulative hazard function
+<span class="math inline">\(H(t)\)</span>. The survival function is:</p>
+<p><span class="math inline">\(S(t) = e^{-H(t)}\)</span></p>
+<p>This means that if we plot <span
+class="math inline">\(\log(S(t))\)</span> against <span
+class="math inline">\(t\)</span>, the cumulative hazard function <span
+class="math inline">\(H(t)\)</span> can be estimated as the
+<strong>negative slope</strong> of the resulting curve.</p>
+<p>We can use the data frame created above for this. For example, just
+for Bathurst:</p>
+<pre class="r"><code>lm(log(surv) ~ time - 1, data = km2_df |&gt; subset(herd == &quot;Bathurst&quot;)) |&gt; summary()</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = log(surv) ~ time - 1, data = subset(km2_df, herd == 
+##     &quot;Bathurst&quot;))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.52886  0.00044  0.02045  0.04092  0.07462 
+## 
+## Coefficients:
+##        Estimate Std. Error t value Pr(&gt;|t|)    
+## time -5.861e-04  1.147e-05  -51.11   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.08002 on 87 degrees of freedom
+## Multiple R-squared:  0.9678, Adjusted R-squared:  0.9674 
+## F-statistic:  2613 on 1 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Baseline constant hazard rate: 0.00059 per day.</p>
+<p>To check out the fit:</p>
+<pre class="r"><code>cont.hazard.fit &lt;- lm(log(surv) ~ time - 1, data = km2_df |&gt; subset(herd == &quot;Bathurst&quot;))
+
+plot(log(surv) ~ time, data = km2_df |&gt; subset(herd == &quot;Bathurst&quot;), 
+     main = &quot;log Survival plot&quot;)
+abline(cont.hazard.fit, col = 2, lwd = 2)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<blockquote>
+<p><strong>Quick Exercise:</strong> Compute this for the other
+herds!</p>
+</blockquote>
+</div>
+</div>
+<div id="nelson-aalen" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Nelson-Aalen</h2>
+<p>Unlike Kaplan-Meier, which estimates survival directly, the
+Nelson-Aalen estimator calculates the cumulative hazard rates over time
+using:</p>
+<p><span class="math display">\[
+H(t) = \sum_{i: t_i \leq t} \frac{d_i}{n_i}
+\]</span></p>
+<p>where <span class="math inline">\(d_i\)</span> is the number of
+events at time <span class="math inline">\(t_i\)</span>, and <span
+class="math inline">\(n_i\)</span> is the number at risk just before
+<span class="math inline">\(t_i\)</span>.</p>
+<p>In the <code>survfit()</code> function, the <code>ctype = 1</code>
+option uses the N-A estimator rather than the default Kaplan-Meier.</p>
+<pre class="r"><code># estimate Nelson-Aalon 
+na1 &lt;- survfit(Surv(days, Died) ~ Herd, 
+               data=survival_sub, 
+               ctype=1)
+print(na1)</code></pre>
+<pre><code>## Call: survfit(formula = Surv(days, Died) ~ Herd, data = survival_sub, 
+##     ctype = 1)
+## 
+##                     n events median 0.95LCL 0.95UCL
+## Herd=Bathurst      95     36   1277     940      NA
+## Herd=Beverly       59      9     NA      NA      NA
+## Herd=Bluenose East 54      5     NA      NA      NA</code></pre>
+<pre class="r"><code># just plots the survival function, boring!
+plot(na1, xscale=365.25, lwd=2, mark.time=TRUE,
+      xlab=&quot;Years since collaring&quot;, ylab=&quot;Survival&quot;)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>That’s a plot of the survival function, that shouldn’t look
+<em>too</em> different from the one above.</p>
+<p>We can get the cumulative survival (which is what the N-A estimator
+is actually computing). We’ll do this for the Bathurst herd again, first
+- again - building a data frame:</p>
+<pre class="r"><code>herd &lt;- rep(c(&quot;Bathurst&quot;,&quot;Beverly&quot;,&quot;Bluenose East&quot;), 
+            times = km2$strata)
+na1_df &lt;- with(na1, 
+     data.frame(time, n.risk, 
+                n.event, n.censor, 
+                surv, std.err, 
+                cumhaz, std.chaz, 
+                lower, upper, 
+                herd))</code></pre>
+<p>Here are some <em>cumulative hazard</em> curves - using the ggplot
+template above:</p>
+<pre class="r"><code>ggplot(na1_df, aes(time, cumhaz, col = herd, fill = herd, 
+                   ymin =  cumhaz - 2*std.chaz, 
+                   ymax = cumhaz + 2*std.chaz)) + 
+  geom_ribbon(alpha = 0.3) + geom_point() + geom_line()</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p>The slope of the cumulative hazard estimator is also an estimate of a
+constant baseline hazard:</p>
+<pre class="r"><code>lm(cumhaz ~ time-1, data = na1_df |&gt; subset(herd == &quot;Bathurst&quot;)) |&gt; summary()</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = cumhaz ~ time - 1, data = subset(na1_df, herd == 
+##     &quot;Bathurst&quot;))
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -0.06281 -0.03320 -0.01431  0.00511  0.34991 
+## 
+## Coefficients:
+##       Estimate Std. Error t value Pr(&gt;|t|)    
+## time 5.704e-04  7.853e-06   72.63   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.05481 on 87 degrees of freedom
+## Multiple R-squared:  0.9838, Adjusted R-squared:  0.9836 
+## F-statistic:  5276 on 1 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The estimator is similar (though not exactly) to the one obtained by
+the Kaplan-Meier estimator: 0.00057 1/day.</p>
+<blockquote>
+<p><strong>Quick Exercise:</strong> Compute this for the other
+herds!</p>
+</blockquote>
+</div>
+</div>
+<div id="cox-proportional-hazard" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Cox-proportional
+hazard</h1>
+<p>The Cox proportional hazards model is widely used in survival
+analysis because it relates the hazard (or risk) of an event happening
+to explanatory covariates without requiring the assumption of a specific
+baseline hazard distribution. However, its validity relies on the
+proportional hazards assumption. In other words, the model assumes that
+the effect of a covariate (i.e. species or treatment) on the risk of the
+event (dying) is constant over time. For example, if species A is twice
+as likely to die as species B early in the study, it remains twice as
+likely to die later, regardless of how much time has passed.</p>
+<p>The hazard function for an individual at time <span
+class="math inline">\(t\)</span>, given covariates <span
+class="math inline">\(\mathbf{x}\)</span>, is modeled as:</p>
+<p><span class="math display">\[
+h(t|\mathbf{x}) = h_0(t) \exp(\beta_1 x_1 + \beta_2 x_2 + \dots +
+\beta_p x_p)
+\]</span> Where:</p>
+<ul>
+<li><p><span class="math inline">\(h(t|\mathbf{x})\)</span> is the
+hazard function at time <span class="math inline">\(t\)</span></p></li>
+<li><p><span class="math inline">\(h_0(t)\)</span> is the baseline
+hazard (the hazard when all covariates are zero)</p></li>
+<li><p><span class="math inline">\(\beta_1, \beta_2, \dots,
+\beta_p\)</span> are coefficients of the covariates <span
+class="math inline">\(x_1, x_2, \dots, x_p\)</span>.</p></li>
+</ul>
+<p>Or - more compactly:</p>
+<p><span class="math display">\[
+h(t|\mathbf{x}) = h_0(t) \exp({\bf X} \beta)
+\]</span></p>
+<p>The assumption of proportional hazards means that the hazard ratio
+between two individuals, <span class="math inline">\(A\)</span> and
+<span class="math inline">\(B\)</span>, with covariates <span
+class="math inline">\(\mathbf{x}_A\)</span> and <span
+class="math inline">\(\mathbf{x}_B\)</span>, is constant over time:</p>
+<p><span class="math display">\[
+\frac{h(t|\mathbf{x}_A)}{h(t|\mathbf{x}_B)} = \exp\big(\beta_1(x_{1A} -
+x_{1B}) + \beta_2(x_{2A} - x_{2B}) + \dots + \beta_p(x_{pA} -
+x_{pB})\big)
+\]</span></p>
+<p>This ratio does not depend on <span class="math inline">\(t\)</span>,
+implying that the relative effect of the covariates on the hazard
+remains the same throughout the study period.</p>
+<div id="compare-across-herds" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Compare across
+herds</h2>
+<p>We use the <code>coxph()</code> function in the survival package to
+quantify the effect size for predictor variables.</p>
+<pre class="r"><code>cph_fit &lt;- coxph(Surv(days, Died) ~ Herd, data=survival_sub)
+summary(cph_fit)</code></pre>
+<pre><code>## Call:
+## coxph(formula = Surv(days, Died) ~ Herd, data = survival_sub)
+## 
+##   n= 208, number of events= 50 
+## 
+##                      coef exp(coef) se(coef)      z Pr(&gt;|z|)    
+## HerdBeverly       -0.8941    0.4090   0.3729 -2.398 0.016503 *  
+## HerdBluenose East -1.8853    0.1518   0.5319 -3.545 0.000393 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##                   exp(coef) exp(-coef) lower .95 upper .95
+## HerdBeverly          0.4090      2.445   0.19692    0.8494
+## HerdBluenose East    0.1518      6.589   0.05351    0.4305
+## 
+## Concordance= 0.676  (se = 0.03 )
+## Likelihood ratio test= 21.64  on 2 df,   p=2e-05
+## Wald test            = 16.27  on 2 df,   p=3e-04
+## Score (logrank) test = 19.93  on 2 df,   p=5e-05</code></pre>
+<p>In a Cox regression model, the quantity of interest is the
+<strong>hazard ratio (HR)</strong>. The HR represents the ratio of
+hazards between two groups at any given time point. It reflects the
+<strong>instantaneous rate</strong> at which the event of interest
+occurs for individuals who are still at risk. It is important to note
+that the HR is not a measure of risk, although it is often mistakenly
+interpreted as such.</p>
+<p>If the regression parameter is denoted as <span
+class="math inline">\(\beta\)</span>, then the hazard ratio is given
+by:</p>
+<p><span class="math display">\[
+HR = e^\beta
+\]</span></p>
+<p>This equation describes how the hazard of the event changes relative
+to a one-unit change in the predictor variable.</p>
+<pre class="r"><code># plot predictions
+
+pred_df &lt;- expand.grid(Died = c(TRUE,FALSE),
+                       Herd = unique(survival_sub$Herd),
+                       days = 1:(365*2)) #2 years
+
+preds &lt;- predict(cph_fit, newdata = pred_df, 
+                 type = &quot;survival&quot;, se.fit = TRUE)
+
+pred_df &lt;- pred_df |&gt; mutate(fit = preds$fit,
+                             lcl = fit - 1.96*preds$se.fit,
+                             ucl = fit + 1.96*preds$se.fit,) |&gt;
+    mutate(Herd = as.factor(Herd))
+  
+ggplot(data = pred_df, 
+         aes(x = days, y = fit, fill = Herd))+
+    geom_ribbon(aes(ymin = lcl, ymax = ucl, fill = Herd), 
+                alpha = .5) +
+    geom_line(aes(color = Herd), cex = 1)+
+    theme_minimal() +
+    scale_fill_brewer(palette = &quot;Dark2&quot;,
+                      guide = FALSE) +
+    scale_color_brewer(palette = &quot;Dark2&quot;,
+                       name = &quot;Herd&quot;)+
+  labs(y = &quot;survival&quot;, x = &quot;days&quot;)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+</div>
+<div id="cph-to-look-at-temperature" class="section level2"
+number="4.2">
+<h2><span class="header-section-number">4.2</span> CPH to look at
+temperature</h2>
+<p>With the movement data, we’re curious about the impact of temperature
+on survival and whether it changes throughout the year. We can
+investigate the impact of temperature on survival using discrete seasons
+and CPH.</p>
+<p>First, let’s visualize seasonal temperatures and whether individuals
+lived or died.</p>
+<pre class="r"><code>tmax_summary &lt;- move_sub |&gt;
+  subset(Herd == &quot;Bathurst&quot;) |&gt;
+  group_by(ID, bioYear, season, Died) |&gt;
+  summarize(temp_mean = mean(tmax, na.rm = TRUE)) |&gt;
+  unique()
+
+ggplot(tmax_summary |&gt; subset(!Died), 
+       aes(x = bioYear, y = temp_mean)) +
+  geom_point(size = 2, alpha = .4) + 
+  theme(legend.position = &quot;none&quot;) +
+  geom_point(data = tmax_summary |&gt; subset(Died), 
+             pch = 17, color = &quot;red&quot;, size = 1) +
+  facet_wrap(~season)</code></pre>
+<p><img src="SurvivalWithChloe_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p>To run the CPH models, we need to summarize the data, annually for
+each caribou and season, calculate the mean temperature experienced,
+whether the animal died, and number of days survived.</p>
+<pre class="r"><code># make data frame for cph 
+# one row for each caribou-season
+# with whether they died, # days survived, mean temperature
+
+cph_df &lt;- move_sub |&gt;
+  #subset(Herd == &quot;Bathurst&quot;) |&gt;
+  group_by(ID, bioYear, season) |&gt;
+  dplyr::summarise(Died = sum(Death) &gt; 0,
+                   days = difftime(max(Date), min(Date), units = &quot;days&quot;),
+                   temp = mean(tmax, na.rm = TRUE))</code></pre>
+<p>Then, we can use a fun plyr function to fit CPH model analyzing days
+survived as a function of temperature for each season.</p>
+<pre class="r"><code>require(plyr)
+
+fit_list &lt;- dlply(cph_df, &quot;season&quot;, function(df)
+  fit &lt;- coxph(Surv(days, Died) ~ temp, data = df)
+  )
+
+require(broom)
+
+ldply(fit_list, tidy)</code></pre>
+<pre><code>##              season term    estimate  std.error  statistic      p.value
+## 1            winter temp -0.10874009 0.08079392 -1.3458944 1.783366e-01
+## 2            spring temp -0.05692325 0.13348155 -0.4264503 6.697797e-01
+## 3           calving temp  2.19576457 1.53947189  1.4263103 1.537788e-01
+## 4 insect-harassment temp  0.07543888 0.15033722  0.5017978 6.158098e-01
+## 5       late summer temp  0.50576748 0.36795353  1.3745418 1.692736e-01
+## 6              fall temp  0.53347256 0.08826209  6.0441870 1.501652e-09</code></pre>
+<p>Nothing significant pops out except for in the fall, there is a
+positive significant coefficient for temperature. Remember that CPH
+models hazard ratios, so higher temps associated with <em>higher</em>
+mortality in fall.</p>
+</div>
+</div>
+<div id="likelihood-based-estimation" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Likelihood-based
+estimation</h1>
+<p>Estimating a survival process where the hazard function is:</p>
+<p><span class="math display">\[h(t|\beta) = \exp\left({\bf
+X}(t)\beta\right)\]</span></p>
+<p>This instantaneous hazard fluctuates with the “risk” covariate <span
+class="math inline">\({\bf X}(t)\)</span>, which changes in time. The
+exponential function guarantees that it is positive.</p>
+<p>From the hazard function, the <strong>survival function</strong> is:
+<span class="math display">\[
+S(t | \beta) = \exp\left(-\int_0^t h(u | \beta) du\right) =
+\exp\left(-\int_0^t \exp\left({\bf X}(u)\beta\right) du\right)
+\]</span></p>
+<p>We observe events from this process: <span
+class="math inline">\(T_i\)</span> where <span class="math inline">\(i
+\in \{1,2, ..., n_t\}\)</span> and censored observations: <span
+class="math inline">\(Y_i\)</span> where <span class="math inline">\(i
+\in \{1,2, ..., n_y\}\)</span>.</p>
+<div id="likelihood-function" class="section level3" number="5.0.1">
+<h3><span class="header-section-number">5.0.1</span> Likelihood
+Function:</h3>
+<p>For <strong>event times</strong> <span
+class="math inline">\(T_i\)</span>, the contribution to the likelihood
+is given by the density function:</p>
+<p><span class="math display">\[ f(T_i | \beta) = \exp\left({\bf
+X}(T_i)\beta\right) \exp\left(-\int_{0}^{T_i} \exp\left({\bf
+X}(t&#39;)\beta\right)\, dt&#39;\right) \]</span></p>
+<p>For <strong>censored times</strong> <span
+class="math inline">\(Y_i\)</span>, the contribution to the likelihood
+is the survival function:</p>
+<p><span class="math display">\[P(T &gt; Y_i | \beta) = S(Y_i | \beta) =
+\exp\left(-\int_0^{Y_i} \exp\left({\bf X}(t&#39;)\beta\right)
+dt&#39;\right)\]</span></p>
+<p>Thus, the total likelihood function is: <span class="math display">\[
+L(\beta) = \prod_{i=1}^{n_t} \exp\left({\bf X}(T_i) \beta\right)
+\exp\left(-\int_0^{T_i} \exp\left({\bf X}(u)\beta\right) du\right)
+\times \prod_{j=1}^{n_y} \exp\left(-\int_0^{Y_j} \exp\left({\bf
+X}(u)\beta\right) du\right)
+\]</span></p>
+</div>
+<div id="log-likelihood-function" class="section level3" number="5.0.2">
+<h3><span class="header-section-number">5.0.2</span> Log-Likelihood
+Function:</h3>
+<p>Taking the logarithm: <span class="math display">\[
+\ell(\beta) = \sum_{i=1}^{n_t} {\bf X}(T_i) \beta - \sum_{i=1}^{n_t}
+\int_0^{T_i} \exp\left({\bf X}(u)\beta\right) du - \sum_{j=1}^{n_y}
+\int_0^{Y_j} \exp\left({\bf X}(u)\beta\right) du.
+\]</span></p>
+<p>This function can be used to estimate <span
+class="math inline">\(\beta\)</span> via maximum likelihood estimation
+(MLE).</p>
+</div>
+<div id="discretization" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Discretization</h2>
+<p>Since the covariate <span
+class="math inline">\(\mathbf{X}(t)\)</span> is collected at discrete
+time points (e.g., daily measurements), we approximate the integral in
+the likelihood function with a sum over discrete time steps.</p>
+<p>Let’s denote the discrete time points as <span
+class="math inline">\(t_1, t_2, \dots\)</span>, and assume the data is
+recorded at intervals <span class="math inline">\(\Delta t\)</span>,
+which we take as 1 for simplicity (e.g., daily measurements, and the
+hazard rate is then in units of 1/day). The integral term is then
+approximated by a sum:</p>
+<p><span class="math display">\[\int_0^{T_i} \exp\left({\bf X}(t&#39;)
+\beta\right) dt&#39; \approx \sum_{t&#39;=0}^{T_i} \exp\left({\bf
+X}(t&#39;) \beta\right) \Delta t. \]</span></p>
+<p>Since <span class="math inline">\(\Delta t = 1\)</span> in our case,
+this simplifies to:</p>
+<p><span class="math display">\[ \sum_{t&#39;=0}^{T_i} \exp\left({\bf
+X}(t&#39;) \beta\right). \]</span></p>
+<div id="discretized-log-likelihood-function" class="section level3"
+number="5.1.1">
+<h3><span class="header-section-number">5.1.1</span> Discretized
+Log-Likelihood Function:</h3>
+<p>Using this approximation, the log-likelihood function can be
+rewritten as:</p>
+<p><span class="math display">\[\ell(\beta) = \sum_{i=1}^{n_t} {\bf
+X}(T_i) \beta - \sum_{i=1}^{n_t} \sum_{t&#39;=0}^{T_i} \exp\left({\bf
+X}(t&#39;)\beta\right) - \sum_{j=1}^{n_y} \sum_{t&#39;=0}^{Y_j}
+\exp\left({\bf X}(t&#39;)\beta\right).\]</span></p>
+<p>This formulation allows for practical computation using observed,
+discretely sampled covariate values.</p>
+</div>
+<div id="solving-for-beta-in-r" class="section level3" number="5.1.2">
+<h3><span class="header-section-number">5.1.2</span> Solving for beta in
+R</h3>
+<pre class="r"><code>log_likelihood &lt;- function(params = c(beta0 = 1, beta1 = 0), data) {
+  beta0 &lt;- params[&quot;beta0&quot;]
+  beta1 &lt;- params[&quot;beta1&quot;]
+  
+  # Get unique IDs
+  unique_ids &lt;- unique(data$ID)
+  
+  # Initialize log-likelihood
+  logL &lt;- 0
+  
+  # Loop over each individual
+  for (id in unique_ids) {
+    # Extract individual&#39;s data
+    indiv_data &lt;- data[data$ID == id, ]
+    
+    # Event time or censoring time
+    if (indiv_data$Died[1]) {  # If individual died
+      Ti &lt;- indiv_data$days[1]  # Death time
+      event_term &lt;- beta0 + beta1 * indiv_data$tmax[nrow(indiv_data)]
+      risk_term &lt;- sum(exp(beta0 + beta1 * indiv_data$tmax[indiv_data$days &lt;= Ti]), na.rm = TRUE)
+    } else {  # If individual was censored
+      Yi &lt;- indiv_data$days[1]  # Censoring time
+      event_term &lt;- 0  # No contribution from an event
+      risk_term &lt;- sum(exp(beta0 + beta1 * indiv_data$tmax[indiv_data$days &lt;= Yi]), na.rm = TRUE)
+    }
+    
+    # Update log-likelihood
+    logL &lt;- logL + event_term - risk_term
+  }
+  
+  return(-logL)
+}</code></pre>
+<pre class="r"><code>p0 &lt;- c(beta0 = 1, beta1 = 0)
+log_likelihood(p0, move_sub |&gt; subset(Herd == &quot;Bathurst&quot;))</code></pre>
+<pre><code>##    beta0 
+## 160543.1</code></pre>
+<pre class="r"><code>dynamic_hazard_fit &lt;- optim(p0, log_likelihood, data = move_sub |&gt; subset(Herd == &quot;Bathurst&quot;), hessian = TRUE)
+dynamic_hazard_fit</code></pre>
+<pre><code>## $par
+##       beta0       beta1 
+## -7.52049021 -0.01247488 
+## 
+## $value
+## [1] 287.0351
+## 
+## $counts
+## function gradient 
+##       63       NA 
+## 
+## $convergence
+## [1] 0
+## 
+## $message
+## NULL
+## 
+## $hessian
+##            beta0     beta1
+## beta0   34.01354 -212.0034
+## beta1 -212.00342 8744.6865</code></pre>
+<p>It worked! The predictions (with standard errors) are:</p>
+<pre class="r"><code>with(dynamic_hazard_fit, 
+     data.frame(par, 
+                se = solve(hessian) |&gt; diag() |&gt; sqrt()) |&gt; 
+       mutate(CI.low = par - 1.96 * se,
+              CI.high = par + 1.96 * se)
+     ) |&gt; round(5)</code></pre>
+<pre><code>##            par      se   CI.low  CI.high
+## beta0 -7.52049 0.18610 -7.88525 -7.15573
+## beta1 -0.01247 0.01161 -0.03522  0.01027</code></pre>
+</div>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

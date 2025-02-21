@@ -19,8 +19,9 @@ htmltools::img(src = "assets/ESFStacked_Full color.png", alt = 'banner',
   - This lecture comes from our [movement ecology book (in progress)](https://eligurarie.github.io/MovementEcologyBook)
 - [**Lecture/Lab 3**: Linear Regression with Matrices and Likelihoods](lectures/PSQE_2025/Lab03_LinearModeling/Lab_MLE_Regression.html)
 - [**Lecture/Lab 4**: Generalized Linear Modeling](lectures/PSQE_2025/Lab04_GLM/Lab_MLE_GLM_LogisticRegression.html)
-- [**Lecture/Lab 5**: Mixed Effects Modeling](lectures/PSQE_2025/Lab05_MLE/MixedEffectsModelsWithTurtles.html)
-- [**Lecture 6**": Bayesian Inference](https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic4/index.html)
+- [**Lecture/Lab 5**: Mixed Effects Modeling (of turtles)](lectures/PSQE_2025/Lab05_MLE/MixedEffectsModelsWithTurtles.html)
+- [**Lecture/Lab 6**: Survival Modeling (of caribou)](lectures/PSQE_2025/Lab06_Survival/SurvivalWithChloe.html)
+- [**Lecture 7**": Bayesian Inference](https://terpconnect.umd.edu/~egurarie/teaching/Biol709/Topic4/index.html)
 
 ![](lectures/PSQE_2025/bg.jpg)
 
