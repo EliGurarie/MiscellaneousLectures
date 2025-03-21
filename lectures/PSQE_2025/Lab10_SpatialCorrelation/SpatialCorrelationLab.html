@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Elie Gurarie" />
+
+<meta name="date" content="2025-03-19" />
+
+<title>Linear Models with Spatial Correlations</title>
+
+<script src="SpatialCorrelationLab_files/header-attrs-2.29/header-attrs.js"></script>
+<script src="SpatialCorrelationLab_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="SpatialCorrelationLab_files/bootstrap-3.3.5/css/journal.min.css" rel="stylesheet" />
+<script src="SpatialCorrelationLab_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="SpatialCorrelationLab_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="SpatialCorrelationLab_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="SpatialCorrelationLab_files/jqueryui-1.13.2/jquery-ui.min.js"></script>
+<link href="SpatialCorrelationLab_files/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="SpatialCorrelationLab_files/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="SpatialCorrelationLab_files/navigation-1.1/tabsets.js"></script>
+<link href="SpatialCorrelationLab_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="SpatialCorrelationLab_files/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Linear Models with Spatial
+Correlations</h1>
+<h3 class="subtitle">EFB 796: Practical Seminar in Quantitative
+Ecology</h3>
+<h4 class="author"><a href="eligurarie.github.io">Elie Gurarie</a></h4>
+<h4 class="date">2025-03-19</h4>
+
+</div>
+
+
+<div id="some-spatially-correlated-data" class="section level1"
+number="1">
+<h1><span class="header-section-number">1</span> Some spatially
+correlated data</h1>
+<p><em>Note - I borrowed this example from this excellent post on: <a
+href="https://www.r-bloggers.com/2019/09/spatial-regression-in-r-part-1-spamm-vs-glmmtmb/"
+class="uri">https://www.r-bloggers.com/2019/09/spatial-regression-in-r-part-1-spamm-vs-glmmtmb/</a></em></p>
+<p>Here’s some spatial data on calcium content measured in soil samples
+taken from the 0-20cm layer at 178 locations within a certain study area
+divided in three sub-areas. The elevation at each location was also
+recorded. There are three regions (a control, and two different
+fertilized treatments) which presumably leads to different calcium
+concentrations. The data are in this <code>geoR</code> package about
+which I know nothing, but it takes a little fussing to make it into a
+more or less recognizable data frame:</p>
+<pre class="r"><code>library(geoR)
+library(viridis)
+data(ca20)
+dat &lt;- data.frame(x = ca20$coords[,1], 
+                  y = ca20$coords[,2], 
+                  calcium = ca20$data, 
+                  elevation = ca20$covariate[,1], 
+                  region = factor(ca20$covariate[,2]))</code></pre>
+<p>A plot of the data:</p>
+<pre class="r"><code>require(ggplot2)
+ggplot(dat, aes(x=x, y = y, color =calcium, shape = region)) +
+  geom_point() +
+  scale_color_viridis(option = &quot;A&quot;) +
+  coord_fixed()</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>And one looking at the covariates and some quicky linear models</p>
+<pre class="r"><code>ggplot(dat, aes(x=elevation, y = calcium, color = region)) +
+  geom_point() + geom_smooth(method = &quot;lm&quot;)</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<div id="spatial-interpolations" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> Spatial
+interpolations</h2>
+<p>By the way, you can infer the elevation through interpolation of a
+raster. The key function here is the <code>Tps</code> (thin plate
+spline), essentially a smoother through measurements. We feed that spine
+to the <code>interpolate</code> function in the <code>raster</code>
+package:</p>
+<pre class="r"><code>library(fields)
+library(raster)
+# derive a DEM
+elev_m &lt;- Tps(dat[,c(&quot;x&quot;,&quot;y&quot;)], dat$elevation)</code></pre>
+<pre><code>## Warning: 
+## Grid searches over lambda (nugget and sill variances) with  minima at the endpoints: 
+##   (GCV) Generalized Cross-Validation 
+##    minimum at  right endpoint  lambda  =  5.669116e-06 (eff. df= 169.1 )</code></pre>
+<pre class="r"><code>r &lt;- raster(xmn = 4950, xmx = 5970, ymn = 4800, ymx = 5720, resolution = 10)
+elev &lt;- interpolate(r, elev_m)
+plot(elev, main = &quot;calcium on interpolated elevation&quot;)
+points(dat$x, dat$y,
+       col = viridis(60, option = &quot;A&quot;)[dat$calcium-21],
+       pch = 14 + as.numeric(dat$region))</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>There’s a clear elevational gradient, and some complex patterns.</p>
+</div>
+</div>
+<div id="the-linear-model" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> The Linear Model</h1>
+<p>A linear model</p>
+<pre class="r"><code>Ca_lm &lt;- lm(calcium ~ elevation * region, data = dat) 
+summary(Ca_lm)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = calcium ~ elevation * region, data = dat)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -28.3603  -5.0931  -0.4355   5.5786  26.7756 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         66.179     11.486   5.762 3.76e-08 ***
+## elevation           -6.425      2.403  -2.673 0.008235 ** 
+## region2             -2.082     16.063  -0.130 0.897031    
+## region3            -69.182     17.980  -3.848 0.000168 ***
+## elevation:region2    2.864      3.270   0.876 0.382361    
+## elevation:region3   16.237      3.374   4.812 3.25e-06 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 9.133 on 172 degrees of freedom
+## Multiple R-squared:  0.3398, Adjusted R-squared:  0.3206 
+## F-statistic:  17.7 on 5 and 172 DF,  p-value: 3.908e-14</code></pre>
+<blockquote>
+<p>What are the main inferences?</p>
+</blockquote>
+<div id="assessing-residuals" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Assessing
+residuals</h2>
+<p>It’s residuals</p>
+<pre class="r"><code>dat$res &lt;- Ca_lm$residuals</code></pre>
+<pre class="r"><code>ggplot(dat, aes(x, y, color = res, shape = region)) +
+  geom_point() +
+  scale_color_viridis(option = &quot;A&quot;) + 
+  coord_fixed()</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+There is definitely spatial autocorrelation in the residuals!</p>
+</div>
+<div id="morans-i-test" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Moran’s I test</h2>
+<p>If you want to obtain a statistical measure for spatial correlation,
+there is a Widely used statistic called Moran’s I.</p>
+</div>
+<div id="formula" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Formula</h2>
+<p><span class="math display">\[
+I = \frac{n}{s} \times \frac{\sum_{i} \sum_{j} w_{ij} (x_i - \bar{x})
+(x_j - \bar{x})}{\sum_{i} (x_i - \bar{x})^2}
+\]</span></p>
+<p>Where: - <span class="math inline">\(n\)</span> = total number of
+observations - <span class="math inline">\(x_i, x_j\)</span> = values at
+locations <span class="math inline">\(i\)</span> and <span
+class="math inline">\(j\)</span> - <span
+class="math inline">\(\bar{x}\)</span> = mean of the variable - <span
+class="math inline">\(w_{ij}\)</span> = spatial weight between locations
+<span class="math inline">\(i\)</span> and <span
+class="math inline">\(j\)</span> - <span class="math inline">\(s =
+\sum_{i} \sum_{j} w_{ij}\)</span>, the sum of all spatial weights</p>
+<p>The weights between the locations represent a structural assumption
+about the nature of the relationship between points as a function of
+distance <span class="math inline">\(d_{ij}\)</span>. In practice, it is
+almost always of the from <span
+class="math inline">\(1/d_{ij}^p\)</span>, where <span
+class="math inline">\(p\)</span> is either 1 or 2.</p>
+<p>If <span class="math inline">\(I \approx 0\)</span>, there is no
+significant spatial autocorrelation. If the statistic is positive <span
+class="math inline">\(I &gt; 0\)</span>, similar values cluster
+together, if it is negative (something I’ve never seen) dissimilar
+values are adjacent.</p>
+<p>The <code>ape::Moran.I()</code> computes Moran’s I, but you have to
+specify weights:</p>
+<pre class="r"><code>require(ape)
+# compute distance metric
+D.matrix &lt;- dist(dat[,c(&quot;x&quot;,&quot;y&quot;)]) |&gt; as.matrix()
+w &lt;- 1/D.matrix
+# set diagonals to 0
+diag(w) &lt;- 0
+Moran.I(dat$res, w)</code></pre>
+<pre><code>## $observed
+## [1] 0.03825488
+## 
+## $expected
+## [1] -0.005649718
+## 
+## $sd
+## [1] 0.006872627
+## 
+## $p.value
+## [1] 1.677087e-10</code></pre>
+<p>The inverse distance weights have a highly significant positive
+Moran’s I. Same for the squared distance:</p>
+<pre class="r"><code>Moran.I(dat$res, w^2)</code></pre>
+<pre><code>## $observed
+## [1] 0.1205907
+## 
+## $expected
+## [1] -0.005649718
+## 
+## $sd
+## [1] 0.02000301
+## 
+## $p.value
+## [1] 2.77111e-10</code></pre>
+<p>If you like prettier output (but less control) here’s a function in
+the <code>DHARMa</code> package:</p>
+<pre class="r"><code>require(DHARMa)
+testSpatialAutocorrelation(dat$res, dat$x, dat$y, plot=FALSE)</code></pre>
+<pre><code>## 
+##  DHARMa Moran&#39;s I test for distance-based autocorrelation
+## 
+## data:  dat$res
+## observed = 0.0382549, expected = -0.0056497, sd = 0.0068726, p-value =
+## 1.677e-10
+## alternative hypothesis: Distance-based autocorrelation</code></pre>
+</div>
+</div>
+<div id="modeling-with-spatial-correlation" class="section level1"
+number="3">
+<h1><span class="header-section-number">3</span> Modeling with spatial
+correlation</h1>
+<p>Ok, we definitely have correlated residuals. We need to take those
+into account. So, our model might look like:</p>
+<p><span class="math display">\[Y = X\beta + \epsilon\]</span></p>
+<p>where</p>
+<p><span class="math display">\[\epsilon \sim {\cal N}(0,
+\Sigma)\]</span></p>
+<p>What distinguishes this from a standard ordinarily squares regression
+is that the residuals are not independent, but correlated. Our task is
+to find a reasonable correlation structure.</p>
+<p>For example, for the above, we might assume a spatial Gaussian
+correlation structure in the residuals that assumes:</p>
+<p><span class="math display">\[\Sigma_{ij} = \sigma^2 \, Cor(r_i,r_j) =
+\sigma^2 (1-\nu) \exp\left(-(d_{ij} / \delta)^2 \right)\]</span></p>
+<p>Where <span class="math inline">\(d_{ij} = ||z_i - z_j||\)</span> is
+the distance between the two residuals. There are now three parameters
+to estimate in the <span class="math inline">\(\Sigma\)</span>: the
+overall variance <span class="math inline">\(\sigma^2\)</span>, the
+“nugget” <span class="math inline">\(0 \leq \nu \leq 1\)</span> and the
+distance scale <span class="math inline">\(\delta &gt; 0\)</span>. The
+nugget captures the variation among points sampled int the same location
+(where <span class="math inline">\(\delta_{ij} = 0\)</span>) - if it
+equal to 0 we assume all the observations at a given location is the
+same. The <span class="math inline">\(\delta\)</span> is the distance
+parameter - it captures the spatial scale of autocorrelation.</p>
+<div id="generalized-least-squares-gls" class="section level2"
+number="3.1">
+<h2><span class="header-section-number">3.1</span> Generalized least
+squares (<code>gls</code>)</h2>
+<p><strong>Generalized Least Squares</strong> is an efficient
+matrix-inversion based statistical method (as you might guess it
+generalizes the standard least squares approach with a fancier <span
+class="math inline">\(\Sigma\)</span>) for estimating exactly this
+model. It is efficient and exact - unfortunately it only works on
+Gaussian models.</p>
+<p>Here’s an example.</p>
+<pre class="r"><code>require(nlme)
+Ca_gls_gauss &lt;- gls(calcium ~ elevation * region, 
+                correlation = corGaus(1, ~ I(x/100) + I(y/100), nugget = TRUE),
+              data = dat) 
+summary(Ca_gls_gauss)</code></pre>
+<pre><code>## Generalized least squares fit by REML
+##   Model: calcium ~ elevation * region 
+##   Data: dat 
+##        AIC      BIC    logLik
+##   1250.789 1279.116 -616.3945
+## 
+## Correlation Structure: Gaussian spatial correlation
+##  Formula: ~I(x/100) + I(y/100) 
+##  Parameter estimate(s):
+##     range    nugget 
+## 0.5568721 0.1761542 
+## 
+## Coefficients:
+##                       Value Std.Error   t-value p-value
+## (Intercept)        55.28398 13.221775  4.181283  0.0000
+## elevation          -3.96324  2.613188 -1.516629  0.1312
+## region2             5.10573 20.015049  0.255095  0.7990
+## region3           -47.20941 22.935333 -2.058370  0.0411
+## elevation:region2   1.06267  3.942516  0.269540  0.7878
+## elevation:region3  11.84809  4.112586  2.880935  0.0045
+## 
+##  Correlation: 
+##                   (Intr) elevtn regin2 regin3 elvt:2
+## elevation         -0.972                            
+## region2           -0.652  0.630                     
+## region3           -0.565  0.545  0.352              
+## elevation:region2  0.634 -0.650 -0.983 -0.334       
+## elevation:region3  0.605 -0.619 -0.379 -0.986  0.383
+## 
+## Standardized residuals:
+##         Min          Q1         Med          Q3         Max 
+## -2.95482414 -0.48688629 -0.03463241  0.60893645  2.87029479 
+## 
+## Residual standard error: 9.400885 
+## Degrees of freedom: 178 total; 172 residual</code></pre>
+<p>Note, I had to divide the X in my coordinates by a 100 in order to
+make the algorithm work. Lots of good information here. Look at the
+results and answer The following questions:</p>
+<ol style="list-style-type: decimal">
+<li>What is the spatial scale of correlation?</li>
+<li>What is an interpretation of the nugget estimate?</li>
+<li>Where in this output is an estimate of <span
+class="math inline">\(\sigma^2\)</span>?</li>
+<li>Are the main effects results different than when we did not account
+for spatial correlation?</li>
+</ol>
+</div>
+<div id="exponential-correlation" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Exponential
+correlation</h2>
+<p>The exponential spatial correlation looks just like the Gaussian one,
+except it isn’t squared.</p>
+<p><span class="math display">\[\Sigma_{ij} = \sigma^2 \, Cor(r_i,r_j) =
+\sigma^2 (1-\nu) \exp\left(-d_{ij} / \delta \right)\]</span></p>
+<pre class="r"><code>require(nlme)
+Ca_gls_exp &lt;- gls(calcium ~ elevation * region, 
+                correlation = corExp(1, ~ I(x/100) + I(y/100), nugget = TRUE), 
+              data = dat) 
+summary(Ca_gls_exp)</code></pre>
+<pre><code>## Generalized least squares fit by REML
+##   Model: calcium ~ elevation * region 
+##   Data: dat 
+##       AIC      BIC    logLik
+##   1246.11 1274.437 -614.0549
+## 
+## Correlation Structure: Exponential spatial correlation
+##  Formula: ~I(x/100) + I(y/100) 
+##  Parameter estimate(s):
+##     range    nugget 
+## 1.1725469 0.1585413 
+## 
+## Coefficients:
+##                       Value Std.Error   t-value p-value
+## (Intercept)        53.32160 15.393860  3.463823  0.0007
+## elevation          -2.49907  2.779489 -0.899110  0.3699
+## region2           -12.50173 23.528630 -0.531341  0.5959
+## region3           -36.13745 25.569560 -1.413300  0.1594
+## elevation:region2   3.48074  4.302498  0.809005  0.4196
+## elevation:region3   8.71906  4.406387  1.978733  0.0494
+## 
+##  Correlation: 
+##                   (Intr) elevtn regin2 regin3 elvt:2
+## elevation         -0.943                            
+## region2           -0.619  0.561                     
+## region3           -0.601  0.579  0.371              
+## elevation:region2  0.574 -0.570 -0.973 -0.313       
+## elevation:region3  0.589 -0.624 -0.354 -0.978  0.332
+## 
+## Standardized residuals:
+##         Min          Q1         Med          Q3         Max 
+## -2.48364728 -0.52071961 -0.02756801  0.55888847  2.49242099 
+## 
+## Residual standard error: 10.79667 
+## Degrees of freedom: 178 total; 172 residual</code></pre>
+<p>Note how the range and nugget changed.</p>
+<p>We can compare these two spatial correlation structures:</p>
+<pre class="r"><code>AIC(Ca_gls_exp, Ca_gls_gauss)</code></pre>
+<pre><code>##              df      AIC
+## Ca_gls_exp    9 1246.110
+## Ca_gls_gauss  9 1250.789</code></pre>
+<p>There is some evidence that the exponential model is better one. But
+is there a better way to determine this? Or a more flexible spatial
+correlation structure?</p>
+<p>Why yes! Is is the …..</p>
+</div>
+<div id="matérn-correlation" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Matérn
+correlation</h2>
+<p>A more generalized form of spatial autocorrelation is the <a
+href="https://en.wikipedia.org/wiki/Mat%C3%A9rn_covariance_function">Matérn
+covariance function</a>. Before we get into it, here are the only
+pictures I could find of Bertil Matérn (1917-2007) - the Swedish
+forestry statistician for whom this covariance structure is named:</p>
+<p><img src="Matern.png" /></p>
+<p>From these, we can infer that he never changed his expression or
+glasses style in 7 decades. However, he must have been relieved when the
+top of his head grew back, after being presumably blown away by this
+thing:</p>
+<p><span class="math display">\[C_\nu(d) =
+\sigma^2\frac{2^{1-\nu}}{\Gamma(\nu)}\Bigg(\sqrt{2\nu}\frac{d}{\rho}\Bigg)^\nu
+K_\nu\Bigg(\sqrt{2\nu}\frac{d}{\rho}\Bigg)\]</span></p>
+<p>This is the Matérn distance function. It’s not that important to know
+what <span class="math inline">\(\Gamma\)</span>, <span
+class="math inline">\(K\)</span>, etc. are (you can dig into it )</p>
+<p><img src="SpatialCorrelationLab_files/figure-html/MaternCurves-1.png" width="672" /></p>
+<p>The parameter <span class="math inline">\(\mu\)</span> is refered to
+as “smoothness”, and <span class="math inline">\(\rho\)</span> is the
+“scale” (similar to <span class="math inline">\(\delta\)</span> above).
+At <span class="math inline">\(\nu = 1/2\)</span> it is exponential. At
+<span class="math inline">\(\nu \to \infty\)</span> it is Gaussian. But
+it is generally quite flexible. So if you don’t want to pre-specify that
+shape, the Matern approach will allow you to estimate both those
+parameters. Here’s an example using the <code>spaMM</code> package:</p>
+<pre class="r"><code>library(spaMM)
+m_spamm &lt;- fitme(calcium ~ elevation * region + Matern(1 | x + y), 
+                 data = dat, family = &quot;gaussian&quot;)
+# model summary
+summary(m_spamm)</code></pre>
+<pre><code>## formula: calcium ~ elevation * region + Matern(1 | x + y)
+## ML: Estimation of corrPars, lambda and phi by ML.
+##     Estimation of fixed effects by ML.
+## Estimation of lambda and phi by &#39;outer&#39; ML, maximizing logL.
+## family: gaussian( link = identity ) 
+##  ------------ Fixed effects (beta) ------------
+##                   Estimate Cond. SE t-value
+## (Intercept)         52.561   13.718  3.8317
+## elevation           -2.937    2.613 -1.1242
+## region2             -2.714   20.959 -0.1295
+## region3            -38.370   23.703 -1.6188
+## elevation:region2    2.145    3.993  0.5372
+## elevation:region3    9.709    4.174  2.3262
+##  --------------- Random effects ---------------
+## Family: gaussian( link = identity ) 
+##                    --- Correlation parameters:
+##       1.nu      1.rho 
+## 0.44908106 0.01530941 
+##            --- Variance parameters (&#39;lambda&#39;):
+## lambda = var(u) for u ~ Gaussian; 
+##    x + y  :  90.21  
+## # of obs: 178; # of groups: x + y, 178 
+##  -------------- Residual variance  ------------
+## phi estimate was 0.00499297 
+##  ------------- Likelihood values  -------------
+##                        logLik
+## logL       (p_v(h)): -626.335</code></pre>
+<p>So - here we have estimates: <span class="math inline">\(\nu =
+0.43\)</span> and <span class="math inline">\(\rho = 0.0116\)</span>.
+What does that look like?</p>
+<pre class="r"><code>curve(MaternCorr(x, nu = 0.43, rho = 0.01), xlim = c(0,500))
+abline(h = 0.1, lty = 3)</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>The <span class="math inline">\(\nu\)</span> is quite close to 1/2,
+so the spatial correlation is approximately exponential. Note that even
+at 200 m distance, there is still something like a 10% correlation in
+the residuals.</p>
+</div>
+<div id="crazy-prediction-plot" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Crazy prediction
+plot</h2>
+<p>This is a terrific plot. The code was cheerfully stolen from <a
+href="https://www.r-bloggers.com/2019/09/spatial-regression-in-r-part-1-spamm-vs-glmmtmb/">this
+blog post</a>.</p>
+<pre class="r"><code>library(fields)
+library(raster)
+# derive a DEM
+elev_m &lt;- Tps(dat[,c(&quot;x&quot;,&quot;y&quot;)], dat$elevation)</code></pre>
+<pre><code>## Warning: 
+## Grid searches over lambda (nugget and sill variances) with  minima at the endpoints: 
+##   (GCV) Generalized Cross-Validation 
+##    minimum at  right endpoint  lambda  =  5.669116e-06 (eff. df= 169.1 )</code></pre>
+<pre class="r"><code>## Warning: 
+## Grid searches over lambda (nugget and sill variances) with  minima at the endpoints: 
+##   (GCV) Generalized Cross-Validation 
+##    minimum at  right endpoint  lambda  =  5.669116e-06 (eff. df= 169.1 )
+r &lt;- raster(xmn = 4950, xmx = 5970, ymn = 4800, ymx = 5720, resolution = 5)
+elev &lt;- interpolate(r, elev_m)
+
+# for the region info use the limits given in ca20
+pp &lt;- SpatialPolygons(
+  list(Polygons(list(Polygon(ca20$reg1)), ID = &quot;reg1&quot;),
+       Polygons(list(Polygon(ca20$reg2)), ID = &quot;reg2&quot;), 
+       Polygons(list(Polygon(ca20$reg3)), ID = &quot;reg3&quot;)))
+region &lt;- rasterize(pp, r)
+
+# predict at any location
+newdat &lt;- expand.grid(x = seq(4960, 5960, length.out = 100), 
+                      y = seq(4830, 5710, length.out = 100))
+newdat$elevation &lt;- extract(elev, newdat[,1:2])
+newdat$region &lt;- factor(extract(region, newdat[,1:2]))
+
+# remove NAs
+newdat &lt;- na.omit(newdat)
+
+# predict
+newdat$calcium &lt;- as.numeric(predict(m_spamm, newdat))
+(gg_spamm &lt;- ggplot(newdat,aes(x=x, y=y, fill = calcium)) +
+  geom_raster() +
+  scale_fill_viridis())</code></pre>
+<p><img src="SpatialCorrelationLab_files/figure-html/PredictionPlot-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
