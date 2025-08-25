@@ -1,0 +1,104 @@
+---
+title: "Highlights of the Syllabuses (Syllabi)?"
+subtitle: "EFB 796/797: Concepts & Techniques in Movement and Spatial Ecology"
+author: "Elie Gurarie and Nate Wehr"
+date: "August 25, 2025"
+output: 
+  xaringan::moon_reader:
+    css: ["default", "default-fonts", "mycss.css"]
+    nature:
+      highlightStyle: github
+      countIncrementalSlides: false
+      highlightLines: true
+      ratio: '16:9'
+editor_options: 
+  chunk_output_type: console
+---
+
+<!-- https://bookdown.org/yihui/rmarkdown/xaringan-format.html -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, 
+                      warning = FALSE, las = 1)
+#output: html_document
+```
+
+
+```{r xaringan-scribble, echo=FALSE}
+xaringanExtra::use_scribble()
+```
+
+```{r xaringan-tile-view, echo=FALSE}
+xaringanExtra::use_tile_view()
+```
+
+```{r colsFunction, eval = FALSE, echo = FALSE}
+#system("cp ../mycss.css ./")
+xaringan::inf_mr()
+```
+
+
+
+.pull-left[
+
+## 797: Concepts 
+### 1 credit seminar
+
+- in-depth discussions of concepts important to movement (& spatial) ecology
+  - 1-2 papers a week, with input on selection from students. 
+
+- reading materials relevant to graduate work. 
+
+Collegial discussion format to improve understanding of the underlying premises and applications of these methodological approaches.
+
+]
+
+--
+
+.pull-right[
+
+## 796: Techniques
+### 2 credit lecture / lab
+
+Linking ecological **questions** to **statistical tools**
+
+- Learning to deal with data
+
+- Understanding underlying math / stats.
+
+- Visualizing, summarizing, inference
+
+- Moving **your own projects** forward. 
+
+]
+--
+
+<br> 
+### Combined:
+
+- Papers covering methods and applications of interest to **796 students** will be covered in **797**.  
+
+
+---
+
+
+#  Assessment
+
+.pull-left.large[
+## 797 only
+
+- Lead a discussion 
+
+- Writing assignment 
+]
+
+.pull-right.large[
+## 796 (+797)
+
+- Lead a discussion
+
+- Some homework assignments / exercises
+
+- Final analysis project presentation 
+
+]
